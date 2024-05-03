@@ -4,8 +4,8 @@
 Author: O. Bayley
 Description: This module controls the server element of the program. It is geared
 entirely towards the socket communication and offloads all commands to the Controller object.
-You should give the system the IP address (cmd prompt 'ipconfig') and select the port for
-communication withing a network. 'localhost' and 1025 are good settings for the same PC.
+The IP address will default to the IP of the PC running the server, it can be declared if
+desired, but the port (>1024) must be specified.
 """
 import socket
 import threading
@@ -13,27 +13,31 @@ from cc_controller import Controller
 
 
 class Server:
-    def __init__(self, host='10.10.29.199', port=12345):
-        self.host = host
+    def __init__(self, port=12345):
         self.port = port
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server_socket.bind(("", self.port))
+        self.allowed_ips = ["10.10.29.199", "10.10.29.202", "10.10.29.201"]  # TODO Store these values elsewhere
 
-        self.list_of_users = ["RoboChem"]  # Piss security only implemented to prevent accidental connections.
-        print(f"Server listening on {self.host}:{self.port}")
+        print(f"Server listening on port: {self.port}")
         self.lcms_controller = Controller(port="COM3")
         print(f"Server connected to controller")
 
     def listen(self):
-        """Listen for incoming connections and handle them."""
+        """
+        Listen for incoming connections and handle them.
+        Will only allow connections by a PC with the IP from the authorised IP list
+        """
         self.server_socket.listen()
         while True:
             client_socket, client_addr = self.server_socket.accept()
-            print(f"Connected by {client_addr}")
-            threading.Thread(target=self.handle_client, args=(client_socket,)).start()
-
-    def check_credentials(self, username):
-        return username in self.list_of_users
+            client_ip = client_addr[0]
+            if client_ip in self.allowed_ips:
+                print(f"Connected by {client_addr}")
+                threading.Thread(target=self.handle_client, args=(client_socket,)).start()
+            else:
+                print(f"Rejected connection from {client_addr}")
+                client_socket.close()
 
     def handle_client(self, client_socket):
         """Receive commands from a client and send them to the Arduino."""
@@ -45,23 +49,12 @@ class Server:
                 if not data:
                     break
                 command = data.decode().strip()
-
-                if authenticated:
-                    if command == 'close server connection':
-                        client_socket.sendall(b"Closing Server Connection...\n")
-                        self.close()
-                    else:
-                        response = self.lcms_controller.process_command(command)
-                    client_socket.sendall(response.encode())
-
-                if not authenticated:  # check connection starts with a user
-                    authenticated = self.check_credentials(command)
-                    if authenticated:
-                        client_socket.sendall(b"Authentication Successful.\n")
-                    else:
-                        client_socket.sendall(b"Authentication Failed.\n")
-                        client_socket.close()
-
+                if command == 'close server connection':
+                    client_socket.sendall(b"Closing Server Connection...\n")
+                    self.close()
+                else:
+                    response = self.lcms_controller.process_command(command)
+                client_socket.sendall(response.encode())
         finally:
             client_socket.close()
 
