@@ -12,6 +12,7 @@ import serial
 
 class ArduinoDevice:
     """Class defining the basic operations required for serial communication with the Arduino."""
+
     def __init__(self, port='COM3', baud_rate=9600, timeout=1):
         self.port = port
         self.baud_rate = baud_rate
@@ -23,9 +24,10 @@ class ArduinoDevice:
         """Open a serial connection on the port specified during init"""
         try:
             self.connection = serial.Serial(self.port, self.baud_rate, timeout=self.timeout)
-        except serial.SerialException as serrial_error:
-            raise serial.SerialException(f"Failed to open serial connection: {serrial_error}")
+        except Exception as serrial_error:
+            raise Exception(f"Failed to open serial connection: {serrial_error}")
 
+    #serial.SerialException
     def is_connected(self) -> bool:
         """Check whether the connection is open. Thread lock included to allow multi-threading"""
         # with self.lock:

@@ -13,15 +13,15 @@ from cc_controller import Controller
 
 
 class Server:
-    def __init__(self, host='localhost', port=12345):
+    def __init__(self, host='10.10.29.199', port=12345):
         self.host = host
         self.port = port
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server_socket.bind((self.host, self.port))
+        self.server_socket.bind(("", self.port))
 
         self.list_of_users = ["RoboChem"]  # Piss security only implemented to prevent accidental connections.
         print(f"Server listening on {self.host}:{self.port}")
-        self.lcms_controller = Controller(port="COM10")
+        self.lcms_controller = Controller(port="COM3")
         print(f"Server connected to controller")
 
     def listen(self):

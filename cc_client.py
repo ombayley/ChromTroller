@@ -11,7 +11,7 @@ class ChromTrollerClient:
     """Simple client interface to send commands to the LCMS server"""
 
     def __init__(self):
-        self.host_server = 'localhost'  # Check this on the labnet
+        self.host_server = '10.10.29.199'  # Check this on the labnet
         self.host_port = 12345  # Check this on the labnet
         self.auth = "RoboChem"  # Low-level authentication added to prevent accidental connections
         self.socket = self.open_connection()

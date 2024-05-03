@@ -255,5 +255,5 @@ class SensorMonitor:
 
 
 if __name__ == "__main__":
-    device_controller = Controller(port='COM10')
+    device_controller = Controller(port='COM3')
     device_controller.controller_user_loop()
