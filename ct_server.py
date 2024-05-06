@@ -17,7 +17,7 @@ import socket
 import threading
 import logging
 from utils.script_utilities import setup_logging, load_ids_file
-from cc_controller import Controller
+from ct_controller import Controller
 
 
 class Server:
