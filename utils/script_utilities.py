@@ -31,10 +31,12 @@ def time_method(method):
 def setup_logging(path=None, script_name=None):
     """Sets up the logging settings"""
     if path is None:
-        # Default to the directory of the script that calls this function if no path given
-        path = os.path.dirname(os.path.abspath(__file__))
+        # Default to the logs directory. Assumes logs dir is in same dir as the utils dir.
+        current_dir_path = os.path.dirname(os.path.abspath(__file__))
+        root_dir_path = os.path.dirname(current_dir_path)
+        path = os.path.join(root_dir_path, 'logs')
+
     if script_name is None:
-        # Default to the name of the script that calls this function if none given
         script_name = os.path.basename(__file__).split('.')[0]
     # Set the log file name and path
     log_file_name = f"ChromTroller_{script_name}_logfile.log"
@@ -55,7 +57,7 @@ def setup_logging(path=None, script_name=None):
 def load_ids_file(secure_id_file_path=None):
     try:
         if secure_id_file_path is None:
-            secure_id_file_path = os.path.join('utils', 'utils/private_connection_ids.json')
+            secure_id_file_path = os.path.join('utils', 'private_connection_ids.json')
         with open(secure_id_file_path, 'r') as ids_file:
             config = json.load(ids_file)
         return config

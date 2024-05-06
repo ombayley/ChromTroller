@@ -25,7 +25,7 @@ class Controller:
         self.sample_loading_position = 'B'  # 1 = Position B
         self.loop_fill_time = 3
         self.lcms_sample_prep_time = 10
-        self.switching_time = 1
+        self.switching_time = 0.5
         self.start_ps_monitor()
 
     def process_command(self, cmd):
@@ -136,7 +136,7 @@ class Controller:
         # Ensure that the switch is in the filling position and if not, switch and fill.
         if self.controller.read_valve_pos() != self.sample_filling_position:
             self.controller.set_valve_pos(self.sample_filling_position)
-            time.sleep(self.switching_time)  # give switch time to change positions
+            time.sleep(self.switching_time*2)  # give time to change switch positions
             if self.controller.read_valve_pos() != self.sample_filling_position:
                 raise Exception("ERROR - Switch Valve - Valve Not Set")
             time.sleep(self.loop_fill_time)
@@ -201,7 +201,7 @@ class SensorMonitor:
         self.controller = controller
 
         # Must be set according to user and platform requirements
-        self.frequency = 0.1
+        self.polling_frequency = 0.1
         self.stability_time = 1
         self.empty_sensor_val = '1'
         self.full_sensor_vals = ['0', '2']
@@ -228,7 +228,7 @@ class SensorMonitor:
             self.check_ps_change(curr_ps_val)
 
             self.last_ps_val = curr_ps_val
-            time.sleep(self.frequency)
+            time.sleep(self.polling_frequency)
 
     def check_ps_change(self, curr_ps_val):
         """Checks whether the new reading differs from the previous reading and the previous stable reading """

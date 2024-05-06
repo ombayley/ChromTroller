@@ -1,0 +1,8 @@
+06-05-2024 11:26:55 - root - INFO - Server successfully connected to instrument controller
+06-05-2024 11:26:55 - root - INFO - Server listening on port: 10989
+06-05-2024 11:26:59 - root - INFO - Client: ('127.0.0.1', 51098) successfully connected
+06-05-2024 11:27:04 - root - INFO - Client command sent: 1
+06-05-2024 11:27:05 - root - INFO - Response received: LCMS_Controller
+06-05-2024 11:27:27 - root - INFO - Client command sent: 4
+06-05-2024 11:27:27 - root - INFO - Response received: Valve Position Error
+06-05-2024 11:28:20 - root - INFO - Server socket closed.

@@ -1,0 +1,11 @@
+{
+    "sample_filling_position": "A",
+    "sample_loading_position": "B",
+    "sample_loop_fill_time": 3.0,
+    "lcms_sample_prep_time": 10.0,
+    "valve_switching_time": 0.5,
+    "empty_phase_sensor_value": "1",
+    "full_phase_sensor_values": ["0", "2"],
+    "phase_sensor_stability_time": 0.5,
+    "phase_sensor_polling_time": 0.1
+}

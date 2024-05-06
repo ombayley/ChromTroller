@@ -13,7 +13,7 @@ class ChromTrollerClient:
 
     def __init__(self):
         ids_file = load_ids_file()
-        self.host_server = ids_file['server_address']
+        self.host_server = 'localhost' #ids_file['server_address']
         self.host_port = ids_file['socket_port']
         self.socket = self.open_connection()
         if self.socket is None:
