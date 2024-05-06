@@ -4,8 +4,11 @@
 Author: O. Bayley
 Description: This module controls the server element of the program. It is geared
 entirely towards the socket communication and offloads all commands to the Controller object.
-The IP address will default to the IP of the PC running the server, it can be declared if
-desired, but the port (>1024) must be specified.
+
+The IP address will default to the IP of the PC running the server but can be declared if
+desired. The port must be specified and should be between 1024-49151. Ports <1024 are commonly
+used/priviliged ports for unix systems (avoid). Ports 49152-65535 are dynamic ports used by the
+operating system (avoid). Ports use an unsigned 16-bit integer so 65,535 is the max.
 """
 import socket
 import threading
@@ -13,7 +16,7 @@ from cc_controller import Controller
 
 
 class Server:
-    def __init__(self, port=12345):
+    def __init__(self, port=10989):
         self.port = port
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server_socket.bind(("", self.port))
