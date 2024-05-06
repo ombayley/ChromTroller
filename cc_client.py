@@ -5,14 +5,16 @@ Author: O. Bayley
 Description: An example client for connecting to the LCMS Server
 """
 import socket
+from utils.script_utilities import load_config_file
 
 
 class ChromTrollerClient:
     """Simple client interface to send commands to the LCMS server"""
 
     def __init__(self):
-        self.host_server = '10.10.29.199'
-        self.host_port = 10989
+        config = load_config_file()
+        self.host_server = config['server_address']
+        self.host_port = config['socket_port']
         self.socket = self.open_connection()
         if self.socket is None:
             raise Exception("Failed to authenticate or connect to server.")

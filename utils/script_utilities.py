@@ -2,12 +2,13 @@
 # -*- coding: utf-8 -*-
 """
 Author: O. Bayley
-Utility script containing functions for logging, timing and error handling.
+Utility script containing functions for logging, timing method execution, and error handling.
 """
 import os
 import time
 import logging
 import inspect
+import json
 
 
 def time_method(method):
@@ -27,29 +28,41 @@ def time_method(method):
     return wrapper
 
 
-def configure_log_reports(path=None, script_name=None):
-    """
-    Sets up the logging settings.
-    Done from a centralized script to give consistent logging throughout the LAMA package.
-    """
+def setup_logging(path=None, script_name=None):
+    """Sets up the logging settings"""
     if path is None:
         # Default to the directory of the script that calls this function if no path given
         path = os.path.dirname(os.path.abspath(__file__))
     if script_name is None:
         # Default to the name of the script that calls this function if none given
         script_name = os.path.basename(__file__).split('.')[0]
-
     # Set the log file name and path
-    log_file_name = f"{script_name}_logfile.log"
+    log_file_name = f"ChromTroller_{script_name}_logfile.log"
     log_file_path = os.path.join(path, log_file_name)
 
     # Set up logging configuration
     logging.basicConfig(
-        filename=log_file_path,
         level=logging.INFO,
-        format='%(asctime)s - %(levelname)s - %(message)s',
-        filemode='w'  # 'w' = overwrite the logfile each run, 'a' = append each run to the logfile
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        datefmt='%d-%m-%Y %H:%M:%S',
+        handlers=[
+            logging.FileHandler(log_file_path, mode='w'),
+            logging.StreamHandler()
+        ]
     )
+
+
+def load_config_file(config_path=None):
+    try:
+        if config_path is None:
+            config_path = os.path.join('utils', 'utils/config.json')
+        with open(config_path, 'r') as config_file:
+            config = json.load(config_file)
+        return config
+    except FileNotFoundError as fnf_e:
+        print(fnf_e)
+    except json.JSONDecodeError as dec_e:
+        print(dec_e)
 
 
 def handle_error(error_discr, original_error=None):

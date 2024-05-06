@@ -12,19 +12,23 @@ operating system (avoid). Ports use an unsigned 16-bit integer so 65,535 is the 
 """
 import socket
 import threading
+import logging
+from utils.script_utilities import setup_logging, load_config_file
 from cc_controller import Controller
 
 
 class Server:
-    def __init__(self, port=10989):
-        self.port = port
+    def __init__(self):
+        config = load_config_file()
+        self.port = config['socket_port']
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server_socket.bind(("", self.port))
-        self.allowed_ips = ["10.10.29.199", "10.10.29.202", "10.10.29.201"]  # TODO Store these values elsewhere
+        self.allowed_ips = config['allowed_ips']
+        setup_logging(script_name="Server")
 
-        print(f"Server listening on port: {self.port}")
-        self.lcms_controller = Controller(port="COM3")
-        print(f"Server connected to controller")
+        logging.info(f"Server listening on port: {self.port}")
+        self.lcms_controller = Controller(port=config['serial_port'])
+        logging.info(f"Server connected to controller")
 
     def listen(self):
         """
@@ -36,16 +40,15 @@ class Server:
             client_socket, client_addr = self.server_socket.accept()
             client_ip = client_addr[0]
             if client_ip in self.allowed_ips:
-                print(f"Connected by {client_addr}")
+                logging.info(f"Client: {client_addr} successfully connected")
                 threading.Thread(target=self.handle_client, args=(client_socket,)).start()
             else:
-                print(f"Rejected connection from {client_addr}")
+                logging.info(f"Connection from {client_addr} rejected as IP is not in allowed list")
                 client_socket.close()
 
     def handle_client(self, client_socket):
         """Receive commands from a client and send them to the Arduino."""
-        authenticated = False
-        response = "Command Sent But No Data Returned"
+        response = "No Data Returned"
         try:
             while True:  # Set to constant listen
                 data = client_socket.recv(1024)
@@ -53,16 +56,20 @@ class Server:
                     break
                 command = data.decode().strip()
                 if command == 'close server connection':
+                    logging.info("Client initiated disconnection")
                     client_socket.sendall(b"Closing Server Connection...\n")
                     self.close()
+                    logging.info("Client disconnected")
                 else:
+                    logging.info(f"Client command sent: {command}")
                     response = self.lcms_controller.process_command(command)
+                    logging.info(f"Response received: {response}")
                 client_socket.sendall(response.encode())
         finally:
             client_socket.close()
 
     def close(self):
-        """Close the server socket and Arduino connection."""
+        """Close the server socket."""
         self.server_socket.close()
 
 
