@@ -5,16 +5,16 @@ Author: O. Bayley
 Description: An example client for connecting to the LCMS Server
 """
 import socket
-from utils.script_utilities import load_config_file
+from utils.script_utilities import load_ids_file
 
 
 class ChromTrollerClient:
     """Simple client interface to send commands to the LCMS server"""
 
     def __init__(self):
-        config = load_config_file()
-        self.host_server = config['server_address']
-        self.host_port = config['socket_port']
+        ids_file = load_ids_file()
+        self.host_server = ids_file['server_address']
+        self.host_port = ids_file['socket_port']
         self.socket = self.open_connection()
         if self.socket is None:
             raise Exception("Failed to authenticate or connect to server.")
@@ -31,7 +31,7 @@ class ChromTrollerClient:
             return None
 
     def send_command(self, com):
-        """method to send comands from a control program to the server"""
+        """method to send commands from a control program to the server"""
         try:
             self.socket.sendall(com.encode())
             data = self.socket.recv(1024)
@@ -41,7 +41,7 @@ class ChromTrollerClient:
             print(f"Error during command transmission: {e}")
 
     def send_user_command(self):
-        """method to send comands from a user to the server"""
+        """method to send commands from a user to the server via cmd line interface"""
         try:
             while True:
                 message = input("Enter command to send: ")  # !CHANGE input to the actual calls in the
@@ -54,6 +54,7 @@ class ChromTrollerClient:
             self.close()
 
     def close(self):
+        """Close connection with the server"""
         if self.socket:
             self.socket.close()
             print("Connection closed.")

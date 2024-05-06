@@ -52,12 +52,12 @@ def setup_logging(path=None, script_name=None):
     )
 
 
-def load_config_file(config_path=None):
+def load_ids_file(secure_id_file_path=None):
     try:
-        if config_path is None:
-            config_path = os.path.join('utils', 'utils/config.json')
-        with open(config_path, 'r') as config_file:
-            config = json.load(config_file)
+        if secure_id_file_path is None:
+            secure_id_file_path = os.path.join('utils', 'utils/private_connection_ids.json')
+        with open(secure_id_file_path, 'r') as ids_file:
+            config = json.load(ids_file)
         return config
     except FileNotFoundError as fnf_e:
         print(fnf_e)
