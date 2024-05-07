@@ -9,6 +9,7 @@ import time
 import logging
 import inspect
 import json
+from datetime import datetime
 
 
 def time_method(method):
@@ -28,27 +29,33 @@ def time_method(method):
     return wrapper
 
 
-def setup_logging(path=None, script_name=None):
+def setup_logging(script_name=None):
     """Sets up the logging settings"""
-    if path is None:
-        # Default to the logs directory. Assumes logs dir is in same dir as the utils dir.
-        current_dir_path = os.path.dirname(os.path.abspath(__file__))
-        root_dir_path = os.path.dirname(current_dir_path)
-        path = os.path.join(root_dir_path, 'logs')
+
+
+    # Default to the logs directory. Assumes logs dir is in same dir as the utils dir.
+    current_dir_path = os.path.dirname(os.path.abspath(__file__))
+    root_dir_path = os.path.dirname(current_dir_path)
+    path = os.path.join(root_dir_path, 'logs')
+
+    # Ensure the logs directory exists
+    os.makedirs(path, exist_ok=True)
 
     if script_name is None:
         script_name = os.path.basename(__file__).split('.')[0]
+
     # Set the log file name and path
-    log_file_name = f"ChromTroller_{script_name}_logfile.log"
+    date_str = datetime.now().strftime("%d-%m-%Y")
+    log_file_name = f"ChromTroller_{date_str}_logfile.log"
     log_file_path = os.path.join(path, log_file_name)
 
     # Set up logging configuration
     logging.basicConfig(
         level=logging.INFO,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        format=f'%(asctime)s - %(levelname)s - {script_name} - %(message)s',
         datefmt='%d-%m-%Y %H:%M:%S',
         handlers=[
-            logging.FileHandler(log_file_path, mode='w'),
+            logging.FileHandler(log_file_path, mode='a'),
             logging.StreamHandler()
         ]
     )

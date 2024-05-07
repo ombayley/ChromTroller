@@ -95,9 +95,9 @@ class Server:
                     self.close()
                     logging.info("Client disconnected")
                 else:
-                    logging.info("Client command sent: %s", command)
+                    logging.info("Command received from client: %s", command)
                     response = self.lcms_controller.process_command(command)
-                    logging.info("Response received: %s", response)
+                    logging.info("Response sent back to client: %s", response)
                     if response is None:
                         response = 'No Data Returned'
                     client_socket.sendall(response.encode())
