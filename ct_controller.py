@@ -8,8 +8,23 @@ and trigger complex behaviours.
 import threading
 import time
 import logging
+import json
+import os
 from devices.lcms_device import LCMSDevice
 from utils.script_utilities import setup_logging
+
+
+def load_param_config(secure_id_file_path=None):
+    try:
+        if secure_id_file_path is None:
+            secure_id_file_path = os.path.join('utils', 'parameter_config.json')
+        with open(secure_id_file_path, 'r') as ids_file:
+            param_config = json.load(ids_file)
+        return param_config
+    except FileNotFoundError as fnf_e:
+        logging.error(fnf_e)
+    except json.JSONDecodeError as dec_e:
+        logging.error(dec_e)
 
 
 class Controller:
@@ -23,11 +38,12 @@ class Controller:
 
     def __init__(self, port='COM3', baud_rate=9600, timeout=1):
         self.controller = LCMSDevice(port, baud_rate, timeout)
-        self.sample_filling_position = 'A'  # 0 = Position A
-        self.sample_loading_position = 'B'  # 1 = Position B
-        self.loop_fill_time = 3
-        self.lcms_sample_prep_time = 10
-        self.switching_time = 0.5
+        param_config = load_param_config()
+        self.sample_filling_position = param_config["sample_filling_position"]
+        self.sample_loading_position = param_config["sample_loading_position"]
+        self.loop_fill_time = param_config["sample_loop_fill_time"]
+        self.lcms_sample_prep_time = param_config["lcms_sample_prep_time"]
+        self.switching_time = param_config["valve_switching_time"]
         setup_logging(script_name="Controller")
         self.start_ps_monitor()
         logging.info("Controller Object Initialized")
@@ -72,7 +88,7 @@ class Controller:
                 return 'k'  # TODO check this dosen't return anything
             case '9':
                 self.controller.calibrate_phase_sensor()
-                return 'k' # TODO check this dosen't return anything
+                return 'k'  # TODO check this dosen't return anything
             case '10':
                 return self.controller.read_phase_sensor()
             case 'Analyse':
@@ -127,11 +143,8 @@ class Controller:
         if ps_ack is None:
             logging.error("Phase Sensor Error")
 
-
-
         # Check LCMS is ready to ensure start trigger will start analysis
         # TODO find a way to have the LCMS tate show as ready while waiting - Wait time for now
-
 
         # Holds analysis until the phase sensor detects a sample
         self.controller.wait_for_phase_sensor()
@@ -140,7 +153,7 @@ class Controller:
         # Ensure that the switch is in the filling position and if not, switch and fill.
         if self.controller.read_valve_pos() != self.sample_filling_position:
             self.controller.set_valve_pos(self.sample_filling_position)
-            time.sleep(self.switching_time*2)  # give time to change switch positions
+            time.sleep(self.switching_time * 2)  # give time to change switch positions
             if self.controller.read_valve_pos() != self.sample_filling_position:
                 logging.error("ERROR - Switch Valve - Valve Not Set")
                 raise Exception("ERROR - Switch Valve - Valve Not Set")
@@ -203,11 +216,12 @@ class SensorMonitor:
     def __init__(self, controller):
         self.controller = controller
 
+        param_config = load_param_config()
         # Must be set according to user and platform requirements
-        self.polling_frequency = 0.1
-        self.stability_time = 1
-        self.empty_sensor_val = '1'
-        self.full_sensor_vals = ['0', '2']
+        self.polling_frequency = param_config["phase_sensor_polling_time"]
+        self.stability_time = param_config["phase_sensor_stability_time"]
+        self.empty_sensor_val = param_config["empty_phase_sensor_value"]
+        self.full_sensor_vals = param_config["full_phase_sensor_values"]
         # general variables
         self.prev_stable_val = None
         self.last_ps_val = None

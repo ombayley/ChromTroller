@@ -16,7 +16,9 @@ private_connection_ids.json file in the utils directory which is not git tracked
 import socket
 import threading
 import logging
-from utils.script_utilities import setup_logging, load_ids_file
+import json
+import os
+from utils.script_utilities import setup_logging
 from ct_controller import Controller
 
 
@@ -31,7 +33,7 @@ class Server:
         then opens the server port
         """
         # init sensitive data from id_file file
-        id_file = load_ids_file()
+        id_file = self.load_ids_file()
         if id_file is None:
             logging.error("error occurred when opening the id file")
             return
@@ -56,6 +58,19 @@ class Server:
         self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server_socket.bind(("", self.port))
         logging.info("Server listening on port: %d", self.port)
+
+    @staticmethod
+    def load_ids_file(secure_id_file_path=None):
+        try:
+            if secure_id_file_path is None:
+                secure_id_file_path = os.path.join('utils', 'private_connection_ids.json')
+            with open(secure_id_file_path, 'r') as ids_file:
+                config = json.load(ids_file)
+            return config
+        except FileNotFoundError as fnf_e:
+            logging.error(fnf_e)
+        except json.JSONDecodeError as dec_e:
+            logging.error(dec_e)
 
     def listen(self):
         """
