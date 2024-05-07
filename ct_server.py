@@ -118,8 +118,8 @@ class Server:
                     client_socket.sendall(response.encode())
         except socket.error as socket_error:
             logging.exception("Error accepting connections: %s", socket_error)
-        finally:
-            self.server_socket.close()
+        # finally:
+        #     self.server_socket.close()
 
     def close(self):
         """Close the server socket."""
