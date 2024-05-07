@@ -80,21 +80,21 @@ class Server:
         dual-system connection but is not necessary for current use.
         """
         self.server_socket.listen()
-        try:
-            while True:
-                try:
-                    client_socket, client_addr = self.server_socket.accept()
-                    client_ip = client_addr[0]
-                    if client_ip in self.allowed_ips:
-                        logging.info("Client: %s successfully connected", client_addr)
-                        threading.Thread(target=self.handle_client, args=(client_socket,)).start()
-                    else:
-                        logging.info("Connection from %s rejected. IP not in IP list", client_addr)
-                        client_socket.close()
-                except socket.error as socket_error:
-                    logging.exception("Error accepting connections: %s", socket_error)
-        finally:
-            self.server_socket.close()
+        # try:
+        while True:
+            try:
+                client_socket, client_addr = self.server_socket.accept()
+                client_ip = client_addr[0]
+                if client_ip in self.allowed_ips:
+                    logging.info("Client: %s successfully connected", client_addr)
+                    threading.Thread(target=self.handle_client, args=(client_socket,)).start()
+                else:
+                    logging.info("Connection from %s rejected. IP not in IP list", client_addr)
+                    client_socket.close()
+            except socket.error as socket_error:
+                logging.exception("Error accepting connections: %s", socket_error)
+        # finally:
+        #     self.server_socket.close()
 
     def handle_client(self, client_socket):
         """Receive commands from a client and send them to the Arduino via the Controller object."""
