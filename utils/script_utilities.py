@@ -12,6 +12,14 @@ import json
 from datetime import datetime
 
 
+class FlushFileHandler(logging.FileHandler):
+    """Custom file handler that flushes writes to disk immediately."""
+
+    def emit(self, record):
+        super().emit(record)
+        self.flush()
+
+
 def time_method(method):
     """
     This method can be used as a decorator to time method run times.
@@ -31,7 +39,6 @@ def time_method(method):
 
 def setup_logging(script_name=None):
     """Sets up the logging settings"""
-
 
     # Default to the logs directory. Assumes logs dir is in same dir as the utils dir.
     current_dir_path = os.path.dirname(os.path.abspath(__file__))
@@ -55,7 +62,7 @@ def setup_logging(script_name=None):
         format=f'%(asctime)s - %(levelname)s - {script_name} - %(message)s',
         datefmt='%d-%m-%Y %H:%M:%S',
         handlers=[
-            logging.FileHandler(log_file_path, mode='a'),
+            FlushFileHandler(log_file_path, mode='a'),
             logging.StreamHandler()
         ]
     )

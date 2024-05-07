@@ -119,7 +119,7 @@ class Server:
         except socket.error as socket_error:
             logging.exception("Error accepting connections: %s", socket_error)
         # finally:
-        #     self.server_socket.close()
+        #     self.server_socket.close()  # this causes a bug when executed
 
     def close(self):
         """Close the server socket."""
