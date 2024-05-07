@@ -52,8 +52,8 @@ def setup_logging(script_name=None):
         script_name = os.path.basename(__file__).split('.')[0]
 
     # Set the log file name and path
-    # date_str = datetime.now().strftime("%d-%m-%Y")
-    log_file_name = f"ChromTroller__logfile.log" #{date_str}
+    date_str = datetime.now().strftime("%d-%m-%Y")
+    log_file_name = f"ChromTroller_{date_str}_logfile.log"
     log_file_path = os.path.join(path, log_file_name)
 
     # Set up logging configuration
@@ -62,7 +62,7 @@ def setup_logging(script_name=None):
         format=f'%(asctime)s - %(levelname)s - {script_name} - %(message)s',
         datefmt='%d-%m-%Y %H:%M:%S',
         handlers=[
-            FlushFileHandler(log_file_path, mode='a'),
+            FlushFileHandler(log_file_path, mode='w'),  # w=write, a=append
             logging.StreamHandler()
         ]
     )
