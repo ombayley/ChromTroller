@@ -7,7 +7,9 @@ and trigger complex behaviours.
 """
 import threading
 import time
+import logging
 from devices.lcms_device import LCMSDevice
+from utils.script_utilities import setup_logging
 
 
 class Controller:
@@ -26,7 +28,9 @@ class Controller:
         self.loop_fill_time = 3
         self.lcms_sample_prep_time = 10
         self.switching_time = 0.5
+        setup_logging(script_name="Controller")
         self.start_ps_monitor()
+        logging.info("Controller Object Initialized")
 
     def process_command(self, cmd):
         """
@@ -45,54 +49,38 @@ class Controller:
         prefix, argument = self.split_command(cmd)
         match prefix:
             case '1':
-                device_id = self.controller.get_id()
-                print(device_id)
-                return device_id
+                return self.controller.get_id()
             case '2':
                 ack = self.controller.set_id(argument)
-                response = ("Good Acknowledge" if ack == 'k' else "Bad Acknowledge")
-                print(response)
-                return response
+                return "Good Acknowledge" if ack == 'k' else "Bad Acknowledge"
             case '3':
                 self.controller.factory_reset()
-                print('k')
                 return 'k'
             case '4':
-                pos = self.controller.read_valve_pos()
-                print(pos)
-                return pos
+                return self.controller.read_valve_pos()
             case '5':
                 ack = self.controller.set_valve_pos(argument)
-                print(ack)
-                response = ("Good Acknowledge" if ack == 'k' else "Bad Acknowledge")
-                print(response)
-                return response
+                return "Good Acknowledge" if ack == 'k' else "Bad Acknowledge"
             case '6':
                 ack = self.controller.start_analysis()
-                response = ("Good Acknowledge" if ack == 'k' else "Bad Acknowledge")
-                print(response)
-                return response
+                return "Good Acknowledge" if ack == 'k' else "Bad Acknowledge"
             case '7':
                 ack = self.controller.stop_analysis()
-                response = ("Good Acknowledge" if ack == 'k' else "Bad Acknowledge")
-                print(response)
-                return response
+                return "Good Acknowledge" if ack == 'k' else "Bad Acknowledge"
             case '8':
                 self.controller.check_lcms_ready()
-                return 'k'
+                return 'k'  # TODO check this dosen't return anything
             case '9':
                 self.controller.calibrate_phase_sensor()
-                return 'k'
+                return 'k' # TODO check this dosen't return anything
             case '10':
-                ps_val = self.controller.read_phase_sensor()
-                print(ps_val)
-                return ps_val
+                return self.controller.read_phase_sensor()
             case 'Analyse':
                 try:
                     self.run_analysis_cycle()
                     return 'Success'
                 except Exception as e:
-                    print(e)
+                    logging.error(e)
 
     def start_ps_monitor(self):
         """
@@ -100,6 +88,7 @@ class Controller:
         """
         sensor_monitor = SensorMonitor(self.controller)
         threading.Thread(target=sensor_monitor.monitor_loop).start()
+        logging.info("Phase sensor monitoring started on separate thread.")
 
     @staticmethod
     def split_command(cmd) -> tuple:
@@ -125,33 +114,48 @@ class Controller:
         """
         Runs the routine start an analytical run. This involves external loading and triggering
         """
-        # TODO make function clearer
-        # TODO include check to see if system is ready. Currently assumes all analyse commands come once ready
-        print("Analysis initiated...")
-        # TODO add a check here to ensure everything is connected correctly
+        logging.info("Analysis initiated...")
+
+        # check connectivity
+        id_ack = self.controller.get_id()
+        if id_ack is None:
+            logging.error("Arduino Not Connected")
+        valve_pos_ack = self.controller.read_valve_pos()
+        if valve_pos_ack is None or valve_pos_ack == 2:
+            logging.error("Switch Valve Error")
+        ps_ack = self.controller.read_phase_sensor()
+        if ps_ack is None:
+            logging.error("Phase Sensor Error")
+
+
+
+        # Check LCMS is ready to ensure start trigger will start analysis
+        # TODO find a way to have the LCMS tate show as ready while waiting - Wait time for now
+
+
         # Holds analysis until the phase sensor detects a sample
         self.controller.wait_for_phase_sensor()
-        print("SUCCESS - Phase Sensor - Sample Detected")
+        logging.info("SUCCESS - Phase Sensor - Sample Detected")
 
         # Ensure that the switch is in the filling position and if not, switch and fill.
         if self.controller.read_valve_pos() != self.sample_filling_position:
             self.controller.set_valve_pos(self.sample_filling_position)
             time.sleep(self.switching_time*2)  # give time to change switch positions
             if self.controller.read_valve_pos() != self.sample_filling_position:
+                logging.error("ERROR - Switch Valve - Valve Not Set")
                 raise Exception("ERROR - Switch Valve - Valve Not Set")
             time.sleep(self.loop_fill_time)
             if not self.controller.get_sample_at_sensor():
+                logging.error("ERROR - Phase Sensor - No Sample Detected After Filling")
                 raise Exception("ERROR - Phase Sensor - No Sample Detected After Filling")
-        print("SUCCESS - Switch Valve - Filling Loop Filled")
-
-        # Check LCMS is ready to ensure start trigger will start analysis
-        # TODO find a way to have the LCMS tate show as ready while waiting
+        logging.info("SUCCESS - Switch Valve - Filling Loop Filled")
 
         # Send start analysis and check acknowledgement.
         ack = self.controller.start_analysis()
         if ack != self.controller.standard_acknowledge:
+            logging.error("ERROR - LCMS - Start Signal Not Sent by Arduino")
             raise Exception("ERROR - LCMS - Start Signal Not Sent by Arduino")
-        print("SUCCESS - LCMS - Start Signal Sent By Arduino")
+        logging.info("SUCCESS - LCMS - Start Signal Sent By Arduino")
 
         # Check acknowledgement from spectrometer (LCMS method must include this!)
         ready_state = '0'
@@ -162,16 +166,15 @@ class Controller:
             time.sleep(0.1)
             if time.time() - start_time > timeout:
                 raise Exception("ERROR - LCMS - No Acknowledgement From Spectrometer Within Timeout")
-
-        print("SUCCESS - LCMS - Start Acknowledged By Spectrometer")
+        logging.info("SUCCESS - LCMS - Start Acknowledged By Spectrometer")
 
         # Wait a set time to allow LCMS sample handling, then load from the switch valve.
         time.sleep(self.lcms_sample_prep_time)
         self.controller.set_valve_pos(self.sample_loading_position)
-        print("SUCCESS - Switch Valve - Sample Loaded From Sample Loop")
+        logging.info("SUCCESS - Switch Valve - Sample Loaded From Sample Loop")
         time.sleep(self.loop_fill_time * 2)
         self.controller.set_valve_pos(self.sample_filling_position)
-        print("SUCCESS - Switch Valve - Returned To Filling Position")
+        logging.info("SUCCESS - Switch Valve - Returned To Filling Position")
 
     def close(self):
         """ Closes the serial connection to the Arduino Device """

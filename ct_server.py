@@ -117,5 +117,5 @@ if __name__ == "__main__":
     try:
         server.listen()
     except KeyboardInterrupt:
-        print("Shutting down the server.")
+        logging.info("Shutting down the server.")
         server.close()
