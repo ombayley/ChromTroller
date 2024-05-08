@@ -51,7 +51,7 @@ def setup_logging():
     os.makedirs(path, exist_ok=True)
 
     # Set the log file name and path
-    date_str = datetime.now().strftime("%d-%m-%Y--%H:%M:%S")
+    date_str = datetime.now().strftime("%d-%m-%Y--%H-%M-%S")
     log_file_name = f"ChromTroller_{date_str}_logfile.log"
     log_file_path = os.path.join(path, log_file_name)
 

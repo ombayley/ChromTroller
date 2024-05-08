@@ -41,7 +41,7 @@ class Server:
         self.allowed_ips = id_file['allowed_ips']
 
         # init logging
-        setup_logging(script_name="Server")
+        setup_logging()
 
         # Connect to the Arduino Controller
         try:
