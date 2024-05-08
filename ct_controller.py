@@ -14,15 +14,16 @@ from devices.lcms_device import LCMSDevice
 def get_instrument_config_parameters() -> dict:
     """
     Function returns a dictionary containing all hardware dependant variable values.
+    TODO move PS to before valve, make stability time longer and add timer to ensure loading
     """
     instrument_params = {
-        "sample_filling_position": "A",
-        "sample_loading_position": "B",
+        "sample_filling_position": 'A',
+        "sample_loading_position": 'B',
         "sample_loop_fill_time": 3.0,
         "lcms_sample_prep_time": 10.0,
         "valve_switching_time": 0.5,
-        "empty_phase_sensor_value": "1",
-        "full_phase_sensor_values": ["0", "2"],
+        "empty_phase_sensor_value": '1',
+        "full_phase_sensor_values": ['0', '2'],
         "phase_sensor_stability_time": 0.5,
         "phase_sensor_polling_time": 0.1,
         "lcms_response_timeout": 240
@@ -81,10 +82,13 @@ class Controller:
                 return 'k'  # TODO check this dosen't return anything
             case '10':
                 return self.lcms_device.read_phase_sensor()
+            case 'Reset_Sample_Counter':
+                self.completed_analysis_cycle = 0
+                return 'Sample counter returned to 0'
             case 'Analyse':
                 try:
-                    self.run_analysis_cycle()
-                    return 'Success'
+                    analysis_outcome = self.run_analysis_cycle()
+                    return analysis_outcome
                 except Exception as e:
                     logging.error(e)
 
@@ -112,7 +116,7 @@ class Controller:
         return prefix, argument
 
     # ---------- Analysis Run START ----------
-    def run_analysis_cycle(self):
+    def run_analysis_cycle(self) -> str:
         """
         Runs the routine to start an analytical run.
         This involves the detection, sample loading and lcms method triggering
@@ -145,7 +149,7 @@ class Controller:
             logging.info("SUCCESS - Switch Valve - Sample Loaded From Sample Loop")
 
             # Wait for the sample loop to be flushed through
-            time.sleep(self.param_config["sample_loop_fill_time"] * 2)
+            time.sleep(self.param_config["sample_loop_fill_time"] * 4)
             self.lcms_device.set_valve_pos(self.param_config["sample_filling_position"])
             logging.info("SUCCESS - Switch Valve - Returned To Filling Position")
 
@@ -153,8 +157,12 @@ class Controller:
             self.completed_analysis_cycle += 1
             logging.info("SUCCESS - Analysis Cycle: %s Complete", self.completed_analysis_cycle)
 
+            return f"SUCCESS - Analysis Cycle: {self.completed_analysis_cycle} Complete"
+
         except Exception as error:
             logging.error(error)
+            return f"FAILED - Analysis Cycle Failed due to: {error}"
+    # ---------- Analysis Run END ----------
 
     def check_device_connectivity(self):
         """ Checks the Arduino microcontroller, switch valve, phase sensor, and LCMS are connected """
@@ -166,12 +174,12 @@ class Controller:
             raise "Error Communicating with the Arduino"
         # Check the switch valve is connected and in a valid state
         valve_pos_ack = self.lcms_device.read_valve_pos()
-        if valve_pos_ack not in [0, 1]:
+        if valve_pos_ack not in ['A', 'B']:
             logging.error("Error Communicating with the Switch Valve")
             raise "Error Communicating with the Switch Valve"
         # Check the phase sensor reads a valid value
         ps_ack = self.lcms_device.read_phase_sensor()
-        if ps_ack not in [0, 1, 2]:
+        if ps_ack not in ['0', '1', '2']:
             logging.error("Error Communicating with the Phase Sensor")
             raise "Error Communicating with the Phase Sensor"
 
@@ -251,13 +259,6 @@ class SensorMonitor:
             # Get current sensor value
             current_ps_value = self.lcms_device.read_phase_sensor()
 
-            # Check for a change in the phase sensor output
-            self.check_ps_change(current_ps_value)
-
-            # If a change is detected, check the stability of the change
-            if self.change_detected_flag:
-                self.check_change_stability(current_ps_value)
-
             # If the change is stable, then perform the action
             if self.change_stable_flag:
                 self.act_on_stable_read(current_ps_value)
@@ -265,6 +266,13 @@ class SensorMonitor:
                 # Reset detection variables
                 self.change_stable_flag = False
                 self.previous_stable_value = current_ps_value
+
+            # If a change is detected, check the stability of the change
+            if self.change_detected_flag:
+                self.check_change_stability(current_ps_value)
+
+            # Check for a change in the phase sensor output
+            self.check_ps_change(current_ps_value)
 
             # Update the previous_ps_value the loop again
             self.previous_ps_value = current_ps_value

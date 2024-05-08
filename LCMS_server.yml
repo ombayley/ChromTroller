@@ -26,4 +26,5 @@ dependencies:
       - iso8601==2.1.0
       - pyserial==3.5
       - pyyaml==6.0.1
+      - watchdog==4.0.0
 prefix: C:\Users\obayley\.conda\envs\LCMS_server
