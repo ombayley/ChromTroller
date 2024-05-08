@@ -37,7 +37,6 @@ class Controller:
         baud_rate (float): Baud rate for serial communication. Defaults to '9600'
         timeout (float): max block time (in seconds) for the serial read(). Defaults to '1'
     """
-
     def __init__(self, port='COM3', baud_rate=9600, timeout=1):
         self.lcms_device = LCMSDevice(port, baud_rate, timeout)
         self.param_config = get_instrument_config_parameters()
@@ -109,31 +108,83 @@ class Controller:
             prefix = cmd_parts[0].strip()
         return prefix, argument
 
+# ---------- Analysis Run START ----------
     def run_analysis_cycle(self):
         """
-        Runs the routine start an analytical run. This involves external loading and triggering
+        Runs the routine to start an analytical run.
+        This involves the detection, sample loading and lcms method triggering
         """
-        logging.info("Analysis initiated...")
+        logging.info("Analysis Process Initiated...")
+        try:
+            # Check devices are connected and in valid states. Raise error if not
+            connected = self.check_device_connectivity()
+            if not connected:
+                logging.error("Error connecting to the hardware devices")
+                raise "Error connecting to the hardware devices"
+            logging.info("SUCCESS - Hardware Connections Verified")
 
-        # check connectivity
+            # Ensure phase sensor sees sample. Wait if not there
+            self.lcms_device.wait_for_phase_sensor()
+            logging.info("SUCCESS - Phase Sensor - Sample Detected")
+
+            # Ensure that the switch is in the filling position and if not, switch and fill.
+            self.check_valve_state()
+            logging.info("SUCCESS - Switch Valve - Filling Loop Filled")
+
+            # Send start analysis and check acknowledgement.
+            self.start_lcms_method()
+            logging.info("SUCCESS - LCMS - Start Signal Sent By Arduino")
+
+            # Check acknowledgement from spectrometer (LCMS method must include this!)
+            ready_state = '0'
+            timeout = 240  # 4min timeout
+            start_time = time.time()
+            while ready_state != '1':
+                ready_state = self.lcms_device.check_lcms_ready()
+                time.sleep(0.1)
+                if time.time() - start_time > timeout:
+                    raise Exception("ERROR - LCMS - No Acknowledgement From Spectrometer Within Timeout")
+            logging.info("SUCCESS - LCMS - Start Acknowledged By Spectrometer")
+
+            # Wait a set time to allow LCMS sample handling, then load from the switch valve.
+            time.sleep(self.param_config["lcms_sample_prep_time"])
+            self.lcms_device.set_valve_pos(self.param_config["sample_loading_position"])
+            logging.info("SUCCESS - Switch Valve - Sample Loaded From Sample Loop")
+            time.sleep(self.param_config["sample_loop_fill_time"] * 2)
+            self.lcms_device.set_valve_pos(self.param_config["sample_filling_position"])
+            logging.info("SUCCESS - Switch Valve - Returned To Filling Position")
+
+        except Exception as error:
+            logging.error(error)
+
+    def check_device_connectivity(self) -> bool:
+        """ Checks the Arduino microcontroller, switch valve, phase sensor, and LCMS are connected """
+
+        # Check the arduino receives and sends data
         id_ack = self.lcms_device.get_id()
         if id_ack is None:
-            logging.error("Arduino Not Connected")
+            logging.error("Error Communicating with the Arduino")
+            return False
+
+        # Check the switch valve is connected and in a valid state
         valve_pos_ack = self.lcms_device.read_valve_pos()
-        if valve_pos_ack is None or valve_pos_ack == 2:
-            logging.error("Switch Valve Error")
+        if valve_pos_ack not in [0, 1]:
+            logging.error("Error Communicating with the Switch Valve")
+            return False
+
+        # Check the phase sensor reads a valid value
         ps_ack = self.lcms_device.read_phase_sensor()
-        if ps_ack is None:
-            logging.error("Phase Sensor Error")
+        if ps_ack in [0, 1, 2]:
+            logging.error("Error Communicating with the Phase Sensor")
+            return False
 
-        # Check LCMS is ready to ensure start trigger will start analysis
-        # TODO find a way to have the LCMS tate show as ready while waiting - Wait time for now
+        # TODO find a way to have the LCMS tate show as ready while waiting - Can use a Wait time for now
 
-        # Holds analysis until the phase sensor detects a sample
-        self.lcms_device.wait_for_phase_sensor()
-        logging.info("SUCCESS - Phase Sensor - Sample Detected")
+        # If connected to all devices, then return True
+        return True
 
-        # Ensure that the switch is in the filling position and if not, switch and fill.
+    def check_valve_state(self):
+        """Checks the switch valve is in the filling state"""
         if self.lcms_device.read_valve_pos() != self.param_config["sample_filling_position"]:
             self.lcms_device.set_valve_pos(self.param_config["sample_filling_position"])
             time.sleep(self.param_config["valve_switching_time"] * 2)  # give time to change switch positions
@@ -144,33 +195,14 @@ class Controller:
             if not self.lcms_device.get_sample_at_sensor():
                 logging.error("ERROR - Phase Sensor - No Sample Detected After Filling")
                 raise Exception("ERROR - Phase Sensor - No Sample Detected After Filling")
-        logging.info("SUCCESS - Switch Valve - Filling Loop Filled")
 
-        # Send start analysis and check acknowledgement.
+    def start_lcms_method(self):
         ack = self.lcms_device.start_analysis()
         if ack != self.lcms_device.standard_acknowledge:
             logging.error("ERROR - LCMS - Start Signal Not Sent by Arduino")
             raise Exception("ERROR - LCMS - Start Signal Not Sent by Arduino")
-        logging.info("SUCCESS - LCMS - Start Signal Sent By Arduino")
 
-        # Check acknowledgement from spectrometer (LCMS method must include this!)
-        ready_state = '0'
-        timeout = 240  # 4min timeout
-        start_time = time.time()
-        while ready_state != '1':
-            ready_state = self.lcms_device.check_lcms_ready()
-            time.sleep(0.1)
-            if time.time() - start_time > timeout:
-                raise Exception("ERROR - LCMS - No Acknowledgement From Spectrometer Within Timeout")
-        logging.info("SUCCESS - LCMS - Start Acknowledged By Spectrometer")
-
-        # Wait a set time to allow LCMS sample handling, then load from the switch valve.
-        time.sleep(self.param_config["lcms_sample_prep_time"])
-        self.lcms_device.set_valve_pos(self.param_config["sample_loading_position"])
-        logging.info("SUCCESS - Switch Valve - Sample Loaded From Sample Loop")
-        time.sleep(self.param_config["sample_loop_fill_time"] * 2)
-        self.lcms_device.set_valve_pos(self.param_config["sample_filling_position"])
-        logging.info("SUCCESS - Switch Valve - Returned To Filling Position")
+# ---------- Analysis Run END ----------
 
     def close(self):
         """ Closes the serial connection to the Arduino Device """
@@ -224,8 +256,8 @@ class SensorMonitor:
             # If the change is stable, then perform the action
             if self.change_stable_flag:
                 self.act_on_stable_read(current_ps_value)
-                # Reset detection variables
                 self.change_detected_flag = False
+                # Reset detection variables
                 self.change_stable_flag = False
                 self.previous_stable_value = current_ps_value
 
@@ -268,8 +300,6 @@ class SensorMonitor:
             self.lcms_device.set_phase_sensor_value(False)
         elif new_stable_value in full_vals:
             self.lcms_device.set_phase_sensor_value(True)
-
-
 
 
 if __name__ == "__main__":
