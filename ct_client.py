@@ -5,14 +5,15 @@ Author: O. Bayley
 Description: An example client for connecting to the LCMS Server
 """
 import socket
-from utils.script_utilities import load_ids_file
+import os
+from utils.script_utilities import load_file
 
 
 class ChromTrollerClient:
     """Simple client interface to send commands to the LCMS server"""
 
     def __init__(self):
-        ids_file = load_ids_file()
+        ids_file = load_file(os.path.join('utils', 'private_connection_ids.json'))
         self.host_server = 'localhost' #ids_file['server_address']
         self.host_port = ids_file['socket_port']
         self.socket = self.open_connection()

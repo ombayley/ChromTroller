@@ -12,14 +12,6 @@ import json
 from datetime import datetime
 
 
-class FlushFileHandler(logging.FileHandler):
-    """Custom file handler that flushes writes to disk immediately."""
-
-    def emit(self, record):
-        super().emit(record)
-        self.flush()
-
-
 def time_method(method):
     """
     This method can be used as a decorator to time method run times.
@@ -37,10 +29,20 @@ def time_method(method):
     return wrapper
 
 
-def setup_logging(script_name=None):
+class FlushFileHandler(logging.FileHandler):
+    """
+    Custom file handler to update the logging.Filehandler so that it flushes and
+    writes to disk immediately.
+    """
+    def emit(self, record):
+        super().emit(record)
+        self.flush()
+
+
+def setup_logging():
     """Sets up the logging settings"""
 
-    # Default to the logs directory. Assumes logs dir is in same dir as the utils dir.
+    # Default to the 'logs' directory. Assumes logs dir is in same dir as the utils dir.
     current_dir_path = os.path.dirname(os.path.abspath(__file__))
     root_dir_path = os.path.dirname(current_dir_path)
     path = os.path.join(root_dir_path, 'logs')
@@ -48,18 +50,15 @@ def setup_logging(script_name=None):
     # Ensure the logs directory exists
     os.makedirs(path, exist_ok=True)
 
-    if script_name is None:
-        script_name = os.path.basename(__file__).split('.')[0]
-
     # Set the log file name and path
-    date_str = datetime.now().strftime("%d-%m-%Y")
+    date_str = datetime.now().strftime("%d-%m-%Y--%H:%M:%S")
     log_file_name = f"ChromTroller_{date_str}_logfile.log"
     log_file_path = os.path.join(path, log_file_name)
 
     # Set up logging configuration
     logging.basicConfig(
         level=logging.INFO,
-        format=f'%(asctime)s - %(levelname)s - {script_name} - %(message)s',
+        format=f'%(asctime)s - %(levelname)s - %(filename)s - %(message)s',
         datefmt='%d-%m-%Y %H:%M:%S',
         handlers=[
             FlushFileHandler(log_file_path, mode='w'),  # w=write, a=append
@@ -68,17 +67,17 @@ def setup_logging(script_name=None):
     )
 
 
-def load_ids_file(secure_id_file_path=None):
+def load_file(file_path=None) -> dict:
     try:
-        if secure_id_file_path is None:
-            secure_id_file_path = os.path.join('utils', 'private_connection_ids.json')
-        with open(secure_id_file_path, 'r') as ids_file:
-            config = json.load(ids_file)
-        return config
-    except FileNotFoundError as fnf_e:
-        print(fnf_e)
-    except json.JSONDecodeError as dec_e:
-        print(dec_e)
+        if file_path is None:
+            logging.error("No File Path Provided")
+        with open(file_path, 'r') as file:
+            file_dict = json.load(file)
+        return file_dict
+    except FileNotFoundError as fnf_err:
+        logging.error(fnf_err)
+    except json.JSONDecodeError as decode_err:
+        logging.error(decode_err)
 
 
 def handle_error(error_discr, original_error=None):

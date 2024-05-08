@@ -6,6 +6,7 @@ Description: *Brief script description*.
 """
 import logging
 from datetime import datetime
+import time
 
 class TestLogger:
     def __init__(self):
@@ -25,4 +26,6 @@ class TestLogger:
 
 if __name__ == "__main__":
     tl = TestLogger()
+    tl.log_something()
+    time.sleep(15)
     tl.log_something()
