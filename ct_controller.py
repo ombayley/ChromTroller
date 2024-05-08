@@ -90,7 +90,7 @@ class Controller:
         """
         Starts a new thread to monitor the data from the phase sensor using the SensorMonitor object
         """
-        sensor_monitor = SensorMonitor(self.lcms_device)
+        sensor_monitor = SensorMonitor(self.lcms_device, self.param_config)
         threading.Thread(target=sensor_monitor.monitor_loop).start()
         logging.info("Phase sensor monitoring started on separate thread.")
 
@@ -195,9 +195,10 @@ class SensorMonitor:
     If it differs, it flags the change else updates the last read data and repeats the loop. If a change was
     detected, the second loop checks that the change is stable for a set amount of time.
     """
-    def __init__(self, controller):
-        self.controller = controller
-        self.previous_stable_value = self.controller.read_phase_sensor()
+    def __init__(self, lcms_device, param_config):
+        self.lcms_device = lcms_device
+        self.param_config = param_config
+        self.previous_stable_value = self.lcms_device.read_phase_sensor()
         self.previous_ps_value = self.previous_stable_value
         self.change_detected_flag = False
         self.change_stable_flag = False
@@ -211,7 +212,7 @@ class SensorMonitor:
         """
         while True:
             # Get current sensor value
-            current_ps_value = self.controller.read_phase_sensor()
+            current_ps_value = self.lcms_device.read_phase_sensor()
 
             # Check for a change in the phase sensor output
             self.check_ps_change(current_ps_value)
@@ -230,7 +231,7 @@ class SensorMonitor:
 
             # Update the previous_ps_value the loop again
             self.previous_ps_value = current_ps_value
-            time.sleep(self.controller.param_config["phase_sensor_polling_time"])
+            time.sleep(self.param_config["phase_sensor_polling_time"])
 
     def check_ps_change(self, curr_ps_val):
         """
@@ -245,7 +246,7 @@ class SensorMonitor:
         Checks that the new value is consistent
         """
         # vars for readability
-        stabl_time_req = self.controller.param_config["phase_sensor_stability_time"]
+        stabl_time_req = self.param_config["phase_sensor_stability_time"]
 
         # Checks values match, if not set change_flag as false, if matching for >stabl_time_req then act
         if curr_ps_val == self.previous_ps_value:
@@ -259,14 +260,14 @@ class SensorMonitor:
         Actions to perform if the new value is stable
         """
         # vars for readability
-        empty_val = self.controller.param_config["empty_phase_sensor_value"]
-        full_vals = self.controller.param_config["full_phase_sensor_values"]
+        empty_val = self.param_config["empty_phase_sensor_value"]
+        full_vals = self.param_config["full_phase_sensor_values"]
 
         # Actions to perform
         if new_stable_value == empty_val:
-            self.controller.set_phase_sensor_value(False)
+            self.lcms_device.set_phase_sensor_value(False)
         elif new_stable_value in full_vals:
-            self.controller.set_phase_sensor_value(True)
+            self.lcms_device.set_phase_sensor_value(True)
 
 
 
