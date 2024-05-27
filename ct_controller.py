@@ -16,13 +16,13 @@ def get_instrument_config_parameters() -> dict:
     Function returns a dictionary containing all hardware dependant variable values.
     """
     instrument_params = {
-        "sample_filling_position": "A",
-        "sample_loading_position": "B",
+        "sample_filling_position": 'A',
+        "sample_loading_position": 'B',
         "sample_loop_fill_time": 3.0,
         "lcms_sample_prep_time": 10.0,
         "valve_switching_time": 0.5,
-        "empty_phase_sensor_value": "1",
-        "full_phase_sensor_values": ["0", "2"],
+        "empty_phase_sensor_value": '1',
+        "full_phase_sensor_values": ['0', '2'],
         "phase_sensor_stability_time": 0.5,
         "phase_sensor_polling_time": 0.1,
         "lcms_response_timeout": 240
@@ -87,6 +87,9 @@ class Controller:
                     return 'Success'
                 except Exception as e:
                     logging.error(e)
+            case 'Stop':
+                self.stop_analysis()
+                return 'Analysis Completed'
 
     def start_ps_monitor(self):
         """
@@ -101,7 +104,8 @@ class Controller:
         """
         Takes commands from the user and splits the prefix (everything BEFORE the first '-')
         and argument (everything AFTER the first '-'). This allows the user to specify both
-        the desire command and provide data for the command.
+        the desire command and provide data for the command. Commands in the form "5-a" will be
+        split as prefix="5" and argument="a"
         """
         cmd_parts = cmd.strip().split('-', 1)  # Split at first instance to ensure only 2 parts
         argument = ""
@@ -110,6 +114,10 @@ class Controller:
         else:
             prefix = cmd_parts[0].strip()
         return prefix, argument
+
+    def stop_analysis(self):
+        self.lcms_device.stop_analysis()
+        logging.info("Analysis Stopped")
 
     # ---------- Analysis Run START ----------
     def run_analysis_cycle(self):
@@ -166,12 +174,12 @@ class Controller:
             raise "Error Communicating with the Arduino"
         # Check the switch valve is connected and in a valid state
         valve_pos_ack = self.lcms_device.read_valve_pos()
-        if valve_pos_ack not in [0, 1]:
+        if valve_pos_ack not in ['A', 'B']:
             logging.error("Error Communicating with the Switch Valve")
             raise "Error Communicating with the Switch Valve"
         # Check the phase sensor reads a valid value
         ps_ack = self.lcms_device.read_phase_sensor()
-        if ps_ack not in [0, 1, 2]:
+        if ps_ack not in ['0', '1', '2']:
             logging.error("Error Communicating with the Phase Sensor")
             raise "Error Communicating with the Phase Sensor"
 
@@ -251,13 +259,6 @@ class SensorMonitor:
             # Get current sensor value
             current_ps_value = self.lcms_device.read_phase_sensor()
 
-            # Check for a change in the phase sensor output
-            self.check_ps_change(current_ps_value)
-
-            # If a change is detected, check the stability of the change
-            if self.change_detected_flag:
-                self.check_change_stability(current_ps_value)
-
             # If the change is stable, then perform the action
             if self.change_stable_flag:
                 self.act_on_stable_read(current_ps_value)
@@ -265,6 +266,13 @@ class SensorMonitor:
                 # Reset detection variables
                 self.change_stable_flag = False
                 self.previous_stable_value = current_ps_value
+
+            # If a change is detected, check the stability of the change
+            if self.change_detected_flag:
+                self.check_change_stability(current_ps_value)
+
+            # Check for a change in the phase sensor output
+            self.check_ps_change(current_ps_value)
 
             # Update the previous_ps_value the loop again
             self.previous_ps_value = current_ps_value
