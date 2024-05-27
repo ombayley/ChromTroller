@@ -14,6 +14,7 @@ from devices.lcms_device import LCMSDevice
 def get_instrument_config_parameters() -> dict:
     """
     Function returns a dictionary containing all hardware dependant variable values.
+    TODO move PS to before valve, make stability time longer and add timer to ensure loading
     """
     instrument_params = {
         "sample_filling_position": 'A',
@@ -81,10 +82,13 @@ class Controller:
                 return 'k'  # TODO check this dosen't return anything
             case '10':
                 return self.lcms_device.read_phase_sensor()
+            case 'Reset_Sample_Counter':
+                self.completed_analysis_cycle = 0
+                return 'Sample counter returned to 0'
             case 'Analyse':
                 try:
-                    self.run_analysis_cycle()
-                    return 'Success'
+                    analysis_outcome = self.run_analysis_cycle()
+                    return analysis_outcome
                 except Exception as e:
                     logging.error(e)
             case 'Stop':
@@ -120,7 +124,7 @@ class Controller:
         logging.info("Analysis Stopped")
 
     # ---------- Analysis Run START ----------
-    def run_analysis_cycle(self):
+    def run_analysis_cycle(self) -> str:
         """
         Runs the routine to start an analytical run.
         This involves the detection, sample loading and lcms method triggering
@@ -153,7 +157,7 @@ class Controller:
             logging.info("SUCCESS - Switch Valve - Sample Loaded From Sample Loop")
 
             # Wait for the sample loop to be flushed through
-            time.sleep(self.param_config["sample_loop_fill_time"] * 2)
+            time.sleep(self.param_config["sample_loop_fill_time"] * 4)
             self.lcms_device.set_valve_pos(self.param_config["sample_filling_position"])
             logging.info("SUCCESS - Switch Valve - Returned To Filling Position")
 
@@ -161,8 +165,12 @@ class Controller:
             self.completed_analysis_cycle += 1
             logging.info("SUCCESS - Analysis Cycle: %s Complete", self.completed_analysis_cycle)
 
+            return f"SUCCESS - Analysis Cycle: {self.completed_analysis_cycle} Complete"
+
         except Exception as error:
             logging.error(error)
+            return f"FAILED - Analysis Cycle Failed due to: {error}"
+    # ---------- Analysis Run END ----------
 
     def check_device_connectivity(self):
         """ Checks the Arduino microcontroller, switch valve, phase sensor, and LCMS are connected """
