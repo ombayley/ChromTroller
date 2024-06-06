@@ -38,50 +38,50 @@
 
 External Device Pinouts:
   Agilent ERI Remote pinout used for the Infinity 1290 II :
-    Pin    | Function       | Color         | Connected
-    -------|----------------|---------------|-----------
-    1      | Start Request  | White         | YES
-    2      | Stop           | Brown         | YES
-    3      | Ready          | Green         | YES
-    4      | Peak Detect    | Yellow        | NO
-    5      | Power On       | Grey          | NO
-    6      | Shut Down      | Pink          | NO
-    7      | Start          | Blue          | NO
-    8      | Prepare        | Red           | NO
-    9      | 1Wire Data     | Black         | NO
-    10     | Digital Ground | Violet        | YES
-    11     | +5V ERI out    | Grey-Pink     | NO
-    12     | PGND           | Red-Blue      | NO
-    13     | PGND           | White-Green   | NO
-    14     | +24V ERI out   | Brown-Green   | NO
-    15     | +24V ERI out   | White-Yellow  | NO
-    10     | Unused         | Yellow-Brown  | NO
+    Pin    | Function       | Color         | Connected   | Active State
+    -------|----------------|---------------|-------------|---------------
+    1      | Start Request  | White         | YES - 2     | LOW
+    2      | Stop           | Brown         | YES - 3     | LOW
+    3      | Ready          | Green         | YES - 4     | HIGH
+    4      | Power On       | Yellow        | YES - 5     | HIGH
+    5      | Not Used       | Grey          | NO          | LOW
+    6      | Shut Down      | Pink          | YES - 6     | LOW
+    7      | Start          | Blue          | YES - 7     | LOW
+    8      | Prepare        | Red           | YES - 8     | LOW
+    9      | 1Wire Data     | Black         | NO          | -
+    10     | Digital Ground | Violet        | YES - GND   | -
+    11     | +5V ERI out    | Grey-Pink     | NO          | -
+    12     | PGND           | Red-Blue      | NO          | -
+    13     | PGND           | White-Green   | NO          | -
+    14     | +24V ERI out   | Brown-Green   | NO          | -
+    15     | +24V ERI out   | White-Yellow  | NO          | -
+    10     | Unused         | Yellow-Brown  | NO          | -
 
 
   Vici actuator controller pinout:
-    Pin    | Function                      | Connected
-    -------|-------------------------------|-----------
-    1      | Ground                        | YES
-    2      | +5V VDC out                   | NO
-    3      | Position A out                | YES
-    4      | Position B out                | YES
-    5      | Position A in                 | YES
-    6      | Position B in                 | YES
-    7      | Position A relay contact out  | NO
-    8      | Position B relay contactout   | NO
-    9      | Position A relay contactin    | NO
-    10     | Position B relay contactin    | NO
+    Pin    | Function                      | Color         | Connected   | Active State
+    -------|-------------------------------|---------------|-------------|---------------
+    1      | Ground                        | Black         | YES - GND   | -
+    2      | +5V VDC out                   | Brown         | NO          | -
+    3      | Position A in                 | Red           | YES - A2    | HIGH
+    4      | Position B in                 | Orange        | YES - A1    | HIGH
+    5      | Position A out                | Yellow        | YES - 12    | HIGH
+    6      | Position B out                | Green         | YES - 13    | HIGH
+    7      | Position A relay contact out  | Blue          | NO          | -
+    8      | Position B relay contact out  | Purple        | NO          | -
+    9      | Position A relay contact in   | Grey          | NO          | -
+    10     | Position B relay contact in   | N/A           | NO          | -
 
 
   OCB350 board pinout:
     Pin    | Function    | Color   | Connected
     -------|-------------|---------|-----------
-    1      | VDC         | Red     | YES
-    2      | Logic Out A | Orange  | YES
-    3      | Logic Out B | Blue    | YES
-    4      | Calibrate   | Green   | YES
-    5      | Analog Out  | White   | NO
-    6      | Ground      | Black   | YES
+    1      | VDC         | Red     | YES - 5V
+    2      | Logic Out A | Orange  | YES - 9
+    3      | Logic Out B | Blue    | YES - 10
+    4      | Calibrate   | Green   | YES - 11
+    5      | Analog Out  | White   | YES - A0
+    6      | Ground      | Black   | YES - GND
 
  Libraries:
    no external libraries.
@@ -125,16 +125,21 @@ External Device Pinouts:
 #define START_REQUEST_SIGNAL_PIN 2 // Pin to output to ERI Remote Pin #1 (White)
 #define STOP_SIGNAL_PIN 3 // Pin to output to ERI Remote Pin #2 (Brown)
 #define READY_SIGNAL_PIN 4 // Pin to output to ERI Remote Pin #3 (Green)
+#define POWER_ON_PIN 5 // Pin to output to ERI Remote Pin #4 (Yellow)
+#define EMERGENCY_SHUT_DOWN_PIN 6 // Pin to output to ERI Remote Pin #6 (Pink)
+#define START_SIGNAL_PIN 7 // Pin to output to ERI Remote Pin #7 (Blue)
+#define PREPARE_SIGNAL_PIN 8 // Pin to output to ERI Remote Pin #8 (Red)
 
 // Phase Sensor Read Pins
-#define PHASE_SENSOR_OUT_A_PIN 6 // Pin to read phase sensor output (Orange)
-#define PHASE_SENSOR_OUT_B_PIN 7 // Pin to read phase sensor output (Blue)
-#define PHASE_SENSOR_CALIBRATE_PIN 8 // Pin to calibrate phase sensor (Green)
+#define PHASE_SENSOR_OUT_A_PIN 9 // Pin to read phase sensor output (Orange)
+#define PHASE_SENSOR_OUT_B_PIN 10 // Pin to read phase sensor output (Blue)
+#define PHASE_SENSOR_CALIBRATE_PIN 11 // Pin to calibrate phase sensor (Green)
+#define PHASE_SENSOR_ANALOG_PIN 14 // Pin to read phase sensor output (White)
 
 // Valve Control Pins
-#define VALVE_A_IN_PIN 9  // Pin to to read valve position A (Vici Pin 3)
-#define VALVE_B_IN_PIN 10 // Pin to to read valve position B (Vici Pin 4)
-#define VALVE_A_OUT_PIN 11 // Pin to to set valve to position A (Vici Pin 5)
+#define VALVE_A_IN_PIN 15  // Pin to to read valve position A (Vici Pin 3)
+#define VALVE_B_IN_PIN 16 // Pin to to read valve position B (Vici Pin 4)
+#define VALVE_A_OUT_PIN 13 // Pin to to set valve to position A (Vici Pin 5)
 #define VALVE_B_OUT_PIN 12 // Pin to to set valve to position B (Vici Pin 6)
 
 // Error codes (type)
