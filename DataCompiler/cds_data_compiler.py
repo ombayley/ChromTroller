@@ -20,11 +20,11 @@ class Compiler:
 
     def analyse(self, dir_path):
         self.find_unprocessed_data_subdir_paths(dir_path)
-        for subdir in self.unprocesed_data_subdir_paths:
-            raw_3d_data = self.import_spectra_files(subdir)
+        print(self.unprocesed_data_subdir_paths)
+        for subdir_path in self.unprocesed_data_subdir_paths:
+            raw_3d_data = self.import_spectra_files(subdir_path)
             print(raw_3d_data)
             prcoessed_3d_data = self.format_data(raw_3d_data)
-            print(prcoessed_3d_data)
 
     def find_unprocessed_data_subdir_paths(self, dir_path):
         """
@@ -34,11 +34,12 @@ class Compiler:
         """
         for sub_dir in next(os.walk(dir_path))[1]:
             if self.raw_data_dir_tag.search(sub_dir):
-                for file in sub_dir:
+                sub_dir_path = os.path.join(dir_path, sub_dir)
+                for file in next(os.walk(sub_dir_path))[2]:
                     if not self.dad_3d_file_tag.search(file):
                         self.unprocesed_data_subdir_paths.append(os.path.join(dir_path, sub_dir))
 
-    def import_spectra_files(self, results_dir) -> dict:
+    def import_spectra_files(self, results_dir_path) -> dict:
         """
         Reads the exported UV chromatogram files (.csv) and adds this data (as a sub-dictionary) to a
         parent dictonary with the chrom_wavelength as the key.
@@ -47,17 +48,16 @@ class Compiler:
         """
         spectra_files_dict = {}
         uv_spectra_filename_pattern = re.compile(r'(.*)DAD\d+ (\d+\.\d+);\d+ Ref .*\.CSV$')
-        for file in results_dir:
-            print(file)
+        for file in next(os.walk(results_dir_path))[2]:
             match = uv_spectra_filename_pattern.search(file)
             if match:
                 chrom_wavelength = match.group(2)  # second bracket in re.compile = chrom hv
                 try:
-                    single_chrom_df = pd.read_csv(os.path.join(results_dir, file))
-                    single_chrom_dict = single_chrom_df.set_index('Time').to_dict()['Absorbance']
+                    single_chrom_df = pd.read_csv(os.path.join(results_dir_path, file))
+                    single_chrom_dict = single_chrom_df.set_index('Time').to_dict()['Absorbance']  # TODO THIS CAUSES ERROR
                     spectra_files_dict[chrom_wavelength] = single_chrom_dict
                 except Exception as e:
-                    print(f'Error processing file: {file} in dir: {results_dir}: {e}')
+                    print(f'Error processing file: {file} in dir: {results_dir_path}: {e}')
 
         return spectra_files_dict
 
@@ -198,7 +198,7 @@ class Compiler:
 
 
 if __name__ == "__main__":
-    dir_path = r"C:\Users\obayley\OneDrive - UvA\Desktop\RoboChem_FGT_Campaign - set of 5 with duplicates.rslt"
+    dir_path = r"C:\Users\obayley\Documents\RoboChem_FGT_Campaign - set of 5 with duplicates.rslt"
     compiler = Compiler()
     compiler.analyse(dir_path)
 
