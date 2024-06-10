@@ -15,7 +15,7 @@ import time
 import threading
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
-from cds_data_compiler import Compiler
+from csv_export_data_compiler import Compiler
 
 
 class Monitor(FileSystemEventHandler):
