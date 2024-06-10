@@ -8,139 +8,120 @@ spectra x time data. This data exporting may change in later updates of OpenLabs
 """
 import os
 import re
-import glob
 import pandas as pd
 
 
 class Compiler:
+    """
+    Compiler class takes paths to either a campiagn directory or to a result directory and compiles
+    the relevant chromatograms into a single file. Have both time and wavelength processing methods
+    to give the final file the desired resolutions for downstream processing and prevention of excessive
+    file size from high time resolution of the spectrometer.
+    """
     def __init__(self):
-        self.raw_data_dir_tag = re.compile(r'\.rsltcsv$')
-        self.dad_3d_file_tag = re.compile(r'\.3D_UV_Data.csv$')
+        self.result_dir_tag = '.rsltcsv'
+        self.result_dir_re_pat = re.compile(rf'{re.escape(self.result_dir_tag)}$')
+        self.dad_3d_file_tag = '3D_UV_Data.csv'
+        self.dad_3d_file_re_pat = re.compile(rf'{re.escape(self.dad_3d_file_tag)}$')
         self.chromatogram_filename_pattern = re.compile(r'(.*)DAD\d+ (\d+\.\d+);\d+ Ref .*\.CSV$')
+        self.wavelength_resolution = 1
+        self.retention_time_resolution = 0.01
         self.unprocesed_data_subdir_paths = []
 
-    def analyse(self, dir_path):
+    def compile_all_result_data(self, campaign_dir_path):
         """
-        Checks the campiagn directory at dir_path and makes a list of
+        Finds all unprocessed raw data directories and creates a 3d-data file
         """
-        self.find_unprocessed_data_subdir_paths(dir_path)
-        print(self.unprocesed_data_subdir_paths)
+        # Get list of result directories without the corresponding 3d data
+        self.find_unprocessed_data_subdir_paths(campaign_dir_path)
+
+        # for every compiled result make a 3d data file
         for subdir_path in self.unprocesed_data_subdir_paths:
-            raw_3d_data = self.import_spectra_files(subdir_path)
-            print(raw_3d_data)
+            self.compile_single_result_data(subdir_path)
 
-    def find_unprocessed_data_subdir_paths(self, dir_path):
+    def compile_single_result_data(self, result_dir_path):
         """
-        Looks through the directory at the given path and searches for any directories that end
-        with ".rsltcsv". Then it adds any sub-directories that DO NOT contain the already processed
-        3D data to the unprocesed_data_subdir_paths list.
+        Finds all unprocessed raw data directories and creates a 3d-data file
         """
-        for sub_dir_name in next(os.walk(dir_path))[1]:
-            if self.raw_data_dir_tag.search(sub_dir_name):
-                sub_dir_path = os.path.join(dir_path, sub_dir_name)
-                for file_name in next(os.walk(sub_dir_path))[2]:
-                    if not self.dad_3d_file_tag.search(file_name):
-                        self.unprocesed_data_subdir_paths.append(os.path.join(dir_path, sub_dir_name))
+        # Read in all chromatogram files
+        raw_3d_data_df = self.import_rsltcsv(result_dir_path)
 
-    def import_spectra_files(self, results_subdir_path) -> pd.DataFrame():
-        """
-        Gets passed a path to a '.rsltcsv' directory and reads all the individual exported UV chromatogram
-        files (.csv) and adds this data to a pd.dataframe
+        # process as desired to give desired time and wavelength resolution
+        rt_res = self.retention_time_resolution
+        condensed_dad_data_df = self.condense_time_intervals(raw_3d_data_df, rt_res)
+        wl_res = self.wavelength_resolution
+        processed_dad_data_df = self.interpolate_missing_wavelengths(condensed_dad_data_df, wl_res)
 
-        Returns: a dataframe of chromatogram data of absorbances by time and wavelength
+        # save compiled and processed data
+        self.save_dad_data(processed_dad_data_df, result_dir_path)
+
+    @staticmethod
+    def save_dad_data(processed_dad_data_df, result_dir_path):
+        try:
+            processed_dad_data_df.to_csv(f"{result_dir_path}3D_UV_Data.csv", index=False)
+        except Exception as e:
+            print(e)
+
+    def find_unprocessed_data_subdir_paths(self, campaign_dir_path):
         """
-        # Initialize a List to hold individual DataFrames
+        Looks through the CAMPAIGN directory at the given path and searches for any RESULT subdirectories
+        that end with ".rsltcsv". It then adds any sub-directories that DO NOT have a coressponding
+        3D data file to the unprocesed_data_subdir_paths list.
+        """
+        # Makes a list of all files in the campaign directory with the 3d data tag after removing the tag
+        compiled_dad_files_name_list = []
+        for file_name in next(os.walk(campaign_dir_path))[2]:
+            if self.dad_3d_file_re_pat.search(file_name):
+                base_name = file_name.removesuffix(self.dad_3d_file_tag)
+                compiled_dad_files_name_list.extend(base_name)
+
+        # looks through all subdirs for directories ending in raw_data_dir_tag (.rsltcsv)
+        for sub_dir_name in next(os.walk(campaign_dir_path))[1]:
+            if self.result_dir_re_pat.search(sub_dir_name):
+                base_name = sub_dir_name.removesuffix(self.result_dir_tag)
+                if base_name not in compiled_dad_files_name_list:
+                    sub_dir_path = os.path.join(campaign_dir_path, sub_dir_name)
+                    self.unprocesed_data_subdir_paths.append(sub_dir_path)
+
+    def import_rsltcsv(self, results_subdir_path) -> pd.DataFrame():
+        """
+        Gets passed a path to a single result directory ('.rsltcsv'), reads all the individual
+        UV chromatogram files (.csv) and adds this data to a pd.dataframe
+
+        Takes: path to .rsltcsv result directory
+        Returns: dataframe of 3d data with absorbances by time and wavelength
+        """
+        # Initialize a List to hold DataFrame data
         spectra_df_list = []
-        # List all csv files in the directory
-        files = [file for file in os.listdir(results_subdir_path) if file.endswith('.CSV')]
 
-        # Iterate through each file
-        for file_name in files:
-            match = self.chromatogram_filename_pattern.search(file_name)
+        # List all csv files in the directory
+        result_chrom_files = [file for file in os.listdir(results_subdir_path) if file.endswith('.CSV')]
+
+        # Iterate through each csv file in the result dir
+        for chrom_file_name in result_chrom_files:
+            match = self.chromatogram_filename_pattern.search(chrom_file_name)
             if match:
+                single_chrom_path = os.path.join(results_subdir_path, chrom_file_name)
                 chrom_wavelength = match.group(2)  # second bracket in re.compile = chrom hv
-                single_chrom_path = os.path.join(results_subdir_path, file_name)
                 try:
+                    # Open the Chrom file
                     single_chrom_df = pd.read_csv(single_chrom_path)
 
-                    # Collect 'Time' column from the first file only
+                    # Get 'Time' data if the compiled list is empty
                     if not spectra_df_list:
                         spectra_df_list.append(
                             single_chrom_df.iloc[:, [0]].rename(columns={single_chrom_df.columns[0]: 'Time'}))
 
-                    # Add the absorbance data with the extracted column name
+                    # Add the absorbance data
                     spectra_df_list.append(
                         single_chrom_df.iloc[:, [1]].rename(columns={single_chrom_df.columns[1]: chrom_wavelength}))
                 except Exception as e:
-                    print(f'Error processing the data file: {file_name} in dir: {results_subdir_path}: {e}')
+                    print(f'Error processing the data file: {chrom_file_name} in dir: {results_subdir_path}: {e}')
 
         # Concatenate all DataFrames along the columns. PerformanceWarning if compiled_df['x'] = single_df.iloc[:, 1]
         spectra_files_df = pd.concat(spectra_df_list, axis=1)
 
         return spectra_files_df
-
-
-    def make_3d_spectra_chromatogram(self, path) -> pd.DataFrame:
-        """
-        Takes the path to a .sirslt directory containing a .rsltcsv sub-directory
-        of exported CSV chromatograms and assembles them into a 3D data file and df
-        """
-        # Initialise vars and patterns
-        spectra_files_df = pd.DataFrame()
-        first_file = True
-        file_prefix = ""
-        data_dirnames = glob.glob(os.path.join(path, "*.rsltcsv"))
-        data_dir = data_dirnames[0]
-        uv_spectra_filename_pattern = re.compile(r'(.*)DAD\d+ (\d+\.\d+);\d+ Ref .*\.CSV$')
-        required_resolution = 1
-        new_columns = {}
-
-        # Identify spectra files
-        for root, dirs, files in os.walk(data_dir):
-            for file in files:
-                match = uv_spectra_filename_pattern.search(file)
-                if match:
-                    chrom_wavelength = match.group(2)  # second bracket in re.compile = chrom hv
-                    full_file_path = os.path.join(root, file)
-                    if first_file:
-                        spectra_files_df = self.get_time_data(full_file_path).iloc[:, 0]
-                        file_prefix = match.group(1)
-                        first_file = False
-                    new_columns[chrom_wavelength] = self.get_absorbance_data(full_file_path).iloc[:, 0]
-
-        spectra_files_df = pd.concat([spectra_files_df] + [pd.DataFrame({k: v}) for k, v in new_columns.items()],
-                                     axis=1)
-
-        spectra_files_df = self.interpolate_missing_wavelengths(spectra_files_df, required_resolution)
-
-        # Save to csv in case later reprocessing is desired [Optional]
-        filename = f"{file_prefix}3D_UV_Data.csv"
-        output_csv = os.path.normpath(os.path.join(path, filename))  # ".." goes up directories
-        spectra_files_df.to_csv(output_csv, index=False)
-
-        return spectra_files_df
-
-    @staticmethod
-    def get_absorbance_data(path) -> pd.DataFrame:
-        """
-        Takes intensity data from the second column of the exported chrom CSV file
-        """
-        try:
-            df = pd.read_csv(path, usecols=[1], header=None)  # Reads the second column
-            return df
-        except Exception as e:
-            print(f'Error processing file at {path}: {e}')
-
-    @staticmethod
-    def get_time_data(path) -> pd.DataFrame:
-        """
-        Takes the time data from the first column of the exported chrom CSV file
-        """
-        try:
-            df = pd.read_csv(path, usecols=[0], header=None)  # Reads the first column
-            return df
-        except Exception as e:
-            print(f'Error processing file at {path}: {e}')
 
     @staticmethod
     def interpolate_missing_wavelengths(df: pd.DataFrame, resolution: float) -> pd.DataFrame:
@@ -195,24 +176,43 @@ class Compiler:
 
         return interpolated_df
 
+    @staticmethod
+    def condense_time_intervals(df: pd.DataFrame, time_interval: float) -> pd.DataFrame:
+        """
+        Condenses the DataFrame by averaging absorbance values over specified time intervals.
+
+        Parameters:
+        - df: DataFrame containing the compiled 3D spectra data, with the first column being time data.
+        - time_interval: The time interval over which to average absorbance values.
+
+        Returns:
+        - A new DataFrame with averaged absorbance values over the specified time intervals.
+        """
+        # Copy DataFrame to avoid modifying the original
+        df_copy = df.copy()
+
+        # Determine the time range and create new time intervals
+        min_time = df_copy['Time'].min()
+        max_time = df_copy['Time'].max()
+        new_time_points = pd.interval_range(start=min_time, end=max_time, freq=time_interval)
+
+        # Initialize list for the new DataFrame
+        averaged_data = []
+
+        for interval in new_time_points:
+            interval_data = df_copy[df_copy['Time'].between(interval.left, interval.right)]
+            if not interval_data.empty:
+                mean_values = interval_data.mean()
+                mean_values['Time'] = interval.mid
+                averaged_data.append(mean_values)
+
+        # Create the new DataFrame
+        condensed_df = pd.DataFrame(averaged_data)
+
+        return condensed_df
+
 
 if __name__ == "__main__":
-    dir_path = r"C:\Users\obayley\Documents\RoboChem_FGT_Campaign - set of 5 with duplicates.rslt"
+    dir_path = r"C:\Users\obayley\OneDrive - UvA\Desktop\test_camp"
     compiler = Compiler()
-    compiler.analyse(dir_path)
-
-    # result_dir_tag = re.compile(r'\.sirslt$')
-    # raw_data_dir_tag = re.compile(r'\.rsltcsv$')
-    # for dir_name in next(os.walk(dir_path))[1]:
-    #     if result_dir_tag.search(dir_name):
-    #         has_rsltcsv = False
-    #         for subdir in next(os.walk(os.path.join(dir_path, dir_name)))[1]:
-    #             if raw_data_dir_tag.search(subdir):
-    #                 has_rsltcsv = True
-    #                 break
-    #
-    #         if has_rsltcsv:
-    #             print(f"Processing {dir_path}...")
-    #             compiler.make_3d_spectra_chromatogram(dir_path)
-    #             print(f"3D DAD data created for {os.path.basename(dir_path)}")
-
+    compiler.compile_all_result_data(dir_path)

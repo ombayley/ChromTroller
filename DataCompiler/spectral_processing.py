@@ -12,6 +12,34 @@ from scipy.integrate import simps
 
 
 class SpectralAnalyser:
+
+    def background_removal(self, sample_df, background_df) -> pd.DataFrame:
+        """
+            Subtract the absorbance values of background_df from sample_df.
+
+            Parameters:
+            - sample_df: DataFrame containing the sample data.
+            - background_df: DataFrame containing the background data.
+
+            Returns:
+            - A new DataFrame with the background subtracted from the sample.
+            """
+        # Ensure both dataframes have the same structure
+        assert sample_df.shape == background_df.shape, "DataFrames must have the same shape"
+        assert all(sample_df.columns == background_df.columns), "DataFrames must have the same columns"
+
+        # Extract the time column
+        time_column = sample_df.iloc[:, 0]
+
+        # Subtract the background from the sample (for all columns except the first one)
+        result_df = sample_df.iloc[:, 1:] - background_df.iloc[:, 1:]
+
+        # Combine the time column back with the subtracted results
+        result_df.insert(0, sample_df.columns[0], time_column)
+
+        return result_df
+
+
     def baseline_correction(self, chromatogram, deg=3):
         """
         Perform a polynomial baseline correction on the chromatogram.
@@ -22,7 +50,7 @@ class SpectralAnalyser:
         corrected = chromatogram - baseline
         return corrected, baseline
 
-    def find_peaks_above_threshold(self,chromatogram, threshold):
+    def find_peaks_above_threshold(self, chromatogram, threshold):
         """
         Find peaks in the chromatogram that are above the specified threshold.
         """
