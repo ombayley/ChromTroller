@@ -5,6 +5,7 @@ Author: O. Bayley
 Description: *Brief script description*.
 """
 import io
+import os.path
 import zipfile
 import struct
 import numpy as np
@@ -33,16 +34,19 @@ class DxFileReader:
                 with zipfile.ZipFile(dx_file_byte_stream, 'r') as dx_file_unzipped:
                     # Find the first file ending with .UV
                     for subfile_name in dx_file_unzipped.namelist():
+                        print(subfile_name)
                         if subfile_name.endswith('.UV'):
                             # Extract the specific file and return its contents
                             with dx_file_unzipped.open(subfile_name) as target_uv_data_file:
-                                uv_datafile = self.parse_uv(target_uv_data_file.read())
+                                print(target_uv_data_file)
+                                times, wavelengths, data, metadata = self.parse_uv(target_uv_data_file.read())
+                                uv_datafile = DataFile(dx_file_path, 'UV', times, wavelengths, data, metadata)
                                 return uv_datafile
                     else:
-                        raise FileNotFoundError("No files ending with .UV found in the ZIP archive")
+                        print("No files ending with .UV found in the ZIP archive")
         except Exception as e:
             print(e)
-            return None, None
+            return None
 
     """
     .uv PARSING METHODS
@@ -119,7 +123,7 @@ class DxFileReader:
         # If there are none, the file may be a partial.
         if num_times == 0:
             f.close()
-            return self.parse_uv_partial(path)
+            return self.parse_uv_partial(uv_file_data)
 
         # Compute the wavelengths by taking the range from
         #     the header of the first data segment
@@ -145,7 +149,7 @@ class DxFileReader:
         metadata = self.read_header(f, metadata_offsets, gap=gap)
         f.close()
 
-        return DataFile(path, 'UV', times, wavelengths, data, metadata)
+        return times, wavelengths, data, metadata
 
     def decode_uv_delta(self, f, data_offsets, num_times, num_wavelengths):
         uint_unpack = struct.Struct('<I').unpack
@@ -320,10 +324,20 @@ class DxFileReader:
             return ""
 
 
-
 if __name__ == "__main__":
-    path = r"C:\Users\obayley\OneDrive - UvA\Desktop\unzip_test\RoboChem Sample032024-06-06 18-59-40+02-00.dx"
-    unzip = DxFileReader()
-    datafile = unzip.get_uv_from_dx(path)
-    df = pd.DataFrame(datafile.data, index=datafile.xlabels, columns=datafile.ylabels)
-    print(df)
+    reader = DxFileReader()
+    dir_path = r"C:\Users\obayley\OneDrive - UvA\Desktop\lcms_data\calibration for FGT additives complete.rslt"
+    for file_name in next(os.walk(dir_path))[2]:
+        if file_name.endswith(".dx"):
+            file_path = os.path.join(dir_path, file_name)
+            datafile = reader.get_uv_from_dx(file_path)
+            if datafile:
+                df = pd.DataFrame(datafile.data, index=datafile.xlabels, columns=datafile.ylabels)
+                df.to_csv(f"{file_path}_3d_data.CSV", index=True)
+                print(df)
+
+    # file_path = r"C:\Users\obayley\OneDrive - UvA\Desktop\lcms_data\calibration for FGT additives complete.rslt\0.05 M - SM-86.dx"
+    # datafile = reader.get_uv_from_dx(file_path)
+    # df = pd.DataFrame(datafile.data, index=datafile.xlabels, columns=datafile.ylabels)
+    # df.to_csv(f"{file_path}_3d_data.CSV", index=True)
+    # print(df)
