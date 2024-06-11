@@ -5,9 +5,11 @@ Author: O. Bayley
 Description: Controls the behavior of the LCMS and switching system allowing it to read data
 and trigger complex behaviours.
 """
+import os
 import threading
 import time
 import logging
+import json
 from devices.lcms_device import LCMSDevice
 
 
@@ -51,7 +53,7 @@ class Controller:
         """
         Triggers the correct methods corresponding to the received inputs. Numerical cases
         (e.g., 1-10) are dedicated to individual method testing, written commands (e.g.,'Analyse')
-        are used to perform complex tasks.
+        are designed for interaction tasks with the RoboChem systems.
         """
         prefix, argument = self.split_command(cmd)
         match prefix:
@@ -82,6 +84,7 @@ class Controller:
                 return 'k'  # TODO check this dosen't return anything
             case '10':
                 return self.lcms_device.read_phase_sensor()
+            # Text based commands
             case 'Reset_Sample_Counter':
                 self.completed_analysis_cycle = 0
                 return 'Sample counter returned to 0'
@@ -91,6 +94,9 @@ class Controller:
                     return analysis_outcome
                 except Exception as e:
                     logging.error(e)
+            case 'Data':
+                self.add_to_run_log(argument)
+                return 'Data Logged'
             case 'Stop':
                 self.stop_analysis()
                 return 'Analysis Completed'
@@ -122,6 +128,34 @@ class Controller:
     def stop_analysis(self):
         self.lcms_device.stop_analysis()
         logging.info("Analysis Stopped")
+
+    def add_to_run_log(self, argument, path=None):
+
+        if path is None:
+            # Sets the default path to the 'logs' directory.
+            current_dir_path = os.path.dirname(os.path.abspath(__file__))
+            path = os.path.join(current_dir_path, 'logs', 'run_data_log')
+            logging.info(f"add to log called with {argument}")
+
+        # Check if the file exists
+        if os.path.exists(path):
+            # Load existing JSON data from file
+            with open(path, 'r') as file:
+                existing_data = json.load(file)
+        else:
+            # If the file doesn't exist, create an empty dictionary
+            existing_data = []
+
+        new_data = {'Analysis cycle': self.completed_analysis_cycle,
+                    'RoboChem Run Info': argument
+                    }
+
+        # Append new data to existing data
+        existing_data.append(new_data)
+        logging.info(f"adding data: {existing_data}")
+        # Write the updated data back to the JSON file
+        with open(path, 'w') as file:
+            json.dump(existing_data, file, indent=4)
 
     # ---------- Analysis Run START ----------
     def run_analysis_cycle(self) -> str:
@@ -170,6 +204,7 @@ class Controller:
         except Exception as error:
             logging.error(error)
             return f"FAILED - Analysis Cycle Failed due to: {error}"
+
     # ---------- Analysis Run END ----------
 
     def check_device_connectivity(self):

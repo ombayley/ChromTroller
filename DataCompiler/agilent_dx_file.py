@@ -152,6 +152,9 @@ class DxFileReader:
         return times, wavelengths, data, metadata
 
     def decode_uv_delta(self, f, data_offsets, num_times, num_wavelengths):
+        """
+
+        """
         uint_unpack = struct.Struct('<I').unpack
         int_unpack = struct.Struct('<i').unpack
         short_unpack = struct.Struct('<h').unpack

@@ -8,6 +8,7 @@ spectra x time data. This data exporting may change in later updates of OpenLabs
 """
 import os
 import re
+import numpy as np
 import pandas as pd
 
 
@@ -191,19 +192,24 @@ class Compiler:
         # Copy DataFrame to avoid modifying the original
         df_copy = df.copy()
 
-        # Determine the time range and create new time intervals
-        min_time = df_copy['Time'].min()
-        max_time = df_copy['Time'].max()
-        new_time_points = pd.interval_range(start=min_time, end=max_time, freq=time_interval)
+        # Determine the time range
+        min_time = df_copy.iloc[:, 0].min()
+        max_time = df_copy.iloc[:, 0].max()
+
+        # Create time intervals
+        time_bins = np.arange(min_time, max_time + time_interval, time_interval)
+
+        # Digitize the time data into bins
+        time_labels = np.digitize(df_copy.iloc[:, 0], bins=time_bins, right=True)
 
         # Initialize list for the new DataFrame
         averaged_data = []
 
-        for interval in new_time_points:
-            interval_data = df_copy[df_copy['Time'].between(interval.left, interval.right)]
+        for i in range(1, len(time_bins)):
+            interval_data = df_copy[time_labels == i]
             if not interval_data.empty:
                 mean_values = interval_data.mean()
-                mean_values['Time'] = interval.mid
+                mean_values.iloc[0] = (time_bins[i - 1] + time_bins[i]) / 2
                 averaged_data.append(mean_values)
 
         # Create the new DataFrame

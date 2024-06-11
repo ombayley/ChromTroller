@@ -23,7 +23,7 @@ class ArduinoDevice:
     def open_connection(self):
         """Open a serial connection on the port specified during init"""
         try:
-            self.connection = serial.Serial(self.port, self.baud_rate, timeout=self.timeout)
+            self.connection = (serial.Serial(self.port, self.baud_rate, timeout=self.timeout))
         except Exception as serrial_error:
             raise Exception(f"Failed to open serial connection: {serrial_error}")
 
