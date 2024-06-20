@@ -77,16 +77,19 @@ class Controller:
                 ack = self.lcms_device.stop_analysis()
                 return "Good Acknowledge" if ack == 'k' else "Bad Acknowledge"
             case '8':
-                self.lcms_device.check_lcms_ready()
-                return 'k'  # TODO check this dosen't return anything
+                ack = self.lcms_device.check_lcms_ready()
+                return ack
             case '9':
                 self.lcms_device.calibrate_phase_sensor()
                 return 'k'  # TODO check this dosen't return anything
             case '10':
                 return self.lcms_device.read_phase_sensor()
-            # Text based commands
+            # --- Text-based commands ---
             case 'Reset_Sample_Counter':
                 self.completed_analysis_cycle = 0
+                return 'Sample counter returned to 0'
+            case 'Reset_run_log':
+                self.clear_run_log()
                 return 'Sample counter returned to 0'
             case 'Analyse':
                 try:
@@ -156,6 +159,20 @@ class Controller:
         # Write the updated data back to the JSON file
         with open(path, 'w') as file:
             json.dump(existing_data, file, indent=4)
+
+    @staticmethod
+    def clear_run_log(path=None):
+        if path is None:
+            # Sets the default path to the 'logs' directory.
+            current_dir_path = os.path.dirname(os.path.abspath(__file__))
+            path = os.path.join(current_dir_path, 'logs', 'run_data_log')
+            logging.info(f"run log cleared")
+
+            if os.path.exists(path):
+                # Load existing JSON data from file
+                with open(path, 'w') as file:
+                    existing_data = []
+                    json.dump(existing_data, file, indent=4)
 
     # ---------- Analysis Run START ----------
     def run_analysis_cycle(self) -> str:
@@ -264,7 +281,7 @@ class Controller:
         self.lcms_device.close()
 
     def controller_user_loop(self):
-        """ Acts as a simple user interface if the script needs to be run directly """
+        """ Acts as a simple user interface if the script needs to be run directly for debugging"""
         try:
             while True:
                 cmd = input("Enter command to send to Arduino: ")
