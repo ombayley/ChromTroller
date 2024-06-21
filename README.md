@@ -1,6 +1,4 @@
-# ChromTroller
-
-<img src = "utils/CrocLogo.png" width = "100">
+# <img src = "utils/CrocLogo.png" width = "100"> ChromTroller
 
 ## Overview
 This package controls the triggering of the LCMS unit used in the NRG's RoboChem systems. 

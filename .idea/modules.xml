@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/ChromatoCroctroller.iml" filepath="$PROJECT_DIR$/.idea/ChromatoCroctroller.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/ChromTroller.iml" filepath="$PROJECT_DIR$/.idea/ChromTroller.iml" />
     </modules>
   </component>
 </project>

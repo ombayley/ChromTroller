@@ -6,32 +6,47 @@ Description: An example client for connecting to the LCMS Server
 """
 import socket
 import os
-from utils.script_utilities import load_file
+import json
 
 
-class ChromTrollerClient:
+class HPLCServerClient:
     """Simple client interface to send commands to the LCMS server"""
 
     def __init__(self):
-        ids_file = load_file(os.path.join('utils', 'private_connection_ids.json'))
-        self.host_server = 'localhost' #ids_file['server_address']
-        self.host_port = ids_file['socket_port']
-        self.socket = self.open_connection()
-        if self.socket is None:
-            raise Exception("Failed to authenticate or connect to server.")
+        # Set path to the private_connection_ids.json
+        path_to_private_keys = os.path.join('utils', 'private_connection_ids.json')
+        # Get connection info from private_connection_ids.json
+        self.ids_file = self.load_file(path_to_private_keys)
+        # Make socket
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        # Connect socket to server
+        self.connect_soc_to_server()
 
-    def open_connection(self) -> socket.socket:
-        """Opens the connection"""
+    # -----Init Methods START-----
+    @staticmethod
+    def load_file(path):
         try:
-            soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            soc.connect((self.host_server, self.host_port))
-            print(f"Connecting to server at {self.host_server}:{self.host_port} ...")
-            return soc
-        except socket.error as e:
-            print(f"Socket error: {e}")
-            return None
+            if path:
+                with open(path, 'r') as file:
+                    file_dict = json.load(file)
+                return file_dict
+        except (FileNotFoundError, json.JSONDecodeError) as err:
+            raise Exception(err)
 
-    def send_command(self, com):
+    # -----Init Methods END-----
+    # -----Basic Client Methods START-----
+    def connect_soc_to_server(self):
+        """Opens the connection"""
+        # Get connection data for the server
+        host_server = 'localhost'  # self.ids_file['server_address']
+        host_port = self.ids_file['socket_port']
+        try:
+            self.socket.connect((host_server, host_port))
+            print(f"Connecting to server at {host_server}:{host_port} ...")
+        except socket.error as e:
+            raise Exception(f"Failed to authenticate or connect to server: {e}")
+
+    def _send_command(self, com):
         """method to send commands from a control program to the server"""
         try:
             self.socket.sendall(com.encode())
@@ -40,6 +55,42 @@ class ChromTrollerClient:
             return data
         except Exception as e:
             print(f"Error during command transmission: {e}")
+
+    def close(self):
+        """Close connection with the server"""
+        if self.socket:
+            self.socket.close()
+            print("Connection closed.")
+
+    # -----BasicClient Methods END-----
+    # -----Action Methods START-----
+
+    def send_exp_detail(self, exp_info):
+        response = self._send_command(f"run_info-{exp_info}")
+        return response
+
+    def get_exp_run_info(self):
+        run_info = self._send_command("get_exp_run_info")
+        return run_info
+
+    def start_hplc_run(self):
+        response = self._send_command("start_hplc_run")
+        return response
+
+    def get_hplc_run_status(self):
+        curr_stat = self._send_command("get_hplc_run_status")
+        return curr_stat
+
+    def start_data_analysis(self):
+        response = self._send_command("start_hplc_run")
+        return response
+
+    def get_analysis_status(self):
+        curr_stat = self._send_command("get_status")
+        return curr_stat
+
+    # -----Action Methods END-----
+    # -----Standalone User Run START-----
 
     def send_user_command(self):
         """method to send commands from a user to the server via cmd line interface"""
@@ -54,13 +105,9 @@ class ChromTrollerClient:
         finally:
             self.close()
 
-    def close(self):
-        """Close connection with the server"""
-        if self.socket:
-            self.socket.close()
-            print("Connection closed.")
-
 
 if __name__ == "__main__":
-    client = ChromTrollerClient()
+    client = HPLCServerClient()
     client.send_user_command()
+
+    # -----Standalone User Run END-----

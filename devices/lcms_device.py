@@ -67,7 +67,7 @@ class LCMSDevice(ArduinoDevice):
             response = self.read_response()
             return response
 
-    def start_analysis(self) -> str:
+    def send_start_request(self) -> str:
         """
         Ask Arduino to send 'START REQUEST' to the LCMS insrument. Returns Arduino
         acknowledgement !NOT! LCMS acknowledgement.
@@ -76,7 +76,7 @@ class LCMSDevice(ArduinoDevice):
             self.send_command("s6")
             return self.read_response()
 
-    def stop_analysis(self) -> str:
+    def send_stop_signal(self) -> str:
         """
         Ask Arduino to send 'STOP' to the LCMS instrument. Returns Arduino
         acknowledgement !NOT! LCMS acknowledgement.

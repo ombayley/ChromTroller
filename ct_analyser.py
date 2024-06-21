@@ -4,3 +4,8 @@
 Author: O. Bayley
 Description: *Brief script description*.
 """
+
+
+class Analyser:
+    def __init__(self):
+        self.draft = ""
