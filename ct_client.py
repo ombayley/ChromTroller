@@ -7,6 +7,7 @@ Description: An example client for connecting to the LCMS Server
 import socket
 import os
 import json
+import threading
 
 
 class HPLCServerClient:
@@ -64,30 +65,33 @@ class HPLCServerClient:
 
     # -----BasicClient Methods END-----
     # -----Action Methods START-----
+    def set_run_name(self, name):
+        acknowledge = self._send_command(f"run_name-{name}")
+        return acknowledge
 
     def send_exp_detail(self, exp_info):
-        response = self._send_command(f"run_info-{exp_info}")
-        return response
-
-    def get_exp_run_info(self):
-        run_info = self._send_command("get_exp_run_info")
-        return run_info
+        acknowledge = self._send_command(f"exp_info-{exp_info}")
+        return acknowledge
 
     def start_hplc_run(self):
-        response = self._send_command("start_hplc_run")
-        return response
+        acknowledge = self._send_command("start_hplc_run")
+        return acknowledge
 
     def get_hplc_run_status(self):
         curr_stat = self._send_command("get_hplc_run_status")
         return curr_stat
 
+    def get_exp_run_info(self):
+        run_info = self._send_command("get_exp_run_info")
+        return run_info
+
     def start_data_analysis(self):
-        response = self._send_command("start_hplc_run")
-        return response
+        acknowledge = self._send_command("start_hplc_run")
+        return acknowledge
 
     def get_analysis_status(self):
-        curr_stat = self._send_command("get_status")
-        return curr_stat
+        acknowledge = self._send_command("get_status")
+        return acknowledge
 
     # -----Action Methods END-----
     # -----Standalone User Run START-----
@@ -99,7 +103,18 @@ class HPLCServerClient:
                 message = input("Enter command to send: ")  # !CHANGE input to the actual calls in the
                 self.socket.sendall(message.encode())
                 data = self.socket.recv(1024)
-                print(f"Received: {data.decode()}")
+                print(data.decode())
+        except KeyboardInterrupt:
+            print("Client stopped by user.")
+        finally:
+            self.close()
+
+    def read_responses(self):
+        try:
+            while True:
+                # add get info command here
+                data = self.socket.recv(1024)
+                print(data.decode())
         except KeyboardInterrupt:
             print("Client stopped by user.")
         finally:
@@ -108,6 +123,9 @@ class HPLCServerClient:
 
 if __name__ == "__main__":
     client = HPLCServerClient()
+    client.set_run_name("reaction with SM and Prod")
+    exp = {"Additive": "thing 1", 'some_such': "b"}
+    client.send_exp_detail(exp)
     client.send_user_command()
 
     # -----Standalone User Run END-----

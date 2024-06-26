@@ -15,22 +15,34 @@ The LCMS unit is composed of an Agilent 1290 Infinity II UPLC-MS, an external VI
 The codebase is built in 3 parts: the **Arduino code** (found in the Arduino Sketches directory), the **device** programs, the **controller** program and the **server** program.
 
 ```mermaid
-graph LR;
-    RbC(RoboChem/External Program)<--Socket-->lis
-    subgraph LCMS Server;
-        lis(Listener)
-        hand(Handler)
-        lis-.->hand
-    end
-    hand--> thrA(Controller Input Thread);
-    subgraph LCMS Controller
-    thrA(Command Thread) --> dev(LCMSDevice)
-    thrB(Phase Sensor Thread) -.->dev
-    end
+graph TD;
+    RbC(RoboChem)
+    cli(CT Client)
+    ser(CT Server)
+    CT(ChromTroller)
+    Ard(Arduino)
+    dev(LCMSDevice)
+    lcms(Agilent LCMS)
+    SW(Switch Valve)
+    PS(Phase Sensor)
+    log(CT RunLog)
+    mon(CT Monitor)
+    anal(CT Analysis)
+    cal(Calibration)
+    lams(Analysis)
+    
+    RbC --> cli
+    cli<--Socket-->ser
+    ser <--> CT
+    log <--> CT
+    CT <--> mon
+    CT --> Hardware & Analysis
     subgraph Hardware
-    dev <--Serial-->Ard(Arduino);
-    Ard-->lcms(Agilent LCMS) & SW(Switch Valve);
-    Ard-->PS(Phase Sensor);
+    dev <--Serial-->Ard;
+    Ard-->lcms & SW & PS;
+    end
+    subgraph Analysis
+    anal --> cal & lams    ;
     end
 ```
 ### LCMS Server
