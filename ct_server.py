@@ -132,7 +132,7 @@ class Server:
                 # Get command as string rather than bytes
                 command = data.decode().strip()
                 # Handle command
-                threading.Thread(target=self.ct_program.handle_command, args=(command,)).start()
+                threading.Thread(target=self.ct_program.handle_command, args=(command, client_socket)).start()
                 logging.info(f"Command reccieved from client: {command}")
                 # Return a generic command acknowledge
                 acknowledge = 'Command Recieved'

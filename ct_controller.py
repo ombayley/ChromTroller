@@ -94,7 +94,7 @@ class Controller:
         Runs the routine to start an analytical run.
         This involves the detection, sample loading and lcms method triggering
         """
-        self.log_info({'analysis_initiated': 'SUCCESS'})
+        self.log_info({'analysis_initiation': 'SUCCESS'})
         try:
             # Check devices are connected and in valid states. Raise error if not
             self._check_device_connectivity()
@@ -106,11 +106,11 @@ class Controller:
 
             # Ensure that the switch is in the filling position and if not, switch and fill.
             self._check_valve_state()
-            self.log_info({'sample_loop_full_check': 'SUCCESS'})
+            self.log_info({'full_sample_loop_check': 'SUCCESS'})
 
             # Send start analysis and check acknowledgement.
             self._send_start_request_wth_error()
-            self.log_info({'start_signal_sent': 'SUCCESS'})
+            self.log_info({'send_start_signal': 'SUCCESS'})
 
             # Check acknowledgement from spectrometer (LCMS method must include this!)
             self._wait_on_lcms_response()
@@ -130,11 +130,11 @@ class Controller:
             self.log_info({'valve_returned_to_bypass': 'SUCCESS'})
 
             # Report triggering success
-            self.log_info({'complete_analysis': 'SUCCESS'})
+            self.log_info({'analysis_cycle_started': 'SUCCESS'})
             return "SUCCESS"
 
         except Exception as error:
-            self.log_info({'complete_analysis': 'FAIL', 'cause': error})
+            self.log_info({'analysis_cycle_started': 'FAIL', 'cause': error})
             return f"FAILED - Analysis Cycle Failed due to: {error}"
 
     # ----- Analysis Method END -----
@@ -172,7 +172,7 @@ class Controller:
 
         # Re-check valve in filling pos. If not
         if self.lcms_device.read_valve_pos() != self.param_config["sample_filling_position"]:
-            self.log_info({'sample_loop_full_check': 'FAIL', 'cause': 'Error switching valve position'})
+            self.log_info({'full_sample_loop_check': 'FAIL', 'cause': 'Error switching valve position'})
             raise Exception("ERROR - Switch Valve - Valve Not Set")
 
         # Wait to fill loop
@@ -180,13 +180,13 @@ class Controller:
 
         # Check for sample at sensor
         if not self.lcms_device.get_sample_at_sensor():
-            self.log_info({'sample_loop_full_check': 'FAIL', 'cause': 'No Sample Detected After Filling'})
+            self.log_info({'full_sample_loop_check': 'FAIL', 'cause': 'No Sample Detected After Filling'})
             raise Exception("ERROR - Phase Sensor - No Sample Detected After Filling")
 
     def _send_start_request_wth_error(self):
         ack = self.lcms_device.send_start_request()
         if ack != self.lcms_device.standard_acknowledge:
-            self.log_info({'start_signal_sent': 'FAIL', 'cause': 'Start Signal Not Sent by Arduino'})
+            self.log_info({'send_start_signal': 'FAIL', 'cause': 'Start Signal Not Sent by Arduino'})
             raise Exception("ERROR - LCMS - Start Signal Not Sent by Arduino")
 
     def _wait_on_lcms_response(self):

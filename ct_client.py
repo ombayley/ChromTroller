@@ -7,6 +7,7 @@ Description: An example client for connecting to the LCMS Server
 import socket
 import os
 import json
+import time
 import threading
 
 
@@ -70,13 +71,19 @@ class HPLCServerClient:
         return acknowledge
 
     def send_exp_detail(self, exp_info):
-        acknowledge = self._send_command(f"exp_info-{exp_info}")
+        exp_info_str = json.dumps(exp_info)
+        acknowledge = self._send_command(f"exp_info-{exp_info_str}")
         return acknowledge
 
     def start_hplc_run(self):
         acknowledge = self._send_command("start_hplc_run")
         return acknowledge
 
+    def get_exp_info(self):
+        info_str = self._send_command('get_status')
+        if info_str:
+            info_dict = json.loads(info_str)
+            return info_dict
     def get_hplc_run_status(self):
         curr_stat = self._send_command("get_hplc_run_status")
         return curr_stat
@@ -123,9 +130,25 @@ class HPLCServerClient:
 
 if __name__ == "__main__":
     client = HPLCServerClient()
-    client.set_run_name("reaction with SM and Prod")
-    exp = {"Additive": "thing 1", 'some_such': "b"}
+    client.set_run_name("3")
+    exp = {"Additive": "thing 1"}
     client.send_exp_detail(exp)
-    client.send_user_command()
+    client.start_hplc_run()
+
+    # time.sleep(5)
+    # seen_keys = set()
+    # while True:
+    #     status_dict = client.get_exp_info()
+    #     if status_dict:
+    #         current_keys = status_dict.keys()
+    #         new_keys = [key for key in current_keys if key not in seen_keys]
+    #         for key in new_keys:
+    #             print(f"New entry: {key} -> {status_dict[key]}")
+    #             seen_keys.add(key)
+    #         if 'file' in seen_keys:
+    #             break
+    #         time.sleep(1)
+
+    # client.send_user_command()
 
     # -----Standalone User Run END-----

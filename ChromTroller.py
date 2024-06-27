@@ -115,7 +115,7 @@ class ChromTroller:
     # -----Init Methods END-----
     # -----Management Methods START -----
 
-    def handle_command(self, command):
+    def handle_command(self, command, client_socket):
         logging.info(f"Command received: {command}")
         command, data = self.split_command(command)
         match command:
@@ -128,10 +128,10 @@ class ChromTroller:
                 time.sleep(0.1)
                 self.monitor_obj.set_dir(self.results_dir_path)
                 self.monitor_obj.start_monitoring()
-
-            # case 'get_exp_run_info':
-            #     status = self.run_log_obj.get_current_run_info()
-            #     return status
+            case 'get_status':
+                run_log_obj = self.run_log_list[-1]
+                run_log_str = json.dumps(run_log_obj.to_dict())
+                client_socket.sendall(run_log_str.encode())
             # case 'get_hplc_run_status':
             #     status = self.run_log_obj.get_controller_status()
             #     return status
@@ -149,9 +149,10 @@ class ChromTroller:
         self.run_log_list.append(new_log)
 
     def log_rbc_info(self, message):
+        logging.info(f"info from robochem: {message}")
         if self.log_queue:
-            logging.info(message)
-            log_info = {'program': 'robochem', 'message': message}
+            exp_info = json.loads(message)
+            log_info = {'program': 'robochem', 'message': exp_info}
             self.log_queue.put(log_info)
 
     def process_log_queue(self):

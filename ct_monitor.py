@@ -48,6 +48,7 @@ class Monitor(FileSystemEventHandler):
         """Starts the monitoring process in a separate thread."""
         if not self.is_running:
             print("Monitoring started.")
+            self.initial_search()
             self.is_running = True
             self.observer = Observer()
             self.observer.schedule(self, self.results_dir, recursive=False)
