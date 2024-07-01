@@ -22,9 +22,11 @@ class Controller:
         timeout (float): max block time (in seconds) for the serial read(). Defaults to '1'
     """
 
-    def __init__(self, port='COM3', baud_rate=9600, timeout=1, log_queue=None):
+    def __init__(self, port='COM3', baud_rate=9600, timeout=1, run_log_list=None):
         # Threadsafe logging
-        self.log_queue = log_queue
+        self.run_log_list = run_log_list
+        # Lock for thread safety
+        self.lock = threading.Lock()
         # Create LCMSDevice object
         self.lcms_device = LCMSDevice(port, baud_rate, timeout)
         # Get hardware and timing settings
@@ -32,7 +34,7 @@ class Controller:
         # Start phase sensor monitoring (seperate thread)
         self.start_ps_monitor()
         # Report init success
-        self.log_info("Controller Object Initialized Successfully")
+        logging.info("Controller Object Initialized Successfully")
 
     # -----Init Methods START-----
     @staticmethod
@@ -85,16 +87,16 @@ class Controller:
         """
         sensor_monitor = SensorMonitor(self.lcms_device, self.param_config)
         threading.Thread(target=sensor_monitor.monitor_loop).start()
-        self.log_info("Phase sensor monitoring started on separate thread.")
+        logging.info("Phase sensor monitoring started on separate thread.")
 
     # -----Init Methods END-----
     # ----- Analysis Method START -----
-    def run_analysis_cycle(self) -> str:
+    def run_analysis_cycle(self):
         """
         Runs the routine to start an analytical run.
         This involves the detection, sample loading and lcms method triggering
         """
-        self.log_info({'analysis_initiation': 'SUCCESS'})
+        self.log_info({'analysis': 'INITIATED'})
         try:
             # Check devices are connected and in valid states. Raise error if not
             self._check_device_connectivity()
@@ -131,11 +133,11 @@ class Controller:
 
             # Report triggering success
             self.log_info({'analysis_cycle_started': 'SUCCESS'})
-            return "SUCCESS"
+            return 'HPLC start - SUCCESS'
 
         except Exception as error:
             self.log_info({'analysis_cycle_started': 'FAIL', 'cause': error})
-            return f"FAILED - Analysis Cycle Failed due to: {error}"
+            return f'HPLC start - FAILED - {error}'
 
     # ----- Analysis Method END -----
     # ----- Compound Command Methods START -----
@@ -244,7 +246,7 @@ class Controller:
 
     def stop_analysis(self):
         self.lcms_device.send_stop_signal()
-        self.log_info("Analysis Stopped")
+        logging.info("Analysis Stopped")
 
     def close(self):
         """ Closes the serial connection to the Arduino Device """
@@ -253,10 +255,9 @@ class Controller:
     # ----- Simple Command Methods END -----
     # -----Util Methods START-----
     def log_info(self, message):
-        if self.log_queue:
-            logging.info(message)
-            log_info = {'program': 'controller', 'message': message}
-            self.log_queue.put(log_info)
+        logging.info(message)
+        with self.lock:
+            self.run_log_list[-1].controller.update(message)
 
     @staticmethod
     def split_command(cmd) -> tuple:

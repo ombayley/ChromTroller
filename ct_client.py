@@ -7,8 +7,7 @@ Description: An example client for connecting to the LCMS Server
 import socket
 import os
 import json
-import time
-import threading
+import asyncio
 
 
 class HPLCServerClient:
@@ -23,10 +22,15 @@ class HPLCServerClient:
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         # Connect socket to server
         self.connect_soc_to_server()
+        # Initialize the event loop
+        self.loop = asyncio.get_event_loop()
+        # Listen to Server
+        self.listen_to_serv = True
 
     # -----Init Methods START-----
     @staticmethod
     def load_file(path):
+        """Get sensitive info such as IP address/ports, etc... from json file"""
         try:
             if path:
                 with open(path, 'r') as file:
@@ -48,13 +52,13 @@ class HPLCServerClient:
         except socket.error as e:
             raise Exception(f"Failed to authenticate or connect to server: {e}")
 
-    def _send_command(self, com):
+    def _send_command(self, com, data=None):
         """method to send commands from a control program to the server"""
         try:
-            self.socket.sendall(com.encode())
-            data = self.socket.recv(1024)
-            print(f"Received: {data.decode()}")
-            return data
+            message_dict = {'command': com, 'data': data}
+            message = json.dumps(message_dict).encode()
+            message_length = len(message).to_bytes(4, byteorder='big')
+            self.socket.sendall(message_length + message)
         except Exception as e:
             print(f"Error during command transmission: {e}")
 
@@ -65,90 +69,63 @@ class HPLCServerClient:
             print("Connection closed.")
 
     # -----BasicClient Methods END-----
-    # -----Action Methods START-----
-    def set_run_name(self, name):
-        acknowledge = self._send_command(f"run_name-{name}")
-        return acknowledge
+    # -----Streaming Methods START-----
+    async def listen_for_updates(self):
+        """Listen for updates from the server."""
+        while self.listen_to_serv:
+            try:
+                data = await self.loop.sock_recv(self.socket, 1024)
+                if data:
+                    message = data.decode()
+                    print(f"Update from server: {message}")
+                    if message == 'TERMINATE':
+                        self.listen_to_serv = False
+            except Exception as e:
+                print(f"Error receiving updates: {e}")
+                break
 
-    def send_exp_detail(self, exp_info):
-        exp_info_str = json.dumps(exp_info)
-        acknowledge = self._send_command(f"exp_info-{exp_info_str}")
-        return acknowledge
+    async def close_async(self):
+        """Close connection with the server asynchronously."""
+        if self.socket:
+            self.socket.close()
+            print("Connection closed.")
+
+    # -----Streaming Methods END-----
+    # -----CT Specific Methods START-----
+    def new_run(self, name):
+        self._send_command(com="new_run_name", data=name)
+
+    def set_reaction_conc(self, conc):
+        self._send_command(com="set_run_conc", data=conc)
+
+    def add_reagents(self, reag_list):
+        self._send_command(com="add_reagents", data=reag_list)
+
+    def add_reaction_conditions(self, condit_dict):
+        self._send_command(com="add_reaction_conditions", data=condit_dict)
 
     def start_hplc_run(self):
-        acknowledge = self._send_command("start_hplc_run")
-        return acknowledge
+        self._send_command(com="start_hplc_run")
 
-    def get_exp_info(self):
-        info_str = self._send_command('get_status')
-        if info_str:
-            info_dict = json.loads(info_str)
-            return info_dict
-    def get_hplc_run_status(self):
-        curr_stat = self._send_command("get_hplc_run_status")
-        return curr_stat
+    # -----CT Specific Methods END-----
+    # -----Standalone Method START-----
 
-    def get_exp_run_info(self):
-        run_info = self._send_command("get_exp_run_info")
-        return run_info
-
-    def start_data_analysis(self):
-        acknowledge = self._send_command("start_hplc_run")
-        return acknowledge
-
-    def get_analysis_status(self):
-        acknowledge = self._send_command("get_status")
-        return acknowledge
-
-    # -----Action Methods END-----
-    # -----Standalone User Run START-----
-
-    def send_user_command(self):
-        """method to send commands from a user to the server via cmd line interface"""
+    def listen(self):
         try:
-            while True:
-                message = input("Enter command to send: ")  # !CHANGE input to the actual calls in the
-                self.socket.sendall(message.encode())
-                data = self.socket.recv(1024)
-                print(data.decode())
+            self.loop.run_until_complete(self.listen_for_updates())
         except KeyboardInterrupt:
-            print("Client stopped by user.")
+            print("Interrupted by user.")
         finally:
-            self.close()
-
-    def read_responses(self):
-        try:
-            while True:
-                # add get info command here
-                data = self.socket.recv(1024)
-                print(data.decode())
-        except KeyboardInterrupt:
-            print("Client stopped by user.")
-        finally:
-            self.close()
+            self.loop.run_until_complete(self.close_async())
 
 
 if __name__ == "__main__":
     client = HPLCServerClient()
-    client.set_run_name("3")
-    exp = {"Additive": "thing 1"}
-    client.send_exp_detail(exp)
+    client.new_run(name="1")
+    client.set_reaction_conc(conc=0.1)
+    client.add_reagents(reag_list=['EtPh', 'BP', 'One'])
+    client.add_reaction_conditions(condit_dict={'light_intensity': 35, 'residence_time': 15})
     client.start_hplc_run()
+    client.listen()
 
-    # time.sleep(5)
-    # seen_keys = set()
-    # while True:
-    #     status_dict = client.get_exp_info()
-    #     if status_dict:
-    #         current_keys = status_dict.keys()
-    #         new_keys = [key for key in current_keys if key not in seen_keys]
-    #         for key in new_keys:
-    #             print(f"New entry: {key} -> {status_dict[key]}")
-    #             seen_keys.add(key)
-    #         if 'file' in seen_keys:
-    #             break
-    #         time.sleep(1)
-
-    # client.send_user_command()
-
-    # -----Standalone User Run END-----
+    # -----Standalone Method END-----

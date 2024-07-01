@@ -40,6 +40,8 @@ class Server:
         self.id_file = self.load_private_ids_file()
         # Create server socket
         self.server_socket = self.init_socket()
+        # Public var
+        self.active_connection = False
 
     # -----Init Methods START-----
     @staticmethod
@@ -88,6 +90,7 @@ class Server:
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server_socket.bind(("", self.id_file['socket_port']))
         logging.info(f"Server listening on port: {self.id_file['socket_port']}")
+        print(f"Server listening on port: {self.id_file['socket_port']}")
         return server_socket
 
     # -----Init Methods END-----
@@ -104,15 +107,31 @@ class Server:
                 # Get connection info
                 client_socket, client_addr = self.server_socket.accept()
                 client_ip = client_addr[0]
-                # Check valid IP address
-                if client_ip in self.id_file['allowed_ips']:
-                    date_str = datetime.now().strftime("%d-%m-%Y--%H-%M-%S")
-                    logging.info(f"Client: {client_addr} connected - {date_str}")
-                    # Handle client on new thread
-                    threading.Thread(target=self.handle_client, args=(client_socket,)).start()
-                else:
-                    logging.info(f"Connection from {client_addr} rejected. IP not in IP list")
+
+                # Reject connections if one is already active
+                if self.active_connection:
+                    denied_message = f"Connection rejected. A client is already connected to the controller"
+                    logging.info(denied_message)
+                    client_socket.sendall(denied_message.encode())
                     client_socket.close()
+
+                # Connect any client with valid IP address
+                if client_ip in self.id_file['allowed_ips']:
+                    # Handle the client on new thread so the server is still responsive
+                    threading.Thread(target=self.handle_client, args=(client_socket,)).start()
+                    self.set_active_connection(True)
+                    date_str = datetime.now().strftime("%d-%m-%Y--%H-%M-%S")
+                    connect_message = f"Client: {client_addr} connected - {date_str}"
+                    logging.info(connect_message)
+                    client_socket.sendall(connect_message.encode())
+
+                # Reject any address not in the IP whitelist
+                else:
+                    denied_message = f"Connection from {client_addr} rejected. IP not in IP list"
+                    logging.info(denied_message)
+                    client_socket.sendall(denied_message.encode())
+                    client_socket.close()
+
             except socket.error as socket_error:
                 logging.exception("Error accepting connections: %s", socket_error)
 
@@ -122,34 +141,48 @@ class Server:
         """Receive commands from a client and handle."""
         try:
             while True:
-                # Connection + Data = action, Connection + No Data = wait, No Connection = break
-                # .recv() is blocking but client sends empty byte (b'') on disconnect.
-                data = client_socket.recv(1024)
-                if not data:
-                    date_str = datetime.now().strftime("%d-%m-%Y--%H-%M-%S")
-                    logging.info(f"Client disconnected - date_str")
+                # First, read the length of the incoming message (4 bytes)
+                message_length_bytes = client_socket.recv(4)
+                if not message_length_bytes:
                     break
-                # Get command as string rather than bytes
-                command = data.decode().strip()
+                message_length = int.from_bytes(message_length_bytes, byteorder='big')
+
+                # Then, read the actual message data
+                client_data = client_socket.recv(message_length)
+
+                # Data = action, No Data = blocking/wait, Disconnect = empty byte
+                # client_data = client_socket.recv(1024)
+
+                # Handle a client disconnect
+                if not client_data:
+                    date_str = datetime.now().strftime("%H_%M_%S-%d_%m_%Y")
+                    disconnect_message = f"Client disconnected at {date_str}"
+                    logging.info(disconnect_message)
+                    print(disconnect_message)
+                    self.ct_program.client_socket = None
+                    self.set_active_connection(False)
+                    break
+                self.ct_program.client_socket = client_socket
                 # Handle command
-                threading.Thread(target=self.ct_program.handle_command, args=(command, client_socket)).start()
-                logging.info(f"Command reccieved from client: {command}")
-                # Return a generic command acknowledge
-                acknowledge = 'Command Recieved'
-                client_socket.sendall(acknowledge.encode())
-                logging.info("Generic acknowledge returned to client")
+                self.ct_program.handle_command(client_data, client_socket)
+                # threading.Thread(target=self.ct_program.handle_command, args=(client_data, client_socket)).start()
+                logging.info(f"Command reccieved from client: {client_data.decode()}")
 
         except socket.error as socket_error:
             logging.exception("Error accepting connections: %s", socket_error)
         finally:
             client_socket.close()
+            self.active_connection = False
+            self.ct_program.client_socket = None
 
     # -----Server Methods END-----
+
+    def set_active_connection(self, state: bool):
+        with threading.Lock():
+            self.active_connection = state
 
     def log_info(self, message):
         if self.ct_program.log_queue:
             logging.info(message)
             log_info = {'program': 'server', 'message': message}
             self.ct_program.log_queue.put(log_info)
-
-

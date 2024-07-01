@@ -20,12 +20,12 @@ from watchdog.events import FileSystemEventHandler
 
 
 class Monitor(FileSystemEventHandler):
-    def __init__(self, log_queue):
+    def __init__(self, run_log_list):
         super().__init__()
         self.monitor_thread = None
         self.observer = None
         self.is_running = False
-        self.log_queue = log_queue
+        self.run_log_list = run_log_list
 
         self.results_dir = None
         self.data_file_tag = re.compile(r'\.dx$')
@@ -86,10 +86,9 @@ class Monitor(FileSystemEventHandler):
             self.monitor_thread.join()
 
     def log_info(self, message):
-        if self.log_queue:
-            logging.info(message)
-            log_info = {'program': 'monitor', 'message': message}
-            self.log_queue.put(log_info)
+        logging.info(message)
+        with threading.Lock():
+            self.run_log_list[-1].file = message
 
 if __name__ == "__main__":
     queue = Queue()
