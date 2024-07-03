@@ -10,11 +10,11 @@ import logging
 import json
 import time
 from datetime import datetime
-from ct_classes.ct_server import Server
-from ct_classes.ct_controller import Controller
-from ct_classes.ct_analyser import Analyser
-from ct_classes.ct_runlog import RunLog
-from ct_classes.ct_monitor import Monitor
+from ct_components.ct_server import Server
+from ct_components.ct_controller import Controller
+from ct_components.ct_analyser import Analyser
+from ct_components.ct_runlog import RunLog
+from ct_components.ct_monitor import Monitor
 
 
 class ChromTroller:

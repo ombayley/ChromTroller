@@ -11,7 +11,7 @@ by the program using this object).
 TODO implement a command table to match the arduino commands with the commands here!
 """
 from threading import Lock, Event
-from ct_classes.devices.base_arduino_device import ArduinoDevice
+from ct_components.devices.base_arduino_device import ArduinoDevice
 
 
 class LCMSDevice(ArduinoDevice):
