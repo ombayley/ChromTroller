@@ -94,7 +94,7 @@ class Server:
         return server_socket
 
     # -----Init Methods END-----
-    # -----Server Methods START -----
+    # -----Connect Method START -----
 
     def listen_for_new_connections(self):
         """
@@ -110,63 +110,72 @@ class Server:
 
                 # Reject connections if one is already active
                 if self.active_connection:
-                    denied_message = f"Connection rejected. A client is already connected to the controller"
-                    logging.info(denied_message)
-                    client_socket.sendall(denied_message.encode())
+                    # Action - Close the new socket attempting to connect
                     client_socket.close()
+                    # Info/Logging
+                    denied_message = "Connection rejected. A client is already connected to the controller"
+                    logging.info(denied_message)
+                    self._send_to_client(client_socket, denied_message, data_type='reply')  # update to handle 'info'
+                    print(denied_message)
 
                 # Connect any client with valid IP address
                 if client_ip in self.id_file['allowed_ips']:
-                    # Handle the client on new thread so the server is still responsive
+                    # Action - Handle the client on new thread so the server is still responsive
                     threading.Thread(target=self.handle_client, args=(client_socket,)).start()
+                    # Info/Logging
                     self.set_active_connection(True)
-                    date_str = datetime.now().strftime("%d-%m-%Y--%H-%M-%S")
-                    connect_message = f"Client: {client_addr} connected - {date_str}"
+                    date_str = datetime.now().strftime("%H:%M:%S_%d-%m-%Y")
+                    connect_message = f"Client connected at {date_str}"
                     logging.info(connect_message)
-                    client_socket.sendall(connect_message.encode())
+                    self._send_to_client(client_socket, connect_message, data_type='reply')  # update to handle 'info'
+                    print(connect_message)
 
                 # Reject any address not in the IP whitelist
                 else:
+                    # Action - Close the new socket attempting to connect
+                    client_socket.close()
+                    # Info/Logging
                     denied_message = f"Connection from {client_addr} rejected. IP not in IP list"
                     logging.info(denied_message)
-                    client_socket.sendall(denied_message.encode())
-                    client_socket.close()
+                    self._send_to_client(client_socket, denied_message, data_type='reply')  # update to handle 'info'
+                    print(denied_message)
 
             except socket.error as socket_error:
                 logging.exception("Error accepting connections: %s", socket_error)
 
-    # --
+    # -----Connect Method END -----
+    # -----Handle Client Methods START -----
 
     def handle_client(self, client_socket):
         """Receive commands from a client and handle."""
         try:
+
             while True:
-                # First, read the length of the incoming message (4 bytes)
-                message_length_bytes = client_socket.recv(4)
-                if not message_length_bytes:
-                    break
-                message_length = int.from_bytes(message_length_bytes, byteorder='big')
-
-                # Then, read the actual message data
-                client_data = client_socket.recv(message_length)
-
-                # Data = action, No Data = blocking/wait, Disconnect = empty byte
-                # client_data = client_socket.recv(1024)
-
-                # Handle a client disconnect
-                if not client_data:
+                # Check the socket is an active socket
+                if self.is_socket_closed(client_socket):
+                    # Info/logging
                     date_str = datetime.now().strftime("%H_%M_%S-%d_%m_%Y")
                     disconnect_message = f"Client disconnected at {date_str}"
                     logging.info(disconnect_message)
                     print(disconnect_message)
+                    # Action - set public vars and break loop
                     self.ct_program.client_socket = None
                     self.set_active_connection(False)
-                    break
+                    return "No connected Socket"
+
+                # set the CT public var to the current client socket
                 self.ct_program.client_socket = client_socket
-                # Handle command
-                self.ct_program.handle_command(client_data, client_socket)
-                # threading.Thread(target=self.ct_program.handle_command, args=(client_data, client_socket)).start()
-                logging.info(f"Command reccieved from client: {client_data.decode()}")
+
+                # Get info from client
+                client_comm_dict = self._receive_from_client(client_socket)
+
+                # Handle the command
+                response = self.ct_program.handle_command(client_comm_dict)
+
+                # Send response back to client
+                if response:
+                    self._send_to_client(client_socket=client_socket, data=response, data_type='reply')
+                    logging.info(f"Response sent to client: {response}")
 
         except socket.error as socket_error:
             logging.exception("Error accepting connections: %s", socket_error)
@@ -175,7 +184,61 @@ class Server:
             self.active_connection = False
             self.ct_program.client_socket = None
 
-    # -----Server Methods END-----
+    @staticmethod
+    def _send_to_client(client_socket, data, data_type='reply'):
+        try:
+            message_dict = {'command': data_type, 'data': data}
+            message = json.dumps(message_dict).encode()
+            message_length = len(message).to_bytes(4, byteorder='big')
+            client_socket.sendall(message_length + message)
+        except OSError as e:
+            logging.error(f"Error sending data to client {client_socket} - {e}")
+
+    @staticmethod
+    def _receive_from_client(client_socket):
+        try:
+            # Read the length of the incoming message (4 bytes) then read the message
+            message_length_bytes = client_socket.recv(4)
+            if not message_length_bytes:
+                return "Empty data byte received"
+            message_length = int.from_bytes(message_length_bytes, byteorder='big')
+            data = client_socket.recv(message_length)
+
+            # Read the incoming data
+            if data:
+                reccieved_dict = json.loads(data.decode())
+                com = reccieved_dict['command']
+                command_data = reccieved_dict['data']
+                print(f"Command from client: {com} with message: {command_data}")
+                logging.info(f"Command from client: {com} with message: {command_data}")
+                return reccieved_dict
+
+            return "no data found in server response"
+
+        except Exception as error:
+            print(f"Error receiving updates: {error}")
+
+    @staticmethod
+    def is_socket_closed(sock):
+        try:
+            # Try to read 1 byte in a non-blocking way to check the socket state
+            data = sock.recv(1, socket.MSG_PEEK)
+            if len(data) == 0:
+                return True  # Socket is closed
+        except BlockingIOError:
+            # Non-blocking read didn't succeed, socket is still open
+            return False
+        except ConnectionResetError:
+            # Connection was reset
+            return True
+        except socket.error as e:
+            # Catch other socket errors
+            print(f"Socket error: {e}")
+            return True
+        return False
+
+    # ----- Handle Client Methods END -----
+    # ----- Util Methods START -----
 
     def set_active_connection(self, state: bool):
         with threading.Lock():
@@ -186,3 +249,5 @@ class Server:
             logging.info(message)
             log_info = {'program': 'server', 'message': message}
             self.ct_program.log_queue.put(log_info)
+
+# ----- Util Methods END -----

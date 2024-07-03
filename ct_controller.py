@@ -133,11 +133,11 @@ class Controller:
 
             # Report triggering success
             self.log_info({'analysis_cycle_started': 'SUCCESS'})
-            return 'HPLC start - SUCCESS'
+            return 'HPLC: SUCCESS'
 
         except Exception as error:
             self.log_info({'analysis_cycle_started': 'FAIL', 'cause': error})
-            return f'HPLC start - FAILED - {error}'
+            return f'HPLC: FAILED - {error}'
 
     # ----- Analysis Method END -----
     # ----- Compound Command Methods START -----
@@ -256,6 +256,7 @@ class Controller:
     # -----Util Methods START-----
     def log_info(self, message):
         logging.info(message)
+        print(message)
         with self.lock:
             self.run_log_list[-1].controller.update(message)
 

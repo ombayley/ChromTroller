@@ -13,6 +13,12 @@ class Analyser:
         self.run_log_list = run_log_list
         logging.info("Analyser Object Initialized Successfully")
 
+    def run_calibration(self):
+        return 'done'
+
+    def run_analysis(self):
+        return {'yield': 1, "conv": 2}
+
     def log_info(self, message):
         logging.info(message)
         with threading.Lock():

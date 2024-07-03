@@ -20,15 +20,16 @@ from ct_monitor import Monitor
 
 class ChromTroller:
     def __init__(self):
-        # Setup Log
-        self._setup_logging()
         # Set path for saving the RunLog data
-        self.run_log_file_path = self.set_run_log_save_path()
+        self.run_log_file_path = None
         # Set path to the results directory. TODO path set by OpenLabs CDS, Find a way to link CT and OL.
         self.results_dir_path = r"C:\Users\obayley\Platform_Data\Dummy_results_dir"
+        # Setup Log
+        self._setup_logging()
 
         # List of 'RunLog' objects. Shared by ct programs (and treads)
         self.run_log_list = []
+
         # Lock for thread safety
         self.lock = threading.Lock()
         # Start thread for monitoring log queue and logging
@@ -47,8 +48,8 @@ class ChromTroller:
         self.client_socket = None
 
     # -----Init Methods START-----
-    @staticmethod
-    def _setup_logging():
+
+    def _setup_logging(self):
         """ Sets log format and file destination """
         # Set path to the 'logs' directory.
         root_dir_path = os.path.dirname(os.path.abspath(__file__))
@@ -58,7 +59,7 @@ class ChromTroller:
         os.makedirs(log_dir_path, exist_ok=True)
 
         # Set the log file name
-        date_str = datetime.now().strftime("%d-%m-%Y-%H-%M-%S")
+        date_str = datetime.now().strftime("%H-%M-%S_%d-%m-%Y")
         log_file_name = f"ChromTroller_{date_str}_logfile.log"
         log_file_path = os.path.join(log_dir_path, log_file_name)
 
@@ -67,22 +68,13 @@ class ChromTroller:
             filename=log_file_path,
             level=logging.INFO,
             format=f'%(asctime)s - %(levelname)s - %(filename)s - %(message)s',
-            datefmt='%d-%m-%Y %H:%M:%S',
+            datefmt='%H-%M-%S_%d-%m-%Y ',
             filemode='w'  # w=write, a=append
         )
 
-    # --
-
-    @staticmethod
-    def set_run_log_save_path():
-        # Get dir path to general 'logs'
-        root_dir_path = os.path.dirname(os.path.abspath(__file__))
-        log_dir_path = os.path.join(root_dir_path, 'logs')
-        # Set the log file name
-        date_str = datetime.now().strftime("%d-%m-%Y-%H-%M-%S")
+        # Set pat for the Run Log Object Tracking
         log_file_name = f"RunLog_{date_str}.json"
-        # Set public var
-        return os.path.join(log_dir_path, log_file_name)
+        self.run_log_file_path = os.path.join(log_dir_path, log_file_name)
 
     # --
 
@@ -122,11 +114,10 @@ class ChromTroller:
     # -----Init Methods END-----
     # -----Management Methods START -----
 
-    def handle_command(self, client_data, client_socket):
+    def handle_command(self, received_dict):
         """Handles the CT specific commands sent by the client"""
 
         # Commands are sent as encoded json dicts in the format: {'command': com, 'data': data}
-        received_dict = json.loads(client_data.decode())
         command = received_dict['command']
         data = received_dict['data']
         logging.info(f"Command received: {command} with data: {data}")
@@ -142,21 +133,11 @@ class ChromTroller:
             case "add_reaction_conditions":
                 self.add_reaction_conditions(data)
             case 'start_hplc_run':
-                self.start_hplc_run(client_socket)
-
-            # case 'get_status':
-            #     run_log_obj = self.run_log_list[-1]
-            #     run_log_str = json.dumps(run_log_obj.to_dict())
-            #     client_socket.sendall(run_log_str.encode())
-            # case 'get_hplc_run_status':
-            #     status = self.run_log_obj.get_controller_status()
-            #     return status
-            # case 'start_data_analysis':
-            #     resp = self.analyser_obj.process_command(command)
-            #     return resp
-            # case 'get_data_analysis_status':
-            #     status = self.analyser_obj.get_status()
-            #     return status
+                return self.start_hplc_run()
+            case 'start_file_monitoring':
+                return self.start_file_monitoring()
+            case 'run_data_analysis':
+                return self.run_data_analysis()
 
     # -----Management Methods END-----
     # -----Action Methods START-----
@@ -177,42 +158,54 @@ class ChromTroller:
         with threading.Lock():
             self.run_log_list[-1].run_conditions = conditions_dict
 
-    def start_hplc_run(self, client_socket):
+    def start_hplc_run(self):
         result = self.lcms_controller_obj.run_analysis_cycle()
-        client_socket.sendall(result.encode())
-        client_socket.sendall("TERMINATE".encode())  # This is needed to close the client connection
-        time.sleep(0.7)  # delay for printig/sending time coordination
+        return result
+
+    def start_file_monitoring(self):
         self.monitor_obj.set_dir(self.results_dir_path)
         self.monitor_obj.start_monitoring()
 
+        # Get event trigger
+
+        self.monitor_obj.stop_monitoring()
+        print("Monitoring stopped.")
+        filename = "new_file.dx"
+        print(f"file found: {filename}")
+        return filename
+
+    def run_data_analysis(self):
+        ack = self.analyser_obj.run_calibration()
+        result_dict = self.analyser_obj.run_analysis()
+        print(f"result: {result_dict}")
+        return result_dict
+
+
+    # -----Async/Threaded Methods START-----
     def stream_updates(self):
         last_run_log = None
         last_run_log_length = 0
         while True:
             with self.lock:
-                current_run_log_length = len(self.run_log_list)
-                if current_run_log_length > last_run_log_length:
-                    # A new run has been added
-                    last_run_log = None  # Reset last_RunLog to None
-                    last_run_log_length = current_run_log_length
-
                 if self.run_log_list:
-                    latest_RunLog = self.run_log_list[-1]
-                    if latest_RunLog != last_run_log:
-                        if last_run_log:
-                            new_data_dict = self.get_diff_dict(latest_RunLog.controller, last_run_log.controller)
-                        else:
-                            new_data_dict = latest_RunLog.controller
-
-                        print(new_data_dict)
-                        if self.client_socket:
-                            try:
-                                self.client_socket.sendall(str(new_data_dict).encode())
-                            except OSError as e:
-                                logging.error(f"Error sending data: {e}")
-                                self.client_socket = None  # Set client_socket to None to avoid repeated attempts
-                        last_run_log = copy.deepcopy(latest_RunLog)
                     self.save_run_logs()
+                    # # Check if new RunLog added
+                    # if len(self.run_log_list) > last_run_log_length:
+                    #     last_run_log = None  # Reset last_RunLog to None
+                    #     last_run_log_length = len(self.run_log_list)
+                    #
+                    # # Get latest RunLog
+                    # latest_RunLog = self.run_log_list[-1]
+                    #
+                    # # Check if any controller info has changed
+                    # if latest_RunLog != last_run_log:
+                    #     if last_run_log:
+                    #         new_data_dict = self.get_diff_dict(latest_RunLog.controller, last_run_log.controller)
+                    #     else:
+                    #         new_data_dict = latest_RunLog.controller
+                    #     print(new_data_dict)
+                    #     # self.send_to_client(new_data_dict)
+                    #     last_run_log = copy.deepcopy(latest_RunLog)
 
             time.sleep(1)  # Check every second
 
@@ -234,10 +227,6 @@ class ChromTroller:
             # Write the list of run logs to the file
             json.dump(run_logs_dict, file, indent=4)
 
-    # -----Action Methods END-----
-    # -----Util Methods START -----
-
-    # -----Util Methods END -----
 
 
 if __name__ == "__main__":
