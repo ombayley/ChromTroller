@@ -27,7 +27,7 @@ class HPLCServerClient:
     def load_from_file():
         """Get sensitive info such as IP address/ports, etc... from json file"""
         # Set path to the private_connection_ids.json
-        path = os.path.join('utils', 'private_connection_ids.json')
+        path = os.path.join('../utils', 'private_connection_ids.json')
         try:
             if path:
                 with open(path, 'r') as file:

@@ -49,7 +49,7 @@ class Server:
         """ Sets log format and file destination """
         # Set path to the 'logs' directory.
         root_dir_path = os.path.dirname(os.path.abspath(__file__))
-        log_dir_path = os.path.join(root_dir_path, 'logs')
+        log_dir_path = os.path.join(root_dir_path, '../logs')
 
         # Ensure the logs directory exists
         os.makedirs(log_dir_path, exist_ok=True)
@@ -75,7 +75,7 @@ class Server:
         """Read in the (private) connection data. """
         try:
             if secure_id_file_path is None:
-                secure_id_file_path = os.path.join('utils', 'private_connection_ids.json')
+                secure_id_file_path = os.path.join('../utils', 'private_connection_ids.json')
             with open(secure_id_file_path, 'r') as ids_file:
                 config = json.load(ids_file)
                 logging.info("Server loaded connection ids from .json file successfully")

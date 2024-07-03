@@ -15,7 +15,7 @@ class HPLCServerClient:
 
     def __init__(self):
         # Set path to the private_connection_ids.json
-        path_to_private_keys = os.path.join('utils', 'private_connection_ids.json')
+        path_to_private_keys = os.path.join('../utils', 'private_connection_ids.json')
         # Get connection info from private_connection_ids.json
         self.ids_file = self.load_file(path_to_private_keys)
         # Make socket

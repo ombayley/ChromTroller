@@ -1,4 +1,4 @@
-name: LCMS_server
+name: ChromTroller_env
 channels:
   - conda-forge
   - defaults
@@ -27,4 +27,4 @@ dependencies:
       - pyserial==3.5
       - pyyaml==6.0.1
       - watchdog==4.0.0
-prefix: C:\Users\obayley\.conda\envs\LCMS_server
+prefix: C:\Users\obayley\.conda\envs\ChromTroller_env

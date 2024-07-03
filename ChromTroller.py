@@ -9,13 +9,12 @@ import threading
 import logging
 import json
 import time
-import copy
 from datetime import datetime
-from ct_server import Server
-from ct_controller import Controller
-from ct_analyser import Analyser
-from ct_runlog import RunLog
-from ct_monitor import Monitor
+from ct_classes.ct_server import Server
+from ct_classes.ct_controller import Controller
+from ct_classes.ct_analyser import Analyser
+from ct_classes.ct_runlog import RunLog
+from ct_classes.ct_monitor import Monitor
 
 
 class ChromTroller:
@@ -24,6 +23,8 @@ class ChromTroller:
         self.run_log_file_path = None
         # Set path to the results directory. TODO path set by OpenLabs CDS, Find a way to link CT and OL.
         self.results_dir_path = r"C:\Users\obayley\Platform_Data\Dummy_results_dir"
+        # Set path to the results directory. TODO path set by OpenLabs CDS, Find a way to link CT and OL.
+        self.analysis_info_dir_path = r"C:\Users\obayley\Platform_Data\Dummy_results_dir"
         # Setup Log
         self._setup_logging()
 
@@ -175,6 +176,8 @@ class ChromTroller:
         return filename
 
     def run_data_analysis(self):
+        # get react conc and compounds from runLog
+
         ack = self.analyser_obj.run_calibration()
         result_dict = self.analyser_obj.run_analysis()
         print(f"result: {result_dict}")

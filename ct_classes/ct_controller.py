@@ -61,7 +61,7 @@ class Controller:
         """ Sets log format and file destination """
         # Set path to the 'logs' directory.
         root_dir_path = os.path.dirname(os.path.abspath(__file__))
-        log_dir_path = os.path.join(root_dir_path, 'logs')
+        log_dir_path = os.path.join(root_dir_path, '../logs')
 
         # Ensure the logs directory exists
         os.makedirs(log_dir_path, exist_ok=True)
