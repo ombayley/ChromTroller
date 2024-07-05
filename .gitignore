@@ -1,5 +1,5 @@
 # Program Specific
-settings_files/socket_settings_private.json
+settings_files/socket_settings.json
 logs
 
 # Byte-compiled / optimized / DLL files
