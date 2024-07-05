@@ -10,7 +10,7 @@ import logging
 from datetime import datetime
 import threading
 import time
-from devices.lcms_device_dummy import LCMSDevice
+from ct_components.devices.lcms_device_dummy import LCMSDevice
 
 
 class Controller:

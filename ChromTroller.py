@@ -5,6 +5,7 @@ Author: O. Bayley
 Description: *Brief script description*.
 """
 import os
+import queue
 import threading
 import logging
 import json
@@ -30,6 +31,9 @@ class ChromTroller:
 
         # List of 'RunLog' objects. Shared by ct programs (and treads)
         self.run_log_list = []
+
+        # Queue for file monitor
+        self.file_mon_queue = queue.Queue()
 
         # Lock for thread safety
         self.lock = threading.Lock()
@@ -93,7 +97,10 @@ class ChromTroller:
 
     def init_monitor(self):
         try:
-            monitor = Monitor(path_to_results_dir=self.results_dir_path, run_log_list=self.run_log_list)
+            monitor = Monitor(path_to_results_dir=self.results_dir_path,
+                              run_log_list=self.run_log_list,
+                              file_mon_queue=self.file_mon_queue
+                              )
         except Exception as err:
             logging.error(f"Failed to connect to monitor: {err}")
             return None
@@ -166,18 +173,17 @@ class ChromTroller:
     def start_file_monitoring(self):
         self.monitor_obj.start_monitoring()
 
-        # Get event trigger!
+        filename = self.file_mon_queue.get()
 
-        self.monitor_obj.stop_monitoring()
-        print("Monitoring stopped.")
-        filename = "new_file.dx"
+
         print(f"file found: {filename}")
         return filename
 
     def run_data_analysis(self):
         # get react conc and compounds from runLog
-        ack = self.analyser_obj.run_calibration()
-        result_dict = self.analyser_obj.analysis()
+        ack = self.analyser_obj.calibrate()
+        print(ack)
+        result_dict = self.analyser_obj.analyse()
         print(f"result: {result_dict}")
         return result_dict
 

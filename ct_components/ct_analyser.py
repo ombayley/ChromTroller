@@ -171,6 +171,17 @@ class Analyser:
             .to_string(index=False)
         )
 
+        sample_row = results[results["Chromatogram"] == "sample"]
+
+        # Extract the Conversion and Yield values
+        if not sample_row.empty:
+            conv_value = sample_row["Conversion [%]"].values[0]
+            yield_value = sample_row["Yield [%]"].values[0]
+
+            # Create the dictionary
+            sample_dict = {"conv": conv_value, "yield": yield_value}
+            return sample_dict
+
     # -----Run Sequence END-----
     # -----Calibration Methods START-----
 

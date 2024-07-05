@@ -20,14 +20,15 @@ from watchdog.events import FileSystemEventHandler
 
 
 class Monitor(FileSystemEventHandler):
-    def __init__(self, path_to_results_dir, run_log_list):
+    def __init__(self, path_to_results_dir, run_log_list, file_mon_queue):
         super().__init__()
         self.monitor_thread = None
         self.observer = None
         self.is_running = False
         self.run_log_list = run_log_list
+        self.queue = file_mon_queue
 
-        self.results_dir = None
+        self.results_dir = path_to_results_dir
         self.data_file_tag = re.compile(r'\.dx$')
         self.prior_filename_list = []
         self.wait_time = 0.5  # Sleep time between checks. Default is 500ms.
@@ -74,6 +75,7 @@ class Monitor(FileSystemEventHandler):
         filename = os.path.basename(event.src_path)
         print(filename)
         if self.data_file_tag.search(filename) and filename not in self.prior_filename_list:
+            self.queue.put(filename)
             self.log_info(filename)
             self.stop_monitoring()
 

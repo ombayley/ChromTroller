@@ -75,7 +75,9 @@ class Server:
         """Read in the (private) connection data. """
         try:
             if secure_id_file_path is None:
-                secure_id_file_path = os.path.join('../utils', 'socket_settings.json')
+                project_path = os.path.dirname(os.path.dirname(__file__))
+                settings_path = os.path.join(project_path, 'settings_files')
+                secure_id_file_path = os.path.join(settings_path, 'socket_settings.json')
             with open(secure_id_file_path, 'r') as ids_file:
                 config = json.load(ids_file)
                 logging.info("Server loaded connection ids from .json file successfully")
