@@ -1,7 +1,7 @@
 import os
 import numpy as np
 
-from mocca2.classes import Data2D
+from ct_components.mocca2.classes import Data2D
 
 def parse_chemstation(path) -> Data2D:
     """

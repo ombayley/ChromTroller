@@ -4,7 +4,7 @@ from numpy.typing import NDArray
 
 import numpy as np
 
-from mocca2.serializing import dict_encoder
+from ct_components.mocca2.serializing import dict_encoder
 
 
 class Component:

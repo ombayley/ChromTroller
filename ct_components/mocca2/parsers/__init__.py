@@ -1,1 +1,1 @@
-# from ct_components.mocca2.parsers.wrapper import load_data2d
+from ct_components.mocca2.parsers.wrapper import load_data2d

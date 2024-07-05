@@ -1,6 +1,6 @@
 import numpy as np
 
-from mocca2.classes import Data2D
+from ct_components.mocca2.classes import Data2D
 
 def parse_labsolutions(path) -> Data2D:
     """Reads the .txt Lab Solutions file"""

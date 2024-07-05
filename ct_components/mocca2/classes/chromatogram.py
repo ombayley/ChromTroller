@@ -7,21 +7,21 @@ import matplotlib.axes
 import numpy as np
 import matplotlib
 
-from mocca2.classes import Data2D, Peak, DeconvolvedPeak, Component, Compound
-from mocca2 import parsers
-from mocca2.baseline import estimate_baseline
-from mocca2.peaks import find_peaks
-from mocca2.deconvolution.deconvolve import deconvolve_adaptive
-from mocca2.deconvolution.fit_peak_model import fit_peak_model
-from mocca2.deconvolution.nonnegative_lstsq import concentrations_from_spectra
-from mocca2.deconvolution.peak_models import (
+from ct_components.mocca2.classes import Data2D, Peak, DeconvolvedPeak, Component, Compound
+from ct_components.mocca2 import parsers
+from ct_components.mocca2.baseline import estimate_baseline
+from ct_components.mocca2.peaks import find_peaks
+from ct_components.mocca2.deconvolution.deconvolve import deconvolve_adaptive
+from ct_components.mocca2.deconvolution.fit_peak_model import fit_peak_model
+from ct_components.mocca2.deconvolution.nonnegative_lstsq import concentrations_from_spectra
+from ct_components.mocca2.deconvolution.peak_models import (
     PeakModel,
     Bemg,
     FraserSuzuki,
     BiGaussian,
     BiGaussianTailing,
 )
-from mocca2.serializing import dict_encoder
+from ct_components.mocca2.serializing import dict_encoder
 
 
 class Chromatogram(Data2D):

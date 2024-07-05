@@ -3,8 +3,8 @@ from numpy.typing import NDArray
 
 import numpy as np
 
-from mocca2.classes.component import Component
-from mocca2.classes.compound import Compound
+from ct_components.mocca2.classes.component import Component
+from ct_components.mocca2.classes.compound import Compound
 
 
 def cluster_components(

@@ -6,7 +6,7 @@ from scipy.ndimage import gaussian_filter  # type: ignore
 from scipy.signal import find_peaks  # type: ignore
 import numpy as np
 
-from mocca2.serializing import dict_encoder
+from ct_components.mocca2.serializing import dict_encoder
 
 
 class Compound:

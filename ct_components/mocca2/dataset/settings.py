@@ -3,7 +3,7 @@ from typing import Literal, Dict, Any
 from dataclasses import dataclass
 import yaml  # type: ignore
 
-from mocca2.serializing import dict_encoder
+from ct_components.mocca2.serializing import dict_encoder
 
 
 @dataclass(init=True)

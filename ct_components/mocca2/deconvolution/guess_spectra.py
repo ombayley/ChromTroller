@@ -5,8 +5,8 @@ from numpy.typing import NDArray
 import numpy as np
 from sklearn.cluster import SpectralClustering # type: ignore
 
-from mocca2.math import cosine_similarity
-from mocca2.peaks import find_peaks
+from ct_components.mocca2.math import cosine_similarity
+from ct_components.mocca2.peaks import find_peaks
 
 def guess_spectra(data: NDArray, n_compounds: int) -> NDArray:
     """

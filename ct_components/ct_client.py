@@ -15,7 +15,7 @@ class HPLCServerClient:
     """Simple client interface to send commands to the LCMS server"""
 
     def __init__(self):
-        # Get connection info from private_connection_ids.json or Sensitive_data.env
+        # Get connection info from socket_settings_private.json or Sensitive_data.env
         self.ids_dict = self.load_from_env()  # self.load_from_file()
         # Make socket
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -26,8 +26,8 @@ class HPLCServerClient:
     @staticmethod
     def load_from_file():
         """Get sensitive info such as IP address/ports, etc... from json file"""
-        # Set path to the private_connection_ids.json
-        path = os.path.join('../utils', 'private_connection_ids.json')
+        # Set path to the socket_settings_private.json
+        path = os.path.join('../utils', 'socket_settings_private.json')
         try:
             if path:
                 with open(path, 'r') as file:

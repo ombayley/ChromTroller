@@ -20,7 +20,7 @@ from watchdog.events import FileSystemEventHandler
 
 
 class Monitor(FileSystemEventHandler):
-    def __init__(self, run_log_list):
+    def __init__(self, path_to_results_dir, run_log_list):
         super().__init__()
         self.monitor_thread = None
         self.observer = None

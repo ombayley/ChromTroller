@@ -2,7 +2,7 @@ import argparse
 import tarfile
 import urllib.request
 from importlib import resources as impresources
-from mocca2 import example_data
+from ct_components.mocca2 import example_data
 
 
 def download_file(url, filename):

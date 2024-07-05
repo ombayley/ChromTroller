@@ -1,7 +1,7 @@
 from typing import List
 from numpy.typing import NDArray
 
-from mocca2.classes import Peak
+from ct_components.mocca2.classes import Peak
 
 
 def merge_overlapping_peaks(data: NDArray, peaks: List[Peak]) -> List[Peak]:

@@ -5,9 +5,9 @@ import numpy as np
 from scipy.signal import find_peaks as scipy_find_peaks  # type: ignore
 from scipy.ndimage import gaussian_filter  # type: ignore
 
-from mocca2.classes import Peak
-from mocca2.peaks import merge_overlapping_peaks
-from mocca2.peaks import split_peaks
+from ct_components.mocca2.classes import Peak
+from ct_components.mocca2.peaks import merge_overlapping_peaks
+from ct_components.mocca2.peaks import split_peaks
 
 
 def find_peaks(

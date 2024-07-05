@@ -2,8 +2,8 @@ from __future__ import annotations
 from typing import List, Any, Dict
 from numpy.typing import NDArray
 
-from mocca2.classes import Data2D
-from mocca2.serializing import dict_encoder
+from ct_components.mocca2.classes import Data2D
+from ct_components.mocca2.serializing import dict_encoder
 
 
 class Peak:

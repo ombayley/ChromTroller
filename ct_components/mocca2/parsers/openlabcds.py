@@ -10,7 +10,8 @@ import zipfile
 import struct
 import numpy as np
 import pandas as pd
-from ct_components.mocca2.parsers.utils import df_to_array, apply_filter, DxFileReader
+
+from ct_components.mocca2.classes import Data2D
 
 
 def tidy_df_openlab(dataframe, wl_high_pass=None, wl_low_pass=None):
@@ -58,9 +59,10 @@ def tidy_df_openlab(dataframe, wl_high_pass=None, wl_low_pass=None):
 
     return df
 
-def set_min_time_res (df, minimum_time):
+
+def set_min_time_res(df, minimum_time):
     df = df.reset_index().copy()
-    df. rename(columns={df.columns[0]: 'time'}, inplace=True)
+    df.rename(columns={df.columns[0]: 'time'}, inplace=True)
 
     # Create a new column 'rounded_time' which rounds the 'time' column to the nearest 0.001
     df['rounded_time'] = (df['time'] / minimum_time).round() * minimum_time
@@ -77,6 +79,68 @@ def set_min_time_res (df, minimum_time):
     return grouped_df
 
 
+def absorbance_to_array(df):
+    """
+    Generates a 2D absorbance array of the absorbance values.
+    """
+    absorbance_array = df.absorbance.to_numpy(). \
+        reshape(df.wavelength.nunique(), df.time.nunique())
+    return absorbance_array
+
+
+def df_to_array(df):
+    """
+    Takes a tidy dataframe of HPLC-DAD data and returns a numpy array of "
+    absorbance values as well as a vector for the time domain and a vector for "
+    the wavelength domain.
+    """
+    data = absorbance_to_array(df)
+    time = df.time.unique()
+    wavelength = df.wavelength.unique()
+    return data, time, wavelength
+
+
+def get_reference_signal(dataframe, bandwidth=5):
+    """
+    Returns the averaged signal over the last number of wavelengths as given by
+    the bandwidth.
+    """
+    df = dataframe.copy()
+    wls = df.wavelength.unique()[-bandwidth:]
+    signals = []
+    for wl in wls:
+        signal = list(df[df['wavelength'] == wl].absorbance)
+        signals.append(signal)
+    mean_signal = list(map(lambda x: sum(x) / len(x), zip(*signals)))
+    return pd.DataFrame({'absorbance': mean_signal})
+
+
+def apply_filter(dataframe, wl_high_pass, wl_low_pass, bandwidth=2,
+                 reference_wl=True):
+    """
+    Filters absorbance data of tidy 3D DAD dataframes to remove noise
+    and background systematic error.
+    """
+
+    df = dataframe.copy()
+    df['absorbance'] = df.groupby('time')['absorbance']. \
+        rolling(window=bandwidth + 1, center=True). \
+        mean().reset_index(0, drop=True)
+    df = df.dropna().reset_index(0, drop=True)
+    if reference_wl:
+        n_times = len(df.time.unique())
+        wls = df.wavelength.unique()
+        reference_df = get_reference_signal(df)
+        reference_series = reference_df.absorbance. \
+            iloc[np.tile(np.arange(n_times), len(wls))].reset_index(0, drop=True)
+        df['absorbance'] = df.absorbance - reference_series
+    if wl_high_pass:
+        df = df[df.wavelength >= wl_high_pass]
+    if wl_low_pass:
+        df = df[df.wavelength <= wl_low_pass]
+    return df
+
+
 def parse_openlabcds(path, wl_high_pass=None, wl_low_pass=None):
     """
     Chemstation read and processing function.
@@ -91,7 +155,8 @@ def parse_openlabcds(path, wl_high_pass=None, wl_low_pass=None):
     df = apply_filter(df, wl_high_pass, wl_low_pass)
     # print(df)
     data, time, wavelength = df_to_array(df)
-    return data, time, wavelength
+    return Data2D(time, wavelength, data)
+
 
 class DxFileReader:
     def get_uv_from_dx(self, dx_file_path):
@@ -401,6 +466,7 @@ class DxFileReader:
             return f.read(str_len)[::gap].decode().strip()
         except Exception:
             return ""
+
 
 # TODO: Remove once debugging complete
 if __name__ == '__main__':

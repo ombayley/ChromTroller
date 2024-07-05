@@ -5,9 +5,9 @@ import warnings
 
 import numpy as np
 
-from mocca2.classes import Data2D
-from mocca2.deconvolution.nonnegative_lstsq import concentrations_from_spectra, spectra_from_concentrations
-from mocca2.deconvolution.guess_spectra import guess_spectra
+from ct_components.mocca2.classes import Data2D
+from ct_components.mocca2.deconvolution.nonnegative_lstsq import concentrations_from_spectra, spectra_from_concentrations
+from ct_components.mocca2.deconvolution.guess_spectra import guess_spectra
 
 def alternating_lstsq(
         data: NDArray | Data2D,

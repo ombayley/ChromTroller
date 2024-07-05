@@ -13,4 +13,4 @@ The entire procedure is as follows:
 
 """
 
-from mocca2.deconvolution.deconvolve import deconvolve_adaptive, deconvolve_fixed
+from ct_components.mocca2.deconvolution.deconvolve import deconvolve_adaptive, deconvolve_fixed

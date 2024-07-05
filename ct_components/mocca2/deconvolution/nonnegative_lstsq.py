@@ -4,7 +4,7 @@ from numpy.typing import NDArray
 import numpy as np
 
 # from scipy.linalg import solve, LinAlgWarning
-from mocca2.deconvolution.nnls import nnls
+from ct_components.mocca2.deconvolution.nnls import nnls
 import warnings
 
 

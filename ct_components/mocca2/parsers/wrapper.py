@@ -1,9 +1,9 @@
 from typing import Literal
 
-from mocca2.classes import Data2D
-from mocca2.parsers.empower import parse_empower
-from mocca2.parsers.chemstation import parse_chemstation
-from mocca2.parsers.labsolutions import parse_labsolutions
+from ct_components.mocca2.classes import Data2D
+from ct_components.mocca2.parsers.empower import parse_empower
+from ct_components.mocca2.parsers.chemstation import parse_chemstation
+from ct_components.mocca2.parsers.labsolutions import parse_labsolutions
 from ct_components.mocca2.parsers.openlabcds import parse_openlabcds
 
 def load_data2d(path: str, format: Literal['auto', 'empower', 'chemstation', 'labsolutions'] = 'auto') -> Data2D:

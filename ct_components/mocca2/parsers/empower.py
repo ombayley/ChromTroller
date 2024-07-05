@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from mocca2.classes import Data2D
+from ct_components.mocca2.classes import Data2D
 
 def parse_empower(path) -> Data2D:
     """Reads the .arw empower file"""

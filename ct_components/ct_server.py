@@ -11,7 +11,7 @@ used/privileged ports for unix systems (avoid). Ports 49152-65535 are dynamic po
 operating system (avoid). Ports use an unsigned 16-bit integer so 65,535 is the max.
 
 The ports and IP addresses are sensitive info and are therefore stored and loaded from the
-private_connection_ids.json file in the utils directory which is not git tracked.
+socket_settings_private.json file in the utils directory which is not git tracked.
 """
 import socket
 import threading
@@ -75,7 +75,7 @@ class Server:
         """Read in the (private) connection data. """
         try:
             if secure_id_file_path is None:
-                secure_id_file_path = os.path.join('../utils', 'private_connection_ids.json')
+                secure_id_file_path = os.path.join('../utils', 'socket_settings_private.json')
             with open(secure_id_file_path, 'r') as ids_file:
                 config = json.load(ids_file)
                 logging.info("Server loaded connection ids from .json file successfully")

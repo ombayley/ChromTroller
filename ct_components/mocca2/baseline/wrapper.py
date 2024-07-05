@@ -7,10 +7,10 @@ import numpy as np
 
 from scipy.signal import savgol_filter # type: ignore
 
-from mocca2.baseline.arpls import arpls
-from mocca2.baseline.asls import asls
-from mocca2.baseline.flatfit import flatfit
-from mocca2.classes import Data2D
+from ct_components.mocca2.baseline.arpls import arpls
+from ct_components.mocca2.baseline.asls import asls
+from ct_components.mocca2.baseline.flatfit import flatfit
+from ct_components.mocca2.classes import Data2D
 
 
 def estimate_baseline(

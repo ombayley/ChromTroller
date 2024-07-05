@@ -4,8 +4,8 @@ from numpy.typing import NDArray
 
 import numpy as np
 
-from mocca2.classes import Peak, Component
-from mocca2.serializing import dict_encoder
+from ct_components.mocca2.classes import Peak, Component
+from ct_components.mocca2.serializing import dict_encoder
 
 
 class DeconvolvedPeak(Peak):

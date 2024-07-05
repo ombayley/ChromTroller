@@ -14,9 +14,9 @@ class HPLCServerClient:
     """Simple client interface to send commands to the LCMS server"""
 
     def __init__(self):
-        # Set path to the private_connection_ids.json
-        path_to_private_keys = os.path.join('../utils', 'private_connection_ids.json')
-        # Get connection info from private_connection_ids.json
+        # Set path to the socket_settings_private.json
+        path_to_private_keys = os.path.join('../utils', 'socket_settings_private.json')
+        # Get connection info from socket_settings_private.json
         self.ids_file = self.load_file(path_to_private_keys)
         # Make socket
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

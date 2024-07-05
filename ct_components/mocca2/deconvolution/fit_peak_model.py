@@ -9,12 +9,12 @@ from scipy.optimize import minimize  # type: ignore
 from scipy.signal import find_peaks  # type: ignore
 from scipy.signal import savgol_filter  # type: ignore
 
-from mocca2.deconvolution.peak_models import PeakModel
-from mocca2.deconvolution.nonnegative_lstsq import (
+from ct_components.mocca2.deconvolution.peak_models import PeakModel
+from ct_components.mocca2.deconvolution.nonnegative_lstsq import (
     concentrations_from_spectra,
     spectra_from_concentrations,
 )
-from mocca2.deconvolution.guess_spectra import guess_spectra
+from ct_components.mocca2.deconvolution.guess_spectra import guess_spectra
 
 
 def fit_peak_model(

@@ -3,9 +3,9 @@ from numpy.typing import NDArray
 
 import numpy as np
 
-from mocca2.deconvolution.nonnegative_lstsq import concentrations_from_spectra, spectra_from_concentrations
-from mocca2.deconvolution.fit_peak_model import fit_peak_model
-from mocca2.deconvolution.peak_models import PeakModel, BiGaussian, BiGaussianTailing, FraserSuzuki, Bemg
+from ct_components.mocca2.deconvolution.nonnegative_lstsq import concentrations_from_spectra, spectra_from_concentrations
+from ct_components.mocca2.deconvolution.fit_peak_model import fit_peak_model
+from ct_components.mocca2.deconvolution.peak_models import PeakModel, BiGaussian, BiGaussianTailing, FraserSuzuki, Bemg
 
 
 def deconvolve_adaptive(

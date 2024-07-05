@@ -93,7 +93,7 @@ class ChromTroller:
 
     def init_monitor(self):
         try:
-            monitor = Monitor(run_log_list=self.run_log_list)
+            monitor = Monitor(path_to_results_dir=self.results_dir_path, run_log_list=self.run_log_list)
         except Exception as err:
             logging.error(f"Failed to connect to monitor: {err}")
             return None
@@ -105,7 +105,7 @@ class ChromTroller:
     def init_analyser(self):
         """Initialise the analyser object"""
         try:
-            analyser = Analyser(run_log_list=self.run_log_list)
+            analyser = Analyser(data_dir_path=self.results_dir_path, run_log_list=self.run_log_list)
         except Exception as err:
             logging.error(f"Failed to connect to analyser: {err}")
             return None
@@ -164,10 +164,9 @@ class ChromTroller:
         return result
 
     def start_file_monitoring(self):
-        self.monitor_obj.set_dir(self.results_dir_path)
         self.monitor_obj.start_monitoring()
 
-        # Get event trigger
+        # Get event trigger!
 
         self.monitor_obj.stop_monitoring()
         print("Monitoring stopped.")
@@ -177,9 +176,8 @@ class ChromTroller:
 
     def run_data_analysis(self):
         # get react conc and compounds from runLog
-
         ack = self.analyser_obj.run_calibration()
-        result_dict = self.analyser_obj.run_analysis()
+        result_dict = self.analyser_obj.analysis()
         print(f"result: {result_dict}")
         return result_dict
 

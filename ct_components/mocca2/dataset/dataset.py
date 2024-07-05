@@ -8,13 +8,13 @@ from multiprocessing import Pool
 import pandas as pd  # type: ignore
 import numpy as np
 
-from mocca2.classes.chromatogram import Chromatogram
-from mocca2.classes.data2d import Data2D
-from mocca2.classes import Compound, Component
-from mocca2.dataset.settings import ProcessingSettings
-from mocca2.clustering.cluster_components import cluster_components
-from mocca2.math import cosine_similarity
-from mocca2.serializing import dict_encoder
+from ct_components.mocca2.classes.chromatogram import Chromatogram
+from ct_components.mocca2.classes.data2d import Data2D
+from ct_components.mocca2.classes import Compound, Component
+from ct_components.mocca2.dataset.settings import ProcessingSettings
+from ct_components.mocca2.clustering.cluster_components import cluster_components
+from ct_components.mocca2.math import cosine_similarity
+from ct_components.mocca2.serializing import dict_encoder
 
 
 class MoccaDataset:

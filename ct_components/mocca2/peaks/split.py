@@ -3,7 +3,7 @@ from numpy.typing import NDArray
 
 import numpy as np
 
-from mocca2.classes import Peak
+from ct_components.mocca2.classes import Peak
 
 def split_peaks(data: NDArray, peaks: List[Peak], max_height: float = 0.05) -> List[Peak]:
     """

@@ -1,5 +1,5 @@
 # Program Specific
-utils/private_connection_ids.json
+settings_files/socket_settings_private.json
 logs
 
 # Byte-compiled / optimized / DLL files

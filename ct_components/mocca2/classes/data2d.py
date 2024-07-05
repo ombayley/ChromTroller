@@ -7,7 +7,7 @@ from scipy.interpolate import interp1d
 import matplotlib
 from matplotlib import pyplot as plt
 
-from mocca2.serializing import dict_encoder
+from ct_components.mocca2.serializing import dict_encoder
 
 
 class Data2D:
