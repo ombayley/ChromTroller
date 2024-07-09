@@ -1,4 +1,4 @@
-name: LCMS_server
+name: ChromTroller
 channels:
   - conda-forge
   - defaults
