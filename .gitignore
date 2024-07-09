@@ -1,6 +1,7 @@
 # Program Specific
 settings_files/socket_settings.json
 logs
+*.pkl
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
