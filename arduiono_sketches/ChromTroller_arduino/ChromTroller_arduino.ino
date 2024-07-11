@@ -21,6 +21,7 @@
     8     | READ_ONLY   | INT[1]      | Read  'READY'         [ERI Remote Pin #3]. Active = high. Read system status to check if it is ready for next analysis. TODO have constant monitor to check if achieved and reset upon submit
     9     | COMMAND     | NONE        | Send 'Calibrate' command to phase sensor
     10    | READ_ONLY   | FLOAT       | Read phase sensor output
+    11    | READ_ONLY   | FLOAT       | Read power state of LCMS
   
  Error codes:
    type  |  description | value
@@ -285,21 +286,21 @@ void parse_serial(){
     int int_response = 3;  // Default response is error
 
 		if (command == 'R' || command == 'r'){  // Comands to READ and return info to caller
-			// Read variable
-			variable_number = Serial.parseInt();
-			switch (variable_number){
-				case 1:
-					// Device identifier
-					Serial.println(device_id);
-					break;
-				case 2:
-					// Error register
-					Serial.print(error_type);
-					Serial.print('-');
-					Serial.println(error_value);
-					error_type = ERROR_NO_ERROR;
-					error_value = 0;
-					break;
+        // Read variable
+        variable_number = Serial.parseInt();
+        switch (variable_number){
+        case 1:
+            // Device identifier
+            Serial.println(device_id);
+            break;
+        case 2:
+            // Error register
+            Serial.print(error_type);
+            Serial.print('-');
+            Serial.println(error_value);
+            error_type = ERROR_NO_ERROR;
+            error_value = 0;
+            break;
         case 5:
           // Valve position
           int_response = read_valve_pos();
@@ -321,14 +322,16 @@ void parse_serial(){
 					error_value = variable_number;
 					break;
 			}
-
-// TODO you can check for errors and set the global variables here
-//			if (Gpio_pin::error != GPIO_ERROR_OK)
-//			{
-//				error_type = ERROR_PIN;
-//				error_value = Gpio_pin::error;
-//				Gpio_pin::error = GPIO_ERROR_OK;
-//			}
+        case 11:
+          // LCMS power state
+          int_response = digitalRead(POWER_ON_PIN);
+          Serial.println(int_response);
+        break;
+        case 12:
+          // LCMS START Signal state
+          int_response = digitalRead(START_SIGNAL_PIN);
+          Serial.println(int_response);
+        break;
 
 		}
 		else if (command == 'S' || command == 's'){  // Comands to SEND 
@@ -403,22 +406,30 @@ void setup()
 {
 	// Load stored values from EEPROM
 	load_defaults();
-	
-	// Initialize LCMS Trigger Pins
+
+  // Initialize LCMS Trigger Pins
+  // Read Pins
+  pinMode(READY_SIGNAL_PIN, INPUT);
+  pinMode(POWER_ON_PIN, INPUT);
+  pinMode(EMERGENCY_SHUT_DOWN_PIN, INPUT);
+  pinMode(START_SIGNAL_PIN, INPUT);
+  pinMode(PREPARE_SIGNAL_PIN, INPUT);
+  //Write Pins
   pinMode(START_REQUEST_SIGNAL_PIN, OUTPUT);
   digitalWrite(START_REQUEST_SIGNAL_PIN, HIGH);  // Set to LCMS defaults on startup to prevent triggering upon conection init
   pinMode(STOP_SIGNAL_PIN, OUTPUT);
   digitalWrite(STOP_SIGNAL_PIN, HIGH);           // Set to LCMS defaults on startup to prevent triggering upon conection init
-  pinMode(READY_SIGNAL_PIN, INPUT);
-  digitalWrite(READY_SIGNAL_PIN, HIGH);           // Set to LCMS defaults on startup to prevent triggering upon conection init
 
   // Initialize Switch Pins
+  // Read Pins
+  pinMode(VALVE_A_IN_PIN, INPUT);
+  pinMode(VALVE_B_IN_PIN, INPUT);
+  // Write Pins
   pinMode(VALVE_A_OUT_PIN, OUTPUT);
   digitalWrite(VALVE_A_OUT_PIN, LOW);  // Set valve to Position A upon startup
   pinMode(VALVE_B_OUT_PIN, OUTPUT);
   digitalWrite(VALVE_B_OUT_PIN, HIGH); // Set valve to Position A upon startup
-  pinMode(VALVE_A_IN_PIN, INPUT);
-  pinMode(VALVE_B_IN_PIN, INPUT);
+
 
   // Initialize Phase Sensor Pins
   pinMode(PHASE_SENSOR_OUT_A_PIN, INPUT);

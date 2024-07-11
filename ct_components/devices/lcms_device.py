@@ -44,7 +44,7 @@ class LCMSDevice(ArduinoDevice):
             self.send_command("s4")
             return self.read_response()
 
-    def read_valve_pos(self) -> str:
+    def get_valve_pos(self) -> str:
         """Requests the vale position from the Arduino and returns the current position"""
         with self.lock:
             self.send_command("r5")
@@ -101,6 +101,17 @@ class LCMSDevice(ArduinoDevice):
         """Requests the phase sensor signal from the Arduino"""
         with self.lock:
             self.send_command("r10")
+            return self.read_response()
+
+    def get_power_sate(self) -> str:
+        """Requests the LCMS 'POWER' signal state from the Arduino"""
+        with self.lock:
+            self.send_command("r11")
+            return self.read_response()
+
+    def get_start_signal(self) -> str:
+        with self.lock:
+            self.send_command("r12")
             return self.read_response()
 
     def set_phase_sensor_value(self, status: bool):

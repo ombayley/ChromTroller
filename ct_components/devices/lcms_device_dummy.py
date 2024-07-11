@@ -32,7 +32,7 @@ class LCMSDevice:
         with self.lock:
             return 'factory reset called'
 
-    def read_valve_pos(self) -> str:
+    def get_valve_pos(self) -> str:
         """Requests the vale position from the Arduino and returns the current position"""
         with self.lock:
             return self.dummy_valve_position
@@ -75,6 +75,16 @@ class LCMSDevice:
         """Requests the phase sensor to be calibrated. Returns the standard acknowledge"""
         with self.lock:
             return 'k'
+
+    def get_power_sate(self) -> str:
+        """Requests the LCMS 'POWER' signal state from the Arduino"""
+        with self.lock:
+            return '1'
+
+    def get_start_signal(self) -> str:
+        """Requests the LCMS 'POWER' signal state from the Arduino"""
+        with self.lock:
+            return '1'
 
     def read_phase_sensor(self) -> str:
         """Requests the phase sensor signal from the Arduino"""

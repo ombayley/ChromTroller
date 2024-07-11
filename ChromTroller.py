@@ -33,7 +33,7 @@ class ChromTroller:
         self.run_log_list = []
 
         # Queue for file monitor
-        self.file_mon_queue = queue.Queue()
+        self.file_monitor_queue = queue.Queue()
 
         # Lock for thread safety
         self.lock = threading.Lock()
@@ -99,7 +99,7 @@ class ChromTroller:
         try:
             monitor = Monitor(path_to_results_dir=self.results_dir_path,
                               run_log_list=self.run_log_list,
-                              file_mon_queue=self.file_mon_queue
+                              file_mon_queue=self.file_monitor_queue
                               )
         except Exception as err:
             logging.error(f"Failed to connect to monitor: {err}")
@@ -173,7 +173,7 @@ class ChromTroller:
     def start_file_monitoring(self):
         self.monitor_obj.start_monitoring()
 
-        filename = self.file_mon_queue.get()
+        filename = self.file_monitor_queue.get()
 
 
         print(f"file found: {filename}")
