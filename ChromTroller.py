@@ -21,19 +21,21 @@ from ct_components.ct_monitor import Monitor
 class ChromTroller:
     def __init__(self):
         # Set path for saving the RunLog data
-        self.run_log_file_path = None
+        self.run_log_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'logs')
         # Set path to the results directory. TODO path set by OpenLabs CDS, Find a way to link CT and OL.
-        self.results_dir_path = r"C:\Users\obayley\Platform_Data\Dummy_results_dir"
-        # Set path to the results directory. TODO path set by OpenLabs CDS, Find a way to link CT and OL.
-        self.analysis_info_dir_path = r"C:\Users\obayley\Platform_Data\Dummy_results_dir"
+        self.results_data_dir_path = r"C:\Users\obayley\Platform_Data\Dummy_results_dir"
+        # Set path to the directory with the calibration data.
+        self.calib_data_dir_path = r"C:\Users\obayley\Platform_Data\Dummy_results_dir"
         # Setup Log
         self._setup_logging()
 
-        # List of 'RunLog' objects. Shared by ct programs (and treads)
+        # List of 'RunLog' objects.
         self.run_log_list = []
 
-        # Queue for file monitor
+        # Queues
+        self.controller_queue = queue.Queue()
         self.file_monitor_queue = queue.Queue()
+        self.analyser_queue = queue.Queue()
 
         # Lock for thread safety
         self.lock = threading.Lock()
@@ -53,8 +55,8 @@ class ChromTroller:
         self.client_socket = None
 
     # -----Init Methods START-----
-
-    def _setup_logging(self):
+    @staticmethod
+    def _setup_logging():
         """ Sets log format and file destination """
         # Set path to the 'logs' directory.
         root_dir_path = os.path.dirname(os.path.abspath(__file__))
@@ -79,17 +81,16 @@ class ChromTroller:
 
         # Set pat for the Run Log Object Tracking
         log_file_name = f"RunLog_{date_str}.json"
-        self.run_log_file_path = os.path.join(log_dir_path, log_file_name)
 
     # --
 
     def init_controller(self):
         """Initialise the controller object"""
         try:
-            controller = Controller(port='COM3', run_log_list=self.run_log_list)
+            controller = Controller(self.controller_queue)
         except Exception as err:
             logging.error(f"Failed to connect to controller: {err}")
-            return None
+            raise err
         logging.info("Successfully connected to instrument controller")
         return controller
 
@@ -97,13 +98,10 @@ class ChromTroller:
 
     def init_monitor(self):
         try:
-            monitor = Monitor(path_to_results_dir=self.results_dir_path,
-                              run_log_list=self.run_log_list,
-                              file_mon_queue=self.file_monitor_queue
-                              )
+            monitor = Monitor(self.file_monitor_queue)
         except Exception as err:
             logging.error(f"Failed to connect to monitor: {err}")
-            return None
+            raise err
         logging.info("Successfully connected to monitor")
         return monitor
 
@@ -112,10 +110,10 @@ class ChromTroller:
     def init_analyser(self):
         """Initialise the analyser object"""
         try:
-            analyser = Analyser(data_dir_path=self.results_dir_path, run_log_list=self.run_log_list)
+            analyser = Analyser(self.analyser_queue)
         except Exception as err:
             logging.error(f"Failed to connect to analyser: {err}")
-            return None
+            raise err
         logging.info("Successfully connected to analyser")
         return analyser
 
@@ -134,8 +132,8 @@ class ChromTroller:
         match command:
             case "new_run_name":
                 self.add_new_run_log(data)
-            case "set_run_conc":
-                self.set_run_conc(data)
+            case "add_run_conc":
+                self.add_run_conc(data)
             case "add_reagents":
                 self.add_reagents(data)
             case "add_reaction_conditions":
@@ -150,33 +148,37 @@ class ChromTroller:
     # -----Management Methods END-----
     # -----Action Methods START-----
     def add_new_run_log(self, name):
-        with threading.Lock():
+        with self.lock:
             new_log = RunLog(run_name=name)
             self.run_log_list.append(new_log)
 
-    def set_run_conc(self, conc):
-        with threading.Lock():
+    def add_run_conc(self, conc):
+        with self.lock:
             self.run_log_list[-1].run_conc = conc
 
     def add_reagents(self, reagent_list):
-        with threading.Lock():
+        with self.lock:
             self.run_log_list[-1].reagent_list = reagent_list
 
     def add_reaction_conditions(self, conditions_dict):
-        with threading.Lock():
+        with self.lock:
             self.run_log_list[-1].run_conditions = conditions_dict
 
     def start_hplc_run(self):
         result = self.lcms_controller_obj.run_analysis_cycle()
+        with self.lock:
+            self.run_log_list[-1].hplc_start = result
         return result
 
     def start_file_monitoring(self):
+        self.monitor_obj.set_dir(self.results_data_dir_path)
         self.monitor_obj.start_monitoring()
-
         filename = self.file_monitor_queue.get()
-
+        self.monitor_obj.stop_monitoring()
 
         print(f"file found: {filename}")
+        with self.lock:
+            self.run_log_list[-1].file = filename
         return filename
 
     def run_data_analysis(self):
@@ -185,45 +187,17 @@ class ChromTroller:
         print(ack)
         result_dict = self.analyser_obj.analyse()
         print(f"result: {result_dict}")
+        self.run_log_list[-1].analysis = result_dict
         return result_dict
 
-
     # -----Async/Threaded Methods START-----
+    # TODO save log post update. Make threaded method stream the ques back to the client socket as 'info'
     def stream_updates(self):
-        last_run_log = None
-        last_run_log_length = 0
         while True:
             with self.lock:
                 if self.run_log_list:
                     self.save_run_logs()
-                    # # Check if new RunLog added
-                    # if len(self.run_log_list) > last_run_log_length:
-                    #     last_run_log = None  # Reset last_RunLog to None
-                    #     last_run_log_length = len(self.run_log_list)
-                    #
-                    # # Get latest RunLog
-                    # latest_RunLog = self.run_log_list[-1]
-                    #
-                    # # Check if any controller info has changed
-                    # if latest_RunLog != last_run_log:
-                    #     if last_run_log:
-                    #         new_data_dict = self.get_diff_dict(latest_RunLog.controller, last_run_log.controller)
-                    #     else:
-                    #         new_data_dict = latest_RunLog.controller
-                    #     print(new_data_dict)
-                    #     # self.send_to_client(new_data_dict)
-                    #     last_run_log = copy.deepcopy(latest_RunLog)
-
             time.sleep(1)  # Check every second
-
-    def get_diff_dict(self, new_dict, old_dict):
-        diff_dict = {}
-        for key, value in new_dict.items():
-            if key not in old_dict:
-                diff_dict[key] = value
-            elif new_dict[key] != old_dict[key]:
-                diff_dict[key] = value
-        return diff_dict
 
     def save_run_logs(self):
         # Convert all RunLog objects to dictionaries
@@ -233,7 +207,6 @@ class ChromTroller:
         with open(self.run_log_file_path, 'w') as file:
             # Write the list of run logs to the file
             json.dump(run_logs_dict, file, indent=4)
-
 
 
 if __name__ == "__main__":

@@ -18,17 +18,12 @@ class Controller:
     """
     Initalise controller object.
     Args:
-        run_log_queue (queue): a shared Queue object for relaying information between CT and ct_controller
+        log_queue (Queue): a shared Queue object for relaying information between CT and ct_controller
     """
 
-    def __init__(self, run_log_list=None):
-        # Threadsafe logging
-        self.run_log_list = run_log_list
-        # Lock for thread safety
-        self.lock = threading.Lock()
-
-        # Setup Logging
-        self._setup_logging()
+    def __init__(self, log_queue):
+        # Shared queue with CT control program
+        self.log_queue = log_queue
         # Get hardware and timing settings
         self.hardware_settings = self.get_hardware_settings()
         # Create LCMSDevice object
@@ -53,30 +48,6 @@ class Controller:
             return hardware_settings
         except (FileNotFoundError, json.JSONDecodeError, PermissionError) as err:
             logging.error(err)
-
-    @staticmethod
-    def _setup_logging():
-        """ Sets log format and file destination """
-        # Set path to the 'logs' directory.
-        root_dir_path = os.path.dirname(os.path.abspath(__file__))
-        log_dir_path = os.path.join(root_dir_path, '../logs')
-
-        # Ensure the logs directory exists
-        os.makedirs(log_dir_path, exist_ok=True)
-
-        # Set the log file name
-        date_str = datetime.now().strftime("%d-%m-%Y--%H-%M-%S")
-        log_file_name = f"ChromTroller_{date_str}_logfile.log"
-        log_file_path = os.path.join(log_dir_path, log_file_name)
-
-        # Set up logging configuration
-        logging.basicConfig(
-            filename=log_file_path,
-            level=logging.INFO,
-            format=f'%(asctime)s - %(levelname)s - %(filename)s - %(message)s',
-            datefmt='%d-%m-%Y %H:%M:%S',
-            filemode='w'  # w=write, a=append
-        )
 
     def init_device(self):
         """
@@ -160,11 +131,11 @@ class Controller:
 
             # Report triggering success
             self.log_info({'analysis_cycle_started': 'SUCCESS'})
-            return 'HPLC: SUCCESS'
+            return 'SUCCESS'
 
         except Exception as error:
             self.log_info({'analysis_cycle_started': 'FAIL', 'cause': error})
-            return f'HPLC: FAILED - {error}'
+            return f'FAILED - {error}'
 
     # ----- Analysis Method END -----
     # ----- Compound Command Methods START -----
@@ -280,8 +251,7 @@ class Controller:
     def log_info(self, message):
         logging.info(message)
         print(message)
-        with self.lock:
-            self.run_log_list[-1].controller.update(message)
+        self.log_queue.put(message)
 
     @staticmethod
     def check_ack(ack):

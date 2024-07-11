@@ -18,8 +18,6 @@ from ct_components.mocca2 import MoccaDataset, Chromatogram, ProcessingSettings
 
 class Analyser:
     def __init__(self, data_dir_path, run_log_list):
-        # Setup logging
-        self._setup_logging()
         # Set passed result dir as public var
         self.data_dir_path = self._set_data_dir(data_dir_path)
         # Get the shared run_log list (use thread lock when accessing!)
@@ -42,29 +40,6 @@ class Analyser:
         logging.info("Analyser Object Initialized Successfully")
 
     # -----Init Methods START-----
-    @staticmethod
-    def _setup_logging():
-        """ Sets log format and file destination """
-        # Set path to the 'logs' directory.
-        root_dir_path = os.path.dirname(os.path.abspath(__file__))
-        log_dir_path = os.path.join(root_dir_path, '../logs')
-
-        # Ensure the logs directory exists
-        os.makedirs(log_dir_path, exist_ok=True)
-
-        # Set the log file name
-        date_str = datetime.now().strftime("%d-%m-%Y--%H-%M-%S")
-        log_file_name = f"ChromTroller_analyser_{date_str}_logfile.log"
-        log_file_path = os.path.join(log_dir_path, log_file_name)
-
-        # Set up logging configuration
-        logging.basicConfig(
-            filename=log_file_path,
-            level=logging.INFO,
-            format=f'%(asctime)s - %(levelname)s - %(filename)s - %(message)s',
-            datefmt='%d-%m-%Y %H:%M:%S',
-            filemode='w'  # w=write, a=append
-        )
 
     def get_settings(self):
         sett_dict = self.analysis_json_data["analysis_settings"]

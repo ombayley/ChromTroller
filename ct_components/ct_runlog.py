@@ -14,7 +14,7 @@ class RunLog:
     run_conc: Optional[float] = field(default_factory=float)
     reagent_list: Optional[List] = field(default_factory=list)
     run_conditions: Optional[Dict] = field(default_factory=dict)
-    controller: Optional[Dict] = field(default_factory=dict)
+    hplc_start: Optional[str] = field(default_factory=str)
     file: Optional[str] = field(default_factory=str)
     analysis: Optional[Dict] = field(default_factory=dict)
 
@@ -24,7 +24,7 @@ class RunLog:
             'run_conc': self.run_conc,
             'reagent_list': self.reagent_list,
             'run_conditions': self.run_conditions,
-            'controller': self.controller,
+            'hplc_start': self.hplc_start,
             'file': self.file,
             'analysis': self.analysis
         }
@@ -37,6 +37,6 @@ class RunLog:
                 self.run_conc == other.run_conc and
                 self.reagent_list == other.reagent_list and
                 self.run_conditions == other.run_conditions and
-                self.controller == other.controller and
+                self.hplc_start == other.hplc_start and
                 self.file == other.file and
                 self.analysis == other.analysis)
