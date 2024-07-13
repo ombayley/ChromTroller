@@ -40,7 +40,7 @@ class ChromTroller:
         # Lock for thread safety
         self.lock = threading.Lock()
         # Start thread for monitoring log queue and logging
-        threading.Thread(target=self.stream_updates, daemon=True).start()
+        # threading.Thread(target=self.stream_updates, daemon=True).start()
 
         # Connect to the server
         self.server = Server(self)
@@ -148,56 +148,60 @@ class ChromTroller:
     # -----Management Methods END-----
     # -----Action Methods START-----
     def add_new_run_log(self, name):
-        with self.lock:
-            new_log = RunLog(run_name=name)
-            self.run_log_list.append(new_log)
+        new_log = RunLog(run_name=name)
+        self.run_log_list.append(new_log)
+        self.save_run_logs()
+        self.log_info(f"new run info object made with name: {name}")
 
     def add_run_conc(self, conc):
-        with self.lock:
-            self.run_log_list[-1].run_conc = conc
+        self.run_log_list[-1].run_conc = conc
+        self.save_run_logs()
+        self.log_info(f"conc: {conc} added to to run info")
 
     def add_reagents(self, reagent_list):
-        with self.lock:
-            self.run_log_list[-1].reagent_list = reagent_list
+        self.run_log_list[-1].reagent_list = reagent_list
+        self.save_run_logs()
+        self.log_info(f"reagents: {reagent_list} added to to run info")
 
     def add_reaction_conditions(self, conditions_dict):
-        with self.lock:
-            self.run_log_list[-1].run_conditions = conditions_dict
+        self.run_log_list[-1].run_conditions = conditions_dict
+        self.save_run_logs()
+        self.log_info(f"conditions: {conditions_dict} added to to run info")
 
     def start_hplc_run(self):
         result = self.lcms_controller_obj.run_analysis_cycle()
-        with self.lock:
-            self.run_log_list[-1].hplc_start = result
+        self.run_log_list[-1].hplc_start = result
+        self.save_run_logs()
+        self.log_info(f"HPLC initiation: {result}")
         return result
 
     def start_file_monitoring(self):
         self.monitor_obj.set_dir(self.results_data_dir_path)
         self.monitor_obj.start_monitoring()
         filename = self.file_monitor_queue.get()
+        self.log_info(f"file found: {filename}")
         self.monitor_obj.stop_monitoring()
-
-        print(f"file found: {filename}")
-        with self.lock:
-            self.run_log_list[-1].file = filename
+        self.run_log_list[-1].file = filename
+        self.save_run_logs()
+        self.log_info(f"new file found: {filename}")
         return filename
 
-    def run_data_analysis(self):
-        # get react conc and compounds from runLog
-        ack = self.analyser_obj.calibrate()
-        print(ack)
-        result_dict = self.analyser_obj.analyse()
-        print(f"result: {result_dict}")
-        self.run_log_list[-1].analysis = result_dict
-        return result_dict
+    def calib_analytical_camp(self):
+        self.analyser_obj.set_dirs(
+            results_data_path=self.results_data_dir_path,
+            calib_data_path=self.calib_data_dir_path
+        )
+        self.analyser_obj.reagents_to_calibrate = self.run_log_list[-1].reagent_list
+        ack = self.analyser_obj.prepare_camp()
+        self.log_info(f"Campaign analysis calibration: {ack}")
 
-    # -----Async/Threaded Methods START-----
-    # TODO save log post update. Make threaded method stream the ques back to the client socket as 'info'
-    def stream_updates(self):
-        while True:
-            with self.lock:
-                if self.run_log_list:
-                    self.save_run_logs()
-            time.sleep(1)  # Check every second
+    def run_data_analysis(self):
+        self.analyser_obj.set_expected_filename(self.run_log_list[-1].file)
+        result_dict = self.analyser_obj.analyse()
+        self.log_info(f"Analysis result: {result_dict}")
+        self.run_log_list[-1].analysis = result_dict
+        self.save_run_logs()
+        return result_dict
 
     def save_run_logs(self):
         # Convert all RunLog objects to dictionaries
@@ -207,6 +211,31 @@ class ChromTroller:
         with open(self.run_log_file_path, 'w') as file:
             # Write the list of run logs to the file
             json.dump(run_logs_dict, file, indent=4)
+
+    # -----Output streaming Methods START-----
+    # TODO implement client method to reccieve 'info' stream before using this
+    def stream_updates(self):
+        while True:
+            if not self.controller_queue.empty():
+                self.server.send_to_client(
+                    client_socket=self.client_socket,
+                    data=self.controller_queue.get(),
+                    data_type='info')
+            if not self.analyser_queue.empty():
+                self.server.send_to_client(
+                    client_socket=self.client_socket,
+                    data=self.analyser_queue.get(),
+                    data_type='info')
+            time.sleep(1)  # Check every second
+
+    # -----Output streaming Methods END-----
+    # -----Util Methods START-----
+
+    def log_info(self, message):
+        logging.info(message)
+        print(message)
+
+    # -----Util Methods END-----
 
 
 if __name__ == "__main__":

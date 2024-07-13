@@ -7,7 +7,6 @@ and trigger complex behaviours.
 """
 import os
 import logging
-from datetime import datetime
 import threading
 import time
 import json
@@ -92,8 +91,9 @@ class Controller:
             self.check_ack(ack)
 
             attempt = 0
-            start_ack = "FAIL"
-            while attempt < 3:
+            max_attempts = 3
+            start_ack = "FAIL- HPLC not starting after 3 attempts"
+            while attempt < max_attempts:
                 # Send start analysis and check acknowledgement.
                 send_ack = self._send_start_request()
                 self.log_info({'send_start_signal': send_ack})
@@ -107,6 +107,7 @@ class Controller:
                     start_ack = "SUCCESS"
                     break
                 attempt += 1
+
             self.check_ack(start_ack)
 
             # Wait for start signal/sample prep completion from spectrometer (LCMS method must include this!)
@@ -135,7 +136,7 @@ class Controller:
 
         except Exception as error:
             self.log_info({'analysis_cycle_started': 'FAIL', 'cause': error})
-            return f'FAILED - {error}'
+            return f'FAIL - {error}'
 
     # ----- Analysis Method END -----
     # ----- Compound Command Methods START -----

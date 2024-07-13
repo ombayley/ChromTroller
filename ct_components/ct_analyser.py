@@ -6,48 +6,44 @@ Description: *Brief script description*.
 """
 import logging
 import os
-import threading
 import copy
 import json
 import pickle
 import time
-from datetime import datetime
 from glob import glob
 from ct_components.mocca2 import MoccaDataset, Chromatogram, ProcessingSettings
 
 
 class Analyser:
-    def __init__(self, data_dir_path, run_log_list):
-        # Set passed result dir as public var
-        self.data_dir_path = self._set_data_dir(data_dir_path)
-        # Get the shared run_log list (use thread lock when accessing!)
-        self.run_log_list = run_log_list
+    def __init__(self, queue):
+        self.queue = queue
+
         # Set default filenames and tags
         self.file_tags = self.set_default_file_tags()
         # Get settings data from settings json
         self.analysis_json_data = self.load_analysis_json()
         # Get current data
-        self.data_filenames_list = self.get_data_filenames()
+        self.data_filenames_list = None
+        self.update_data_filenames_list()
         # Get analysis settings
-        self.settings = self.get_settings()
-        # Set internal standard conc
-        self.istd_conc = 0
+        self.settings_obj = self.get_settings_obj()
+
+        self.calib_data_dirpath = None
+        self.results_data_dirpath = None
+        self.expected_filename = None
+        self.reagents_to_calibrate = None
+        self.istd_conc = self.analysis_json_data["internal_standard"]["conc"]
+
         # Create the MOCCA2 dataset for the campaign
         self.campaign = MoccaDataset()
+
         # fast_bkg skips the background time matching and just returns the first bkg
         self.fast_bkg = False
+
         # Log init completion
         logging.info("Analyser Object Initialized Successfully")
 
     # -----Init Methods START-----
-
-    def get_settings(self):
-        sett_dict = self.analysis_json_data["analysis_settings"]
-        logging.info(f"settings read from analysis json")
-        sett_obj = ProcessingSettings.from_dict(sett_dict)
-        logging.info(f"settings object created")
-        return sett_obj
-
     @staticmethod
     def set_default_file_tags() -> dict:
         """ Set default file naming and type tags used in campaign. """
@@ -56,17 +52,6 @@ class Analyser:
             "sample_tag": "sample",
             "data_file_type": ".dx"
         }
-
-    # ---
-
-    @staticmethod
-    def _set_data_dir(data_dir_path) -> str:
-        if not os.path.exists(data_dir_path):
-            e = f"No data directory found at: {data_dir_path}"
-            print(e)
-            logging.error(e)
-            raise FileNotFoundError(e)
-        return data_dir_path
 
     @staticmethod
     def load_analysis_json() -> dict:
@@ -82,47 +67,49 @@ class Analyser:
         except (FileNotFoundError, PermissionError, json.JSONDecodeError) as error:
             logging.error(f"Error: {error}")
 
-    # ---
+    def get_settings_obj(self):
+        sett_dict = self.analysis_json_data["analysis_settings"]
+        logging.info(f"settings read from analysis json")
+        sett_obj = ProcessingSettings.from_dict(sett_dict)
+        logging.info(f"settings object created")
+        return sett_obj
 
-    def get_data_filenames(self) -> list:
-
+    def update_data_filenames_list(self):
         data_file_type = self.file_tags.get("data_file_type")
-        data_files = glob(self.data_dir_path + "/*" + data_file_type)
+        data_files = glob(self.results_data_dirpath + "/*" + data_file_type)
         data_files = sorted(data_files)
-
-        if not data_files:
-            message = f"No {data_file_type} file type found in: {self.data_dir_path}"
-            print(message)
-            logging.info(message)
-            return []
         self.data_filenames_list = data_files
-        return data_files
+        if not data_files:
+            self.log_info(f"No {data_file_type} file type found in: {self.results_data_dirpath}")
+
+    def set_dirs(self, results_data_path, calib_data_path=None):
+        self.results_data_dirpath = results_data_path
+        if calib_data_path:
+            self.calib_data_dirpath = calib_data_path
+
+    def set_expected_filename(self, filename):
+        self.expected_filename = filename
 
     # -----Init Methods END----
     # -----Run Sequence START-----
-    def calibrate(self):
-        self.campaign = self.add_istd(self.campaign)
-        logging.info("istd added to campaign")
-        self.campaign = self.add_sm(self.campaign)
-        logging.info("sm added to campaign")
-        self.campaign = self.add_prod(self.campaign)
-        logging.info("prod added to campaign")
-        # save
-        self.save_calibration(self.campaign)
-        logging.info("calibration info saved")
+    def prepare_camp(self):
+        self.add_istd()
+        self.add_sm()
+        self.add_prod()
+        for reagent in self.reagents_to_calibrate:
+            self.add_reagent(reagent)
+        self.save_campaign()
         return 'SUCCESS'
 
     def analyse(self):
-        run_campaign = copy.deepcopy(self.campaign)
-        run_campaign = self.add_reagent(run_campaign, "additive_01")
-        run_campaign = self.add_latest_sample(run_campaign)
-        # Process the dataset
+        self.add_latest_sample()
         start_time = time.time()
-        run_campaign.process_all(self.settings, verbose=True, cores=12)
-        print(f"run complete after {time.time()-start_time} seconds")
-        self.save_analysis(run_campaign)
+        self.campaign.process_all(self.settings_obj, verbose=True, cores=12)
+        self.log_info(f"run complete after {time.time() - start_time} seconds")
+        self.save_campaign()
+
         # Get concentrations relative to the internal standard
-        results = run_campaign.get_relative_concentrations()[0][
+        results = self.campaign.get_relative_concentrations()[0][
             ["Chromatogram", "starting_material", "product"]
         ]
 
@@ -160,40 +147,22 @@ class Analyser:
     # -----Run Sequence END-----
     # -----Calibration Methods START-----
 
-    def add_istd(self, campaign):
-        self.istd_conc = self.analysis_json_data["internal_standard"]["conc"]
+    def add_istd(self):
+        """Add the data for the internal standard to the campaign. Must be present"""
         istd_name = self.analysis_json_data["internal_standard"]["name"]
+        istd_chrom = self.get_chromatogram_from_name(name=istd_name)
 
-        istd_file_path_list = self.find_sample_paths(name=istd_name)
-
-        if not istd_file_path_list:
-            message = f"No istd data found in: {self.data_filenames_list}"
-            print(message)
-            logging.info(message)
-            return
-        logging.info(f"istd file found {istd_file_path_list[-1]}")
-
-        bkg_file_path = self.find_closest_bkg_path(filename=istd_file_path_list[-1])
-        logging.info(f"background file found {bkg_file_path}")
-
-        istd_chrom = Chromatogram(
-            sample=istd_file_path_list[-1],
-            blank=bkg_file_path,
-            name=istd_name
-        )
-        logging.info('Chromatogram generated')
-
-        campaign.add_chromatogram(
+        self.campaign.add_chromatogram(
             chromatogram=istd_chrom,
             reference_for_compound=istd_name,
             istd_reference=True,
             compound_concentration=self.istd_conc,
             istd_concentration=self.istd_conc
         )
-        logging.info(f'istd chromatogram added to campaign - {istd_file_path_list[-1]}')
-        return campaign
+        logging.info(f'istd chromatogram added to campaign - {istd_chrom.sample_path}')
 
-    def add_sm(self, campaign):
+    def add_sm(self):
+        """Add the data for the starting material to the campaign"""
         sm_name = None
         conc_list = []
 
@@ -204,27 +173,17 @@ class Analyser:
                 break
 
         for conc in conc_list:
-            sm_file_path_list = self.find_sample_paths(name=sm_name, conc=conc)
-            if sm_file_path_list:
-                sm_file_path = sm_file_path_list[-1]  # use last in list in case sample run twice
-                bkg_file_path = self.find_closest_bkg_path(filename=sm_file_path)
-                sm_chrom = Chromatogram(
-                    sample=sm_file_path,
-                    blank=bkg_file_path,
-                    name=sm_name
-                )
-                campaign.add_chromatogram(
-                    chromatogram=sm_chrom,
-                    reference_for_compound="starting_material",
-                    compound_concentration=conc,
-                    istd_concentration=self.istd_conc
-                )
-                logging.info(f'sm chromatogram added to campaign - {sm_file_path_list[-1]}')
-            else:
-                logging.info(f'no data found for sm chromatogram')
-        return campaign
+            sm_chrom = self.get_chromatogram_from_name(name=sm_name, conc=conc)
+            self.campaign.add_chromatogram(
+                chromatogram=sm_chrom,
+                reference_for_compound="starting_material",
+                compound_concentration=conc,
+                istd_concentration=self.istd_conc
+            )
+            logging.info(f'sm chromatogram added to campaign - {sm_chrom.sample_path}')
 
-    def add_prod(self, campaign):
+    def add_prod(self):
+        """Add the data for the product to the campaign"""
         prod_name = None
         conc_list = []
 
@@ -235,27 +194,18 @@ class Analyser:
                 break
 
         for conc in conc_list:
-            prod_file_path_list = self.find_sample_paths(name=prod_name, conc=conc)
-            if prod_file_path_list:
-                prod_file_path = prod_file_path_list[-1]
-                bkg_file_path = self.find_closest_bkg_path(filename=prod_file_path)
-                prod_chrom = Chromatogram(
-                    sample=prod_file_path,
-                    blank=bkg_file_path,
-                    name=prod_name
-                )
-                campaign.add_chromatogram(
-                    chromatogram=prod_chrom,
-                    reference_for_compound="product",
-                    compound_concentration=conc,
-                    istd_concentration=self.istd_conc
-                )
-                logging.info(f'Prod chromatogram added to campaign - {prod_file_path_list[-1]}')
-            else:
-                logging.info(f'no data found for prod chromatogram')
-        return campaign
+            prod_chrom = self.get_chromatogram_from_name(name=prod_name, conc=conc)
+            self.campaign.add_chromatogram(
+                chromatogram=prod_chrom,
+                reference_for_compound="product",
+                compound_concentration=conc,
+                istd_concentration=self.istd_conc
+            )
+            logging.info(f'Prod chromatogram added to campaign - {prod_chrom.sample_path}')
 
-    def add_reagent(self, campaign, reagent_name):
+    def add_reagent(self, reagent_name):
+        """Add the data for the specific reagent to the campaign. the reagent must have
+         the raw data as well as an entry in the analysis calibration JSON"""
         reagent_name = reagent_name.replace(" ", "_").lower()
         conc_list = []
 
@@ -265,51 +215,83 @@ class Analyser:
                 break
 
         for conc in conc_list:
-            reag_file_path_list = self.find_sample_paths(name=reagent_name, conc=conc)
-            if reag_file_path_list:
-                reag_file_path = reag_file_path_list[-1]
-                bkg_file_path = self.find_closest_bkg_path(filename=reag_file_path)
-                reag_chrom = Chromatogram(
-                    sample=reag_file_path,
-                    blank=bkg_file_path,
-                    name=reagent_name
-                )
-                campaign.add_chromatogram(
-                    chromatogram=reag_chrom,
-                    reference_for_compound=reagent_name,
-                    compound_concentration=conc,
-                    istd_concentration=self.istd_conc
-                )
-                logging.info(f'reagent chromatogram added to campaign - {reag_file_path_list[-1]}')
-            else:
-                logging.info(f'no data found for reagent chromatogram')
-        return campaign
-
-    def add_latest_sample(self, campaign):
-        data_files = self.get_data_filenames()
-        name = self.file_tags["sample_tag"].replace(" ", "_").lower()
-        sample_files_list = [file for file in data_files if name in file.replace(" ", "_").lower()]
-        if sample_files_list:
-            sample_file_path = sample_files_list[-1]
-            bkg_file_path = self.find_closest_bkg_path(filename=sample_file_path)
-            reag_chrom = Chromatogram(
-                sample=sample_file_path,
-                blank=bkg_file_path,
-                name='sample'
-            )
-            campaign.add_chromatogram(
-                chromatogram=reag_chrom,
+            reagent_chrom = self.get_chromatogram_from_name(name=reagent_name, conc=conc)
+            self.campaign.add_chromatogram(
+                chromatogram=reagent_chrom,
+                reference_for_compound=reagent_name,
+                compound_concentration=conc,
                 istd_concentration=self.istd_conc
             )
-            logging.info(f'reagent chromatogram added to campaign - {sample_files_list[-1]}')
-        else:
-            logging.info(f'no same chromatogram data found')
-        return campaign
+            logging.info(f'reagent chromatogram added to campaign - {reagent_chrom.sample_path}')
 
     # -----Calibration Methods END-----
-    # -----Basic Task Methods START-----
+    # -----Run Methods START-----
 
-    def find_sample_paths(self, name, conc=None) -> list:
+    def add_latest_sample(self):
+        """Adds the most recent sample file to the campaign for analysis"""
+        latest_file = self.find_latest_sample()
+        if latest_file != self.expected_filename:
+            m = "WARNING - final sample file does no match the file identified by the file monitor"
+            logging.warning(m)
+            print(m)
+
+        if self.expected_filename:
+            sample_chrom = self.get_chromatogram_from_name(self.expected_filename)
+            self.log_info("chromatogram generated from monitor detected file")
+        else:
+            sample_chrom = self.get_chromatogram_from_name(latest_file)
+            self.log_info("chromatogram generated from latest_file")
+
+        self.campaign.add_chromatogram(
+            chromatogram=sample_chrom,
+            istd_concentration=self.istd_conc
+        )
+        self.log_info(f'reagent chromatogram added to campaign - {sample_chrom.sample_path}')
+
+    def add_all_samples(self):
+        """Adds the most recent sample file to the campaign for analysis"""
+        self.update_data_filenames_list()
+        name = self.file_tags["sample_tag"].replace(" ", "_").lower()
+        sample_files_list = [file for file in self.data_filenames_list if name in file.replace(" ", "_").lower()]
+        for sample in sample_files_list:
+            sample_chrom = self.get_chromatogram_from_name(sample)
+            self.campaign.add_chromatogram(
+                chromatogram=sample_chrom,
+                istd_concentration=self.istd_conc
+            )
+            self.log_info(f'reagent chromatogram added to campaign - {sample}')
+
+    # -----Run Methods END-----
+    # -----Basic Task Methods START-----
+    def get_chromatogram_from_name(self, name, conc=None):
+        """Returns a chromatogram object coressponding to the given name"""
+
+        sample_filepath = self.find_sample_path(name=name, conc=conc)
+        if not sample_filepath:
+            self.log_info(f"No data found in directory: {self.results_data_dirpath} for compound: {name}")
+            return
+        logging.info(f"file: {sample_filepath} found for compound: {name}")
+
+        bkg_file_path = self.get_bkg_path(filename=sample_filepath)
+        if not bkg_file_path:
+            self.log_info(f"No istd data found in directory: {self.results_data_dirpath}")
+            return
+        logging.info(f"background file found {bkg_file_path}")
+
+        chrom = Chromatogram(
+            sample=sample_filepath,
+            blank=bkg_file_path,
+            name=name
+        )
+        logging.info('Chromatogram generated')
+
+        return chrom
+
+    def find_sample_path(self, name, conc=None) -> str:
+        """
+        Finds the filepath for the sample matching the given name and concentration.
+        If multiple files are found that match the given name and conc, returns the most recent file.
+        """
         data_files = self.data_filenames_list  # self.get_data_filenames()
         name = name.replace(" ", "_").lower()
         sample_files_list = [file for file in data_files if name in file.replace(" ", "_").lower()]
@@ -318,65 +300,68 @@ class Analyser:
             conc = str(conc).replace(" ", "_").lower()
             sample_files_list = [file for file in sample_files_list if conc in file.replace(" ", "_").lower()]
 
-        return sample_files_list
+        return sample_files_list[-1]
 
-    def find_closest_bkg_path(self, filename) -> str:
-        ctime_sample = os.path.getctime(filename)
-        data_files = self.data_filenames_list  # self.get_data_filenames()
-        bkg = self.file_tags["bkg_tag"].replace(" ", "_").lower()
+    def get_bkg_path(self, filename) -> str:
+        """
+        Finds the file path to the relevant background file.
+        If fast_bkg is ON then it returns the first background file.
+        If fast_bkg is OFF it returns the bkg file reccorded closest in time to the sample of intrest
+        """
+        bkg_tag = self.file_tags["bkg_tag"].replace(" ", "_").lower()
 
-        # Ability to skip time matching
+        # SHORTER - returns the first background file in the file list
         if self.fast_bkg:
-            for file in data_files:
-                if bkg in file.replace(" ", "_").lower():
-                    return bkg
+            for file in self.data_filenames_list:
+                if bkg_tag in file.replace(" ", "_").lower():
+                    self.log_info(f"gradient file: {file} used for chromatogram background")
+                    return file
 
-        bkg_files_list = [file for file in data_files if bkg in file.replace(" ", "_").lower()]
+        # LONGER - returns the background file for the bkg closest in time to the sample of intrest
+        ctime_sample = os.path.getctime(filename)
+        self.update_data_filenames_list()
+        bkg_files_list = [file for file in self.data_filenames_list if bkg_tag in file.replace(" ", "_").lower()]
 
         if not bkg_files_list:
-            e = f"No background traces found in data"
-            print(e)
-            logging.error(e)
+            self.log_info("No background traces found in data")
             return ""
 
-        closest_bkg = bkg_files_list[0]
-        for bkg in bkg_files_list:
-            if abs(ctime_sample - os.path.getctime(bkg)) < abs(ctime_sample - os.path.getctime(closest_bkg)):
-                closest_bkg = bkg
+        closest_bkg = min(bkg_files_list, key=lambda file: abs(ctime_sample - os.path.getctime(file)))
 
         return closest_bkg
 
+    def find_latest_sample(self):
+        self.update_data_filenames_list()
+        name = self.file_tags["sample_tag"].replace(" ", "_").lower()
+        sample_files_list = [file for file in self.data_filenames_list if name in file.replace(" ", "_").lower()]
+        if sample_files_list:
+            return sample_files_list[-1]
+
+    # -----Basic Task Methods START-----
+    # -----Util Methods START-----
+
     @staticmethod
-    def save_calibration(campaign):
-        with open("calibration_campaign.pkl", "wb") as file:
+    def save_campaign(campaign):
+        with open("campaign.pkl", "wb") as file:
             pickle.dump(campaign, file)
 
     @staticmethod
-    def load_calibration():
-        with open("calibration_campaign.pkl", "rb") as file:
+    def load_campaign():
+        with open("campaign.pkl", "rb") as file:
             return pickle.load(file)
 
     @staticmethod
-    def save_analysis(campaign):
-        with open("analysis_campaign.pkl", "wb") as file:
-            pickle.dump(campaign, file)
-
-    @staticmethod
-    def load_analysis():
-        with open("analysis_campaign.pkl", "rb") as file:
-            return pickle.load(file)
-
-    # -----Basic Task Methods End-----
-
     def log_info(self, message):
         logging.info(message)
-        with threading.Lock():
-            self.run_log_list[-1].analysis = message
+        print(message)
+        # self.queue.put(message)
+
+    # -----Util Methods END-----
 
 
 if __name__ == "__main__":
     run_log_list = []
     data_dir_path = r"C:\Users\obayley\Platform_Data\Dummy_results_dir"
     analyser = Analyser(data_dir_path, run_log_list)
-    analyser.calibrate()
+    analyser.prepare_camp()
     analyser.analyse()

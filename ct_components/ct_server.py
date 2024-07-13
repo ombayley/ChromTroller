@@ -90,7 +90,7 @@ class Server:
                     # Info/Logging
                     denied_message = "Connection rejected. A client is already connected to the controller"
                     logging.info(denied_message)
-                    self._send_to_client(client_socket, denied_message, data_type='reply')  # update to handle 'info'
+                    self.send_to_client(client_socket, denied_message, data_type='reply')  # update to handle 'info'
                     print(denied_message)
 
                 # Connect any client with valid IP address
@@ -102,7 +102,7 @@ class Server:
                     date_str = datetime.now().strftime("%H:%M:%S_%d-%m-%Y")
                     connect_message = f"Client connected at {date_str}"
                     logging.info(connect_message)
-                    self._send_to_client(client_socket, connect_message, data_type='reply')  # update to handle 'info'
+                    self.send_to_client(client_socket, connect_message, data_type='reply')  # update to handle 'info'
                     print(connect_message)
 
                 # Reject any address not in the IP whitelist
@@ -112,7 +112,7 @@ class Server:
                     # Info/Logging
                     denied_message = f"Connection from {client_addr} rejected. IP not in IP list"
                     logging.info(denied_message)
-                    self._send_to_client(client_socket, denied_message, data_type='reply')  # update to handle 'info'
+                    self.send_to_client(client_socket, denied_message, data_type='reply')  # update to handle 'info'
                     print(denied_message)
 
             except socket.error as socket_error:
@@ -149,7 +149,7 @@ class Server:
 
                 # Send response back to client
                 if response:
-                    self._send_to_client(client_socket=client_socket, data=response, data_type='reply')
+                    self.send_to_client(client_socket=client_socket, data=response, data_type='reply')
                     logging.info(f"Response sent to client: {response}")
 
         except socket.error as socket_error:
@@ -160,7 +160,7 @@ class Server:
             self.ct_program.client_socket = None
 
     @staticmethod
-    def _send_to_client(client_socket, data, data_type='reply'):
+    def send_to_client(client_socket, data, data_type='reply'):
         try:
             message_dict = {'command': data_type, 'data': data}
             message = json.dumps(message_dict).encode()
