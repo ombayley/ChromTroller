@@ -19,6 +19,11 @@
         "relaxe_concs": true,
         "__classname__": "ProcessingSettings"
     },
+    "file_tags": {
+        "bkg_tag": "gradient",
+        "sample_tag": "sample",
+        "data_file_type": ".dx"
+    },
     "internal_standard": {
         "name": "Internal Standard",
         "conc": 0.02
