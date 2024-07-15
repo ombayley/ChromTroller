@@ -57,18 +57,18 @@ def get_current_state(device):
         user_in = input("state (a) or start_req (b) ?")
         if user_in == 'a':
             start_request = device.get_lcms_start()
-            stop = device.get_lcms_stop()
-            ready = device.get_lcms_ready()
-            power = device.get_lcms_power()
-            start = device.get_lcms_start()
-            prepare = device.get_lcms_prepare()
-
             print(f"start_request: {start_request}")
+            stop = device.get_lcms_stop()
             print(f"stop: {stop}")
+            ready = device.get_lcms_ready()
             print(f"ready: {ready}")
+            power = device.get_lcms_power()
             print(f"power: {power}")
+            start = device.get_lcms_start()
             print(f"start: {start}")
+            prepare = device.get_lcms_prepare()
             print(f"prepare: {prepare}")
+
         if user_in == 'b':
             print("START REQUEST - Sent")
             device.send_start_request()
