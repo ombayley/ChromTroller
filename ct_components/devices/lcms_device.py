@@ -91,6 +91,18 @@ class LCMSDevice(ArduinoDevice):
             self.send_command("r8")
             return self.read_response()
 
+    def check_lcms_power(self) -> str:
+        """Requests the LCMS 'READY' signal state from the Arduino"""
+        with self.lock:
+            self.send_command("r11")
+            return self.read_response()
+
+    def check_lcms_start(self) -> str:
+        """Requests the LCMS 'READY' signal state from the Arduino"""
+        with self.lock:
+            self.send_command("r12")
+            return self.read_response()
+
     def calibrate_phase_sensor(self) -> str:
         """Requests the phase sensor to be calibrated. Returns the standard acknowledge"""
         with self.lock:

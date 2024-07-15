@@ -22,6 +22,7 @@
     9     | COMMAND     | NONE        | Send 'Calibrate' command to phase sensor
     10    | READ_ONLY   | FLOAT       | Read phase sensor output
     11    | READ_ONLY   | FLOAT       | Read power state of LCMS
+    12    | READ_ONLY   | FLOAT       | Read start signal from the LCMS
   
  Error codes:
    type  |  description | value
@@ -321,7 +322,6 @@ void parse_serial(){
 					error_type = ERROR_SERIAL;
 					error_value = variable_number;
 					break;
-			}
         case 11:
           // LCMS power state
           int_response = digitalRead(POWER_ON_PIN);
@@ -332,6 +332,8 @@ void parse_serial(){
           int_response = digitalRead(START_SIGNAL_PIN);
           Serial.println(int_response);
         break;
+        
+			}
 
 		}
 		else if (command == 'S' || command == 's'){  // Comands to SEND 
