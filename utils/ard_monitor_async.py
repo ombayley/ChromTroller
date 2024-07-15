@@ -16,9 +16,9 @@ async def monitor_ouput_signals(device, executor):
     last_start_read = '0'
     loop = asyncio.get_event_loop()
     while True:
-        ready = await loop.run_in_executor(executor, device.check_lcms_ready)
-        power = await loop.run_in_executor(executor, device.check_lcms_power)
-        start = await loop.run_in_executor(executor, device.check_lcms_start)
+        ready = await loop.run_in_executor(executor, device.get_lcms_ready)
+        power = await loop.run_in_executor(executor, device.get_lcms_power)
+        start = await loop.run_in_executor(executor, device.get_lcms_start)
 
         if ready == '1' and last_ready_read == '0':
             print("READY line Activated")

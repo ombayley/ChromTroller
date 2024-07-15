@@ -10,6 +10,7 @@ by the program using this object).
 
 TODO implement a command table to match the arduino commands with the commands here!
 """
+import time
 from threading import Lock, Event
 from ct_components.devices.base_arduino_device import ArduinoDevice
 
@@ -23,6 +24,7 @@ class LCMSDevice(ArduinoDevice):
         self.load_detection_event = Event()
         self._phase_sensor_detects = False
         self.standard_acknowledge = 'k'
+        time.sleep(2)  # sleep a couple seconds upon init to ensure connection
 
     def get_id(self) -> str:
         """Requests the device ID from the Arduino and returns the output"""
@@ -85,22 +87,35 @@ class LCMSDevice(ArduinoDevice):
             self.send_command("s7")
             return self.read_response()
 
-    def check_lcms_ready(self) -> str:
+    def get_lcms_stop(self) -> str:
+        with self.lock:
+            self.send_command("r7")
+            reply = str(self.read_response())
+            return reply
+
+    def get_lcms_ready(self) -> str:
         """Requests the LCMS 'READY' signal state from the Arduino"""
         with self.lock:
             self.send_command("r8")
-            return self.read_response()
+            reply = str(self.read_response())
+            return reply
 
-    def check_lcms_power(self) -> str:
+    def get_lcms_power(self) -> str:
         """Requests the LCMS 'READY' signal state from the Arduino"""
         with self.lock:
             self.send_command("r11")
             return self.read_response()
 
-    def check_lcms_start(self) -> str:
+    def get_lcms_start(self) -> str:
         """Requests the LCMS 'READY' signal state from the Arduino"""
         with self.lock:
             self.send_command("r12")
+            return self.read_response()
+
+    def get_lcms_prepare(self) -> str:
+        """Requests the LCMS 'READY' signal state from the Arduino"""
+        with self.lock:
+            self.send_command("r13")
             return self.read_response()
 
     def calibrate_phase_sensor(self) -> str:
@@ -113,17 +128,6 @@ class LCMSDevice(ArduinoDevice):
         """Requests the phase sensor signal from the Arduino"""
         with self.lock:
             self.send_command("r10")
-            return self.read_response()
-
-    def get_power_sate(self) -> str:
-        """Requests the LCMS 'POWER' signal state from the Arduino"""
-        with self.lock:
-            self.send_command("r11")
-            return self.read_response()
-
-    def get_start_signal(self) -> str:
-        with self.lock:
-            self.send_command("r12")
             return self.read_response()
 
     def set_phase_sensor_value(self, status: bool):
