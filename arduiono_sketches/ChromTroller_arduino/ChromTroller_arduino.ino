@@ -413,8 +413,8 @@ void setup()
   // Read Pins
   pinMode(READY_SIGNAL_PIN, INPUT);
   pinMode(POWER_ON_PIN, INPUT);
-  pinMode(EMERGENCY_SHUT_DOWN_PIN, INPUT);
   pinMode(START_SIGNAL_PIN, INPUT);
+  pinMode(EMERGENCY_SHUT_DOWN_PIN, INPUT);
   pinMode(PREPARE_SIGNAL_PIN, INPUT);
   //Write Pins
   pinMode(START_REQUEST_SIGNAL_PIN, OUTPUT);

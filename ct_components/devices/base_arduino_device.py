@@ -41,7 +41,8 @@ class ArduinoDevice:
     def read_response(self) -> str:
         """Read response from Arduino. Thread lock included to allow multi-threading"""
         # with self.lock:
-        return self.connection.readline().decode().strip()
+        reply = self.connection.readline().decode().strip()
+        return reply
 
     def close(self):
         """Close the serial connection."""

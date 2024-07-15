@@ -10,19 +10,15 @@ from concurrent.futures import ThreadPoolExecutor
 from ct_components.devices.lcms_device import LCMSDevice
 
 
-def monitor_ouput_signals(device):
-    time.sleep(1)
+async def monitor_ouput_signals(device, executor):
     last_ready_read = '0'
     last_power_read = '0'
     last_start_read = '0'
-    print(f"starting ready state: {device.check_lcms_ready()}")
-    print(f"starting power state: {device.check_lcms_power()}")
-    print(f"starting start state: {device.check_lcms_start()}")
-
+    loop = asyncio.get_event_loop()
     while True:
-        ready = device.check_lcms_ready()
-        power = device.check_lcms_power()
-        start = device.check_lcms_start()
+        ready = await loop.run_in_executor(executor, device.check_lcms_ready)
+        power = await loop.run_in_executor(executor, device.check_lcms_power)
+        start = await loop.run_in_executor(executor, device.check_lcms_start)
 
         if ready == '1' and last_ready_read == '0':
             print("READY line Activated")
@@ -44,7 +40,10 @@ def monitor_ouput_signals(device):
             print("START line De-activated")
             last_start_read = '1'
 
+        await asyncio.sleep(0.01)
+
 
 if __name__ == "__main__":
     device = LCMSDevice(port='COM5')
-    monitor_ouput_signals(device)
+    executor = ThreadPoolExecutor(max_workers=3)
+    asyncio.run(monitor_ouput_signals(device, executor))
