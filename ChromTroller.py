@@ -21,7 +21,7 @@ from ct_components.ct_monitor import Monitor
 class ChromTroller:
     def __init__(self):
         # Set path for saving the RunLog data
-        self.run_log_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'logs')
+        self.run_log_file_path = None
         # Set path to the results directory. TODO path set by OpenLabs CDS, Find a way to link CT and OL.
         self.results_data_dir_path = r"C:\Users\obayley\Platform_Data\Dummy_results_dir"
         # Set path to the directory with the calibration data.
@@ -55,8 +55,8 @@ class ChromTroller:
         self.client_socket = None
 
     # -----Init Methods START-----
-    @staticmethod
-    def _setup_logging():
+
+    def _setup_logging(self):
         """ Sets log format and file destination """
         # Set path to the 'logs' directory.
         root_dir_path = os.path.dirname(os.path.abspath(__file__))
@@ -81,7 +81,8 @@ class ChromTroller:
 
         # Set pat for the Run Log Object Tracking
         log_file_name = f"RunLog_{date_str}.json"
-
+        log_file_path = os.path.join(log_dir_path, log_file_name)
+        self.run_log_file_path = log_file_path
     # --
 
     def init_controller(self):

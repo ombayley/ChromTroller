@@ -6,6 +6,7 @@ from ct_components.mocca2.parsers.chemstation import parse_chemstation
 from ct_components.mocca2.parsers.labsolutions import parse_labsolutions
 from ct_components.mocca2.parsers.openlabcds import parse_openlabcds
 
+
 def load_data2d(path: str, format: Literal['auto', 'empower', 'chemstation', 'labsolutions'] = 'auto') -> Data2D:
     """
     Loads empower/chemstation/labsolutions file, returns 2D data
@@ -38,7 +39,8 @@ def load_data2d(path: str, format: Literal['auto', 'empower', 'chemstation', 'la
         elif path.lower().endswith('.txt'):
             data = parse_labsolutions(path)
         else:
-            raise Exception("Unknown file format in load_data2D(), consider specifying the format instead of using `auto`")
+            raise Exception(
+                "Unknown file format in load_data2D(), consider specifying the format instead of using `auto`")
 
     elif format == 'openlabcds':
         data = parse_openlabcds(path)
@@ -50,8 +52,8 @@ def load_data2d(path: str, format: Literal['auto', 'empower', 'chemstation', 'la
         data = parse_labsolutions(path)
     else:
         raise Exception("Unknown file format in load_data2D()")
-        
-    assert data.data.shape[0] == data.wavelength.shape[0], 'Parsing raw data by load_data2D() yields inconsistent shapes'
-    assert data.data.shape[1] == data.time.shape[0], 'Parsing raw data by load_data2D() yields inconsistent shapes'
+
+    assert data.data.shape[0] == data.wavelength.shape[0], 'Parsing raw data yields inconsistent shapes - wavelength'
+    assert data.data.shape[1] == data.time.shape[0], 'Parsing raw data yields inconsistent shapes - time'
 
     return data

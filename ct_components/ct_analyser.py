@@ -64,8 +64,11 @@ class Analyser:
         self.save_campaign()
         return 'SUCCESS'
 
-    def analyse(self):
-        self.add_latest_sample()
+    def analyse(self, smpl_selection='latest'):
+        if smpl_selection == 'latest':
+            self.add_latest_sample()
+        else:
+            self.add_all_samples()
         start_time = time.time()
         self.campaign.process_all(self.settings_obj, verbose=True, cores=12)
         self.log_info(f"processing complete after {round(time.time() - start_time, 2)} seconds")
@@ -107,7 +110,7 @@ class Analyser:
             chrom = Chromatogram(sample=filepath, blank=bkg_filepath, name=name)
             self.campaign.add_chromatogram(
                 chromatogram=chrom,
-                reference_for_compound="starting_material",
+                reference_for_compound=name,
                 compound_concentration=conc,
                 istd_concentration=self.istd_conc
             )
@@ -125,7 +128,7 @@ class Analyser:
             chrom = Chromatogram(sample=filepath, blank=bkg_filepath, name=name)
             self.campaign.add_chromatogram(
                 chromatogram=chrom,
-                reference_for_compound="product",
+                reference_for_compound=name,
                 compound_concentration=conc,
                 istd_concentration=self.istd_conc
             )
@@ -273,7 +276,12 @@ class Analyser:
 
     def calulations_placeholder(self):
 
-        return self.campaign.get_relative_concentrations()
+        camp_dict = self.campaign.to_dict()
+        ints = self.campaign.get_integrals()
+        rel_ints = self.campaign.get_relative_integrals()
+        concs = self.campaign.get_concentrations()
+        rel_concs = self.campaign.get_relative_concentrations()
+        return ints, rel_ints, concs, rel_concs
 
         # Get concentrations relative to the internal standard
         results = self.campaign.get_relative_concentrations()[0][
@@ -368,7 +376,11 @@ if __name__ == "__main__":
     ack = analyser.prepare_camp()
     print(f"Campaign analysis calibration: {ack}")
     analyser.set_expected_filename("RoboChem Sample292024-06-07 07-42-09+02-00.dx")
-    res = analyser.analyse()
-    df = res[0]
-    df.to_csv(r"C:\Users\obayley\OneDrive - UvA\Desktop\run_result.csv")
-    print(f"Campaign analysis result: {res[0]}")
+    res = analyser.analyse(smpl_selection='all')
+    print(res)
+    # path = os.path.join(os.path.dirname(__file__), "campaign.json")
+    # with open(path, "w") as file:
+    #     json.dump(res, file, indent=4)
+    # df = res[0]
+    # df.to_csv(r"C:\Users\obayley\OneDrive - UvA\Desktop\run_result.csv")
+    # print(f"Campaign analysis result: {res[0]}")

@@ -33,162 +33,28 @@
             "Compound": "sm",
             "Role": "Starting Material",
             "Calibration Concs": [
-                0.1,
-                0.05,
-                0.02
+                0.1
             ]
         },
         {
             "Compound": "prod",
             "Role": "Product",
             "Calibration Concs": [
-                0.1,
-                0.05,
-                0.02
+                0.1
             ]
         },
         {
             "Compound": "additive_01",
             "Role": "Reagent",
             "Calibration Concs": [
-                0.1,
-                0.05,
-                0.02
+                0.1
             ]
         },
         {
             "Compound": "additive_02",
             "Role": "Reagent",
             "Calibration Concs": [
-                0.1,
-                0.05,
-                0.02
-            ]
-        },
-        {
-            "Compound": "additive_03",
-            "Role": "Reagent",
-            "Calibration Concs": [
-                0.1,
-                0.05,
-                0.02
-            ]
-        },
-        {
-            "Compound": "additive_04",
-            "Role": "Reagent",
-            "Calibration Concs": [
-                0.1,
-                0.05,
-                0.02
-            ]
-        },
-        {
-            "Compound": "additive_06",
-            "Role": "Reagent",
-            "Calibration Concs": [
-                0.1,
-                0.05,
-                0.02
-            ]
-        },
-        {
-            "Compound": "additive_09",
-            "Role": "Reagent",
-            "Calibration Concs": [
-                0.1,
-                0.05,
-                0.02
-            ]
-        },
-        {
-            "Compound": "additive_10",
-            "Role": "Reagent",
-            "Calibration Concs": [
-                0.1,
-                0.05,
-                0.02
-            ]
-        },
-        {
-            "Compound": "additive_11",
-            "Role": "Reagent",
-            "Calibration Concs": [
-                0.1,
-                0.05,
-                0.02
-            ]
-        },
-        {
-            "Compound": "additive_12",
-            "Role": "Reagent",
-            "Calibration Concs": [
-                0.1,
-                0.05,
-                0.02
-            ]
-        },
-        {
-            "Compound": "additive_13",
-            "Role": "Reagent",
-            "Calibration Concs": [
-                0.1,
-                0.05,
-                0.02
-            ]
-        },
-        {
-            "Compound": "additive_15",
-            "Role": "Reagent",
-            "Calibration Concs": [
-                0.1,
-                0.05,
-                0.02
-            ]
-        },
-        {
-            "Compound": "additive_16",
-            "Role": "Reagent",
-            "Calibration Concs": [
-                0.1,
-                0.05,
-                0.02
-            ]
-        },
-        {
-            "Compound": "additive_18",
-            "Role": "Reagent",
-            "Calibration Concs": [
-                0.1,
-                0.05,
-                0.02
-            ]
-        },
-        {
-            "Compound": "additive_20",
-            "Role": "Reagent",
-            "Calibration Concs": [
-                0.1,
-                0.05,
-                0.02
-            ]
-        },
-        {
-            "Compound": "additive_22",
-            "Role": "Reagent",
-            "Calibration Concs": [
-                0.1,
-                0.05,
-                0.02
-            ]
-        },
-        {
-            "Compound": "additive_23",
-            "Role": "Reagent",
-            "Calibration Concs": [
-                0.1,
-                0.05,
-                0.02
+                0.1
             ]
         }
     ]
