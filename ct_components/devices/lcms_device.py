@@ -156,3 +156,7 @@ class LCMSDevice(ArduinoDevice):
     def wait_for_phase_sensor(self):
         """Block until the loaded property is True."""
         self.load_detection_event.wait()
+
+if __name__ == "__main__":
+    dev = LCMSDevice(port="COM5")
+    dev.set_valve_pos("B")

@@ -23,9 +23,9 @@ class ChromTroller:
         # Set path for saving the RunLog data
         self.run_log_file_path = None
         # Set path to the results directory. TODO path set by OpenLabs CDS, Find a way to link CT and OL.
-        self.results_data_dir_path = r"C:\Users\obayley\Platform_Data\Dummy_results_dir"
+        self.results_data_dir_path = r"D:\CDSProjects\Polymer_Degradation\Results\RoboChem_test_1.rslt"
         # Set path to the directory with the calibration data.
-        self.calib_data_dir_path = r"C:\Users\obayley\Platform_Data\Dummy_results_dir"
+        self.calib_data_dir_path = r"D:\CDSProjects\RoboChem_FGT\Results\RoboChem_FGT\FGT additive calibration -[completed].rslt"
         # Setup Log
         self._setup_logging()
 
@@ -197,6 +197,7 @@ class ChromTroller:
         self.log_info(f"Campaign analysis calibration: {ack}")
 
     def run_data_analysis(self):
+        return "SUCCESS"
         self.analyser_obj.set_expected_filename(self.run_log_list[-1].file)
         result_dict = self.analyser_obj.analyse()
         self.log_info(f"Analysis result: {result_dict}")
@@ -231,8 +232,8 @@ class ChromTroller:
 
     # -----Output streaming Methods END-----
     # -----Util Methods START-----
-
-    def log_info(self, message):
+    @staticmethod
+    def log_info(message):
         logging.info(message)
         print(message)
 

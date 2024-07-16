@@ -5,7 +5,7 @@
     "sample_filling_position": "A",
     "sample_loading_position": "B",
     "sample_loop_fill_time": 5.0,
-    "valve_switching_time": 0.5,
+    "valve_switching_timeout": 10,
     "lcms_response_timeout": 20,
     "lcms_sample_prep_timeout": 300,
     "sample_detection_timeout": 1200,

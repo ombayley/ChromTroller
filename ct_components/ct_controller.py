@@ -10,7 +10,7 @@ import logging
 import threading
 import time
 import json
-from ct_components.devices.lcms_device_dummy import LCMSDevice
+from ct_components.devices.lcms_device import LCMSDevice
 
 
 class Controller:
@@ -110,20 +110,23 @@ class Controller:
 
             self.check_ack(start_ack)
 
+            time.sleep(5)
+
             # Wait for start signal/sample prep completion from spectrometer (LCMS method must include this!)
             self.log_info({'start_signal': 'WAITING'})
             ack = self._wait_on_lcms_start()
-            self.log_info({'start_request_acknowledged': ack})
+            self.log_info({'start_signal': ack})
             self.check_ack(ack)
 
             # Load from the switch valve.
+            self.log_info({'valve_switched_to_load': "INITIATED"})
             ack = self.switch_valve_to(self.hardware_settings["sample_loading_position"])
             self.log_info({'valve_switched_to_load': ack})
             self.check_ack(ack)
 
             # Wait for the sample loop to be flushed through
             self.log_info({'sample_loading': 'WAITING'})
-            time.sleep(self.hardware_settings["sample_loop_fill_time"])
+            time.sleep(self.hardware_settings["sample_loop_fill_time"]*5)
             self.log_info({'sample_loading': 'SUCCESS'})
 
             # Return to initial filling position
@@ -145,25 +148,29 @@ class Controller:
 
         # Check the arduino receives and sends data
         id_ack = self.lcms_device.get_id()
-        if id_ack is None:
-            return "FAIL - Error Communicating with the Arduino"
+        ard_conn = "FAIL"
+        if id_ack is not None:
+            ard_conn = "SUCCESS"
 
         # Check the switch valve is connected and in a valid state
         valve_pos_ack = self.lcms_device.get_valve_pos()
-        if valve_pos_ack not in ['A', 'B']:
-            return "FAIL - Error Communicating with the Switch Valve"
+        valve_conn = "FAIL"
+        if valve_pos_ack in ['A', 'B']:
+            valve_conn = "SUCCESS"
 
         # Check the phase sensor reads a valid value
         ps_ack = self.lcms_device.read_phase_sensor()
-        if ps_ack not in ['0', '1', '2']:
-            return "FAIL - Error Communicating with the Phase Sensor"
+        ps_conn = "FAIL"
+        if ps_ack in ['0', '1', '2']:
+            ps_conn = "SUCCESS"
 
         # Check LCMS Power state - Default POWER state '1' when device is on
-        lc_ack = self.lcms_device.get_power_sate()
-        if lc_ack != '1':
-            return "FAIL - Error Communicating with the UPLC-MS"
+        lc_ack = self.lcms_device.get_lcms_power()
+        lcms_conn = "FAIL"
+        if lc_ack == '1':
+            lcms_conn = "SUCCESS"
 
-        return "SUCCESS"
+        return {"Arduino": ard_conn, "Valve": valve_conn, "Phase_Sensor": ps_conn, "LCMS": lcms_conn}
 
     def check_filling_state(self):
         """Checks the switch valve is in the filling state"""
@@ -179,7 +186,7 @@ class Controller:
     def wait_for_sample(self):
         start_time = time.time()
         timeout = self.hardware_settings["sample_detection_timeout"]
-        while time.time() - start_time >= timeout:
+        while time.time() - start_time <= timeout:
             self.lcms_device.wait_for_phase_sensor()
             return "SUCCESS"
         return "FAIL - No sample detected at phase sensor before timeout"
@@ -201,7 +208,7 @@ class Controller:
         timeout = self.hardware_settings["lcms_response_timeout"]
         polling_time = 0.05
         start_time = time.time()
-        while time.time() - start_time > timeout:
+        while time.time() - start_time < timeout:
             initialization_ack = self.lcms_device.get_lcms_start_request()
             if initialization_ack == '0':  # - REQEST gets pulled down to '0' when called (default state is '1')
                 return "SUCCESS"
@@ -216,7 +223,7 @@ class Controller:
         timeout = self.hardware_settings["lcms_sample_prep_timeout"]
         polling_time = 0.05
         start_time = time.time()
-        while time.time() - start_time > timeout:
+        while time.time() - start_time < timeout:
             ready_state = self.lcms_device.get_lcms_start()
             if ready_state == '0':  # - START gets pulled down to '0' when called (default state is '1')
                 return "SUCCESS"
@@ -226,24 +233,18 @@ class Controller:
     def switch_valve_to(self, desired_position):
         """
         Set valve position and verify it switched. while loop allows check to occur 3 times.
-
         """
+        timeout = self.hardware_settings["valve_switching_timeout"]
+        polling_time = 0.1
+
         self.lcms_device.set_valve_pos(desired_position)
-        time.sleep(self.hardware_settings["valve_switching_time"])
-        pos = self.lcms_device.get_valve_pos()
-
-        if pos == desired_position:
-            return "SUCCESS"
-
-        # try the read valve position 2 more times to ensure it truely wasnt set
-        retest_count = 0
-        while retest_count < 2:
-            time.sleep(self.hardware_settings["valve_switching_time"])
+        start_time = time.time()
+        while time.time() - start_time < timeout:
             pos = self.lcms_device.get_valve_pos()
             if pos == desired_position:
                 return "SUCCESS"
-
-        return 'FAIL - Valve failed to switch to desired position'
+            time.sleep(polling_time)
+        return "FAIL - Valve failed to switch to desired position"
 
     # ----- Compound Command Methods START -----
     # -----Util Methods START-----
@@ -254,8 +255,8 @@ class Controller:
 
     @staticmethod
     def check_ack(ack):
-        if 'Fail' in ack:
-            raise ack
+        if 'FAIL' in str(ack):
+            raise Exception(ack)
 
     # -----Util Methods END-----
 

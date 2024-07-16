@@ -16,13 +16,14 @@
     3     | COMMAND     | NONE        | Save defaults.
     4     | COMMAND     | NONE        | Factory Reset.
     5     | READ/WRITE  | INT[0-1]    | Valve position. Sends acknowledge signal when done. (0=A, 1=B) 
-    6     | COMMAND     | NONE        | Send  'START REQUEST' [ERI Remote Pin #1]. Active = Low.  Request to start injection cycle. Receiver is the autosampler.
+    6     | READ/WRITE  | INT[0-1]    | Send  'START REQUEST' [ERI Remote Pin #1]. Active = Low.  Request to start injection cycle. Receiver is the autosampler.
     7     | COMMAND     | NONE        | Send  'STOP'          [ERI Remote Pin #2]. Active = Low.  Request to reach system ready state as soon as possible. Receiver is any module performing run-time_of_inj controlled activities.
     8     | READ_ONLY   | INT[1]      | Read  'READY'         [ERI Remote Pin #3]. Active = high. Read system status to check if it is ready for next analysis. TODO have constant monitor to check if achieved and reset upon submit
     9     | COMMAND     | NONE        | Send 'Calibrate' command to phase sensor
     10    | READ_ONLY   | FLOAT       | Read phase sensor output
     11    | READ_ONLY   | FLOAT       | Read power state of LCMS
     12    | READ_ONLY   | FLOAT       | Read start signal from the LCMS
+    13    | READ_ONLY   | FLOAT       | Read prepare signal from the LCMS
   
  Error codes:
    type  |  description | value
@@ -141,8 +142,8 @@ External Device Pinouts:
 // Valve Control Pins
 #define VALVE_A_IN_PIN 15  // Pin to to read valve position A (Vici Pin 3)
 #define VALVE_B_IN_PIN 16 // Pin to to read valve position B (Vici Pin 4)
-#define VALVE_A_OUT_PIN 13 // Pin to to set valve to position A (Vici Pin 5)
-#define VALVE_B_OUT_PIN 12 // Pin to to set valve to position B (Vici Pin 6)
+#define VALVE_A_OUT_PIN 17 // Pin to to set valve to position A (Vici Pin 5)
+#define VALVE_B_OUT_PIN 18 // Pin to to set valve to position B (Vici Pin 6)
 
 // Error codes (type)
 #define ERROR_NO_ERROR 0	  // No error.
