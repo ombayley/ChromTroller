@@ -7,7 +7,7 @@
     "sample_loop_fill_time": 5.0,
     "valve_switching_time": 0.5,
     "lcms_response_timeout": 20,
-    "lcms_sample_prep_time": 360,
+    "lcms_sample_prep_timeout": 300,
     "sample_detection_timeout": 1200,
     "empty_phase_sensor_value": "1",
     "full_phase_sensor_values": ["0", "2"],

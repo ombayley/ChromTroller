@@ -158,11 +158,10 @@ class Controller:
         if ps_ack not in ['0', '1', '2']:
             return "FAIL - Error Communicating with the Phase Sensor"
 
-        # Check LCMS Power state  # TODO make the LCMS communicate the Power status. Bypass this until ready
+        # Check LCMS Power state - Default POWER state '1' when device is on
         lc_ack = self.lcms_device.get_power_sate()
         if lc_ack != '1':
-            return "SUCCESS"
-            # return "FAIL - Error Communicating with the UPLC-MS"
+            return "FAIL - Error Communicating with the UPLC-MS"
 
         return "SUCCESS"
 
@@ -203,33 +202,32 @@ class Controller:
         polling_time = 0.05
         start_time = time.time()
         while time.time() - start_time > timeout:
-            ready_state = self.lcms_device.check_lcms_ready()
-            if ready_state == '1':
+            initialization_ack = self.lcms_device.get_lcms_start_request()
+            if initialization_ack == '0':  # - REQEST gets pulled down to '0' when called (default state is '1')
                 return "SUCCESS"
             time.sleep(polling_time)
-        # TODO make the LCMS communicate the acknowledge. Bypass this until ready
-        return "SUCCESS"
-        # return "FAIL - No acknowledgement from spectrometer within timeout"
+        return "FAIL - No sample prep initiation acknowledgement from spectrometer within timeout"
 
     def _wait_on_lcms_start(self):
         """
         Waits for the spectrometer to send the 'start' signal.
         This signal should be at the time of sample injection
         """
-        timeout = self.hardware_settings["lcms_sample_prep_time"]
+        timeout = self.hardware_settings["lcms_sample_prep_timeout"]
         polling_time = 0.05
         start_time = time.time()
         while time.time() - start_time > timeout:
-            ready_state = self.lcms_device.get_start_signal()
-            if ready_state == '1':
+            ready_state = self.lcms_device.get_lcms_start()
+            if ready_state == '0':  # - START gets pulled down to '0' when called (default state is '1')
                 return "SUCCESS"
             time.sleep(polling_time)
-        # TODO make the LCMS communicate the start. Bypass this until ready
-        return "SUCCESS"
-        # return "FAIL - No Start Signal Sent From Spectrometer Within Expected Sample Prep time"
+        return "FAIL - No Run start acknowledgement from spectrometer within timeout"
 
     def switch_valve_to(self, desired_position):
-        """Set valve position and verify it switched"""
+        """
+        Set valve position and verify it switched. while loop allows check to occur 3 times.
+
+        """
         self.lcms_device.set_valve_pos(desired_position)
         time.sleep(self.hardware_settings["valve_switching_time"])
         pos = self.lcms_device.get_valve_pos()
