@@ -78,6 +78,15 @@ class LCMSDevice(ArduinoDevice):
             self.send_command("s6")
             return self.read_response()
 
+    def get_lcms_start_request(self) -> str:
+        """
+        Ask Arduino to send 'START REQUEST' to the LCMS insrument. Returns Arduino
+        acknowledgement !NOT! LCMS acknowledgement.
+        """
+        with self.lock:
+            self.send_command("r6")
+            return self.read_response()
+
     def send_stop_signal(self) -> str:
         """
         Ask Arduino to send 'STOP' to the LCMS instrument. Returns Arduino

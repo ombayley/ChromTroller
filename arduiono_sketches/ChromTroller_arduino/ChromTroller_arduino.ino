@@ -307,6 +307,10 @@ void parse_serial(){
           int_response = read_valve_pos();
 					Serial.println(int_response);
 					break;
+        case 6:
+          // LCMS stop state
+          int_response = digitalRead(START_REQUEST_SIGNAL_PIN);
+          Serial.println(int_response);
         case 7:
           // LCMS stop state
           int_response = digitalRead(STOP_SIGNAL_PIN);
