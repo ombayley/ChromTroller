@@ -147,7 +147,7 @@ class Analyser:
             chrom = Chromatogram(sample=filepath, blank=bkg_filepath, name=name)
             self.campaign.add_chromatogram(
                 chromatogram=chrom,
-                reference_for_compound=reagent_name,
+                reference_for_compound=name,
                 compound_concentration=conc,
                 istd_concentration=self.istd_conc
             )
