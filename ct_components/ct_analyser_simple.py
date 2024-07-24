@@ -15,16 +15,14 @@ from ct_components.mocca2 import MoccaDataset, Chromatogram, ProcessingSettings
 
 
 class Analyser:
-    def __init__(self):
+    def __init__(self, results_dirpath):
 
         self.analysis_json_data = self.load_analysis_json()
-        self.file_tags = self.analysis_json_data["file_tags"]
         self.settings_obj = self.get_settings_obj()
-        self.istd_conc = self.analysis_json_data["internal_standard"]["conc"]
+        self.file_tags = self.analysis_json_data["file_tags"]
 
-        self.results_data_dirpath = None
-        self.reagents_to_calibrate = None
-        self.expected_filename = None
+        # Changing this to just be the sample_path
+        self.results_data_dirpath = results_dirpath
 
         self.fast_bkg = False
         self.campaign = MoccaDataset()
@@ -59,33 +57,37 @@ class Analyser:
 
     # -----Init Methods END----
     # -----Analysis Methods START-----
-    def add_latest_sample(self):
+    def main(self):
         """
-        Adds the most recent sample file to the campaign for analysis.
+        Central run method.
         """
-        latest_file = self.find_latest_sample(self.results_data_dirpath)
+        latest_file_path = self.find_latest_sample_path()
+        file_name = self.expected_filename
+        given_file_path = self.find_given_sample_path(file_name)
 
-        if latest_file != self.expected_filename:
-            m = "WARNING - latest sample file does no match the file identified by the file monitor"
-            logging.warning(m)
-            print(m)
-        if self.expected_filename:
-            file_name = self.expected_filename
-            self.log_info("chromatogram generated from monitor file")
-        else:
-            file_name = latest_file
-            self.log_info("chromatogram generated from last file in directory")
+        # if latest_file != self.expected_filename:
+        #     m = "WARNING - latest sample file does no match the file identified by the file monitor"
+        #     logging.warning(m)
+        #     print(m)
+        # if self.expected_filename:
+        #     file_name = self.expected_filename
+        #     self.log_info("chromatogram generated from monitor file")
+        # else:
+        #     file_name = latest_file
+        #     self.log_info("chromatogram generated from last file in directory")
 
-        sample_filepath = os.path.join(self.results_data_dirpath, file_name + self.file_tags["data_file_type"])
-        bkg_filepath = self.get_bkg_filepath(sample_filepath)
-        smpl_chrom = Chromatogram(sample=sample_filepath, blank=bkg_filepath, name='sample')
+        # sample_filepath = os.path.join(self.results_data_dirpath, file_name + self.file_tags["data_file_type"])
+
+        bkg_filepath = self.get_bkg_filepath(latest_file_path)
+        smpl_chrom = Chromatogram(sample=latest_file_path, blank=bkg_filepath, name='sample')
         self.process_chrom(smpl_chrom)
+        integrals = smpl_chrom.get_integrals()
         smpl_chrom.plot()
         plt.show()
 
-    def find_latest_sample(self, dirpath):
+    def find_latest_sample_path(self):
         data_file_type = self.file_tags["data_file_type"]
-        data_files = glob(dirpath + "/*" + data_file_type)
+        data_files = glob(self.results_data_dirpath + "/*" + data_file_type)
         name = self.file_tags["sample_tag"].replace(" ", "_").lower()
         sample_files_list = [file for file in data_files if name in file.replace(" ", "_").lower()]
         if sample_files_list:
@@ -127,49 +129,7 @@ class Analyser:
         )
 
     def calulations_placeholder(self):
-
-        camp_dict = self.campaign.to_dict()
-        ints = self.campaign.get_integrals()
-        rel_ints = self.campaign.get_relative_integrals()
-        concs = self.campaign.get_concentrations()
-        rel_concs = self.campaign.get_relative_concentrations()
-        return ints, rel_ints, concs, rel_concs
-
-        # Get concentrations relative to the internal standard
-        results = self.campaign.get_relative_concentrations()[0][
-            ["Chromatogram", "starting_material", "product"]
-        ]
-
-        # If a compound is not detected, the concentration is set to nan
-        # Convert nan to 0
-        results = results.fillna(0)
-
-        # Calculate conversion and yield
-        initial_concentration = 0.06
-        results["Conversion [%]"] = (
-                100
-                * (initial_concentration - results["starting_material"])
-                / initial_concentration
-        )
-        results["Yield [%]"] = 100 * results["product"] / initial_concentration
-
-        # Print the results
-        print(
-            results[["Chromatogram", "Conversion [%]", "Yield [%]"]]
-            .round(0)
-            .to_string(index=False)
-        )
-
-        sample_row = results[results["Chromatogram"] == "sample"]
-
-        # Extract the Conversion and Yield values
-        if not sample_row.empty:
-            conv_value = sample_row["Conversion [%]"].values[0]
-            yield_value = sample_row["Yield [%]"].values[0]
-
-            # Create the dictionary
-            sample_dict = {"conv": conv_value, "yield": yield_value}
-            return sample_dict
+        return 1
 
     # -----Analysis Methods END-----
     # -----Basic Task Methods START-----
