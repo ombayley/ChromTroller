@@ -14,9 +14,7 @@ from ct_components.mocca2 import MoccaDataset, Chromatogram, ProcessingSettings
 
 
 class Analyser:
-    def __init__(self, queue=None):
-        # self.queue = queue  # Currently not used. Implemented for future streaming to client purposes
-
+    def __init__(self):
         self.analysis_json_data = self.load_analysis_json()
         self.file_tags = self.analysis_json_data["file_tags"]
         self.settings_obj = self.get_settings_obj()
@@ -354,13 +352,11 @@ class Analyser:
     def log_info(message):
         logging.info(message)
         print(message)
-        # self.queue.put(message)
 
     @staticmethod
     def log_error(message):
         logging.error(message)
         print(message)
-        # self.queue.put(message)
         raise Exception(message)
 
     # -----Util Methods END-----

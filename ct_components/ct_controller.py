@@ -16,13 +16,9 @@ from ct_components.devices.lcms_device import LCMSDevice
 class Controller:
     """
     Initalise controller object.
-    Args:
-        log_queue (Queue): a shared Queue object for relaying information between CT and ct_controller
     """
 
-    def __init__(self, log_queue):
-        # Shared queue with CT control program
-        self.log_queue = log_queue
+    def __init__(self):
         # Get hardware and timing settings
         self.hardware_settings = self.get_hardware_settings()
         # Create LCMSDevice object
@@ -251,7 +247,6 @@ class Controller:
     def log_info(self, message):
         logging.info(message)
         print(message)
-        self.log_queue.put(message)
 
     @staticmethod
     def check_ack(ack):

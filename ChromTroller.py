@@ -7,10 +7,8 @@ Description: *Brief script description*.
 import os
 import re
 import queue
-import threading
 import logging
 import json
-import time
 from datetime import datetime
 from ct_components.ct_server import Server
 from ct_components.ct_controller import Controller
@@ -32,34 +30,26 @@ class ChromTroller:
         self.settings = self.load_settings()
         # Set path for saving the RunLog data
         self.runlog_path = self.get_runlog_path()
-        # List of 'RunLog' objects.
-        self.runlog_list = []  # TODO change to append to .json rather than store lost in memory
         # Set path to the results directory.
         self.results_dirpath = self.set_result_dirpath()
         # Set path to the directory with the calibration data.
         self.calib_data_dirpath = self.settings.get("calibration_data_path")
-
-        # !!--- For info streaming (currently not implemented) ---!!
-        # Communication Queues
-        self.controller_queue = queue.Queue()
+        # queue for file monitoring thread
         self.file_monitor_queue = queue.Queue()
-        self.analyser_queue = queue.Queue()
-
-        # Lock for thread safety
-        self.lock = threading.Lock()
-        # Start thread for monitoring log queue and logging
-        # threading.Thread(target=self.stream_updates, daemon=True).start()
-        # !!--- For info streaming (currently not implemented) ---!!
-
         # Connect to the server
         self.server = self.init_server()
         # Connect to the Arduino Controller
         self.lcms_controller_obj = self.init_controller()
+
         # TODO change to init objs at time of need but verify the data path upon CT init
         # Start the directory monitor to identify data files
         self.monitor_obj = self.init_monitor()
         # Create the Analysis object
         self.analyser_obj = self.init_analyser()
+
+        # TODO change to append to .json rather than store as list in memory
+        # List of 'RunLog' objects.
+        self.runlog_list = []
 
         # Client Socket
         self.client_socket = None
@@ -169,11 +159,11 @@ class ChromTroller:
         return server
 
     # --
-
-    def init_controller(self):
+    @staticmethod
+    def init_controller():
         """Initialise the hardware controller object"""
         try:
-            controller = Controller(self.controller_queue)
+            controller = Controller()
         except Exception as err:
             print("Failed to connect to controller")
             logging.error(f"Failed to connect to controller: {err}")
@@ -197,11 +187,11 @@ class ChromTroller:
         return monitor
 
     # --
-
-    def init_analyser(self):
+    @staticmethod
+    def init_analyser():
         """Initialise the analyser object"""
         try:
-            analyser = Analyser(self.analyser_queue)
+            analyser = Analyser()
         except Exception as err:
             print("Failed to initialise file analyser")
             logging.error(f"Failed to initialise file analyser: {err}")
@@ -321,24 +311,6 @@ class ChromTroller:
             # Write the list of run logs to the file
             json.dump(run_logs_dict, file, indent=4)
 
-    # -----Output streaming Methods START-----
-    # TODO implement client method to reccieve 'info' stream before using this
-    def stream_updates(self):
-        """!NOT YET IMPLEMENTED! - stream info from the queues back to the client"""
-        while True:
-            if not self.controller_queue.empty():
-                self.server.send_to_client(
-                    client_socket=self.client_socket,
-                    data=self.controller_queue.get(),
-                    data_type='info')
-            if not self.analyser_queue.empty():
-                self.server.send_to_client(
-                    client_socket=self.client_socket,
-                    data=self.analyser_queue.get(),
-                    data_type='info')
-            time.sleep(1)  # Check every second
-
-    # -----Output streaming Methods END-----
     # -----Util Methods START-----
     @staticmethod
     def log_info(message):

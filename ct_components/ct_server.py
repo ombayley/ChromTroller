@@ -215,10 +215,4 @@ class Server:
         with threading.Lock():
             self.active_connection = state
 
-    def log_info(self, message):
-        if self.ct_program.log_queue:
-            logging.info(message)
-            log_info = {'program': 'server', 'message': message}
-            self.ct_program.log_queue.put(log_info)
-
 # ----- Util Methods END -----
