@@ -23,7 +23,7 @@ class ChromTroller:
         # Set path for saving the RunLog data
         self.run_log_file_path = None
         # Set path to the results directory. TODO path set by OpenLabs CDS, Find a way to link CT and OL.
-        self.results_data_dir_path = r"D:\CDSProjects\Polymer_Degradation\Results\RoboChem_test_1.rslt"
+        self.results_data_dir_path = r"D:\CDSProjects\Polymer_Degradation\Results\RoboChem_debugg_samples_24-7-24.rslt"
         # Set path to the directory with the calibration data.
         self.calib_data_dir_path = r"D:\CDSProjects\RoboChem_FGT\Results\RoboChem_FGT\FGT additive calibration -[completed].rslt"
         # Setup Log
@@ -83,6 +83,7 @@ class ChromTroller:
         log_file_name = f"RunLog_{date_str}.json"
         log_file_path = os.path.join(log_dir_path, log_file_name)
         self.run_log_file_path = log_file_path
+
     # --
 
     def init_controller(self):
@@ -197,7 +198,8 @@ class ChromTroller:
         self.log_info(f"Campaign analysis calibration: {ack}")
 
     def run_data_analysis(self):
-        return "SUCCESS"
+
+        return "SUCCESS"  # tmp bypass
         self.analyser_obj.set_expected_filename(self.run_log_list[-1].file)
         result_dict = self.analyser_obj.analyse()
         self.log_info(f"Analysis result: {result_dict}")
@@ -241,8 +243,8 @@ class ChromTroller:
 
 
 if __name__ == "__main__":
-    chrom_troller = ChromTroller()
     try:
+        chrom_troller = ChromTroller()
         chrom_troller.server.listen_for_new_connections()
     except KeyboardInterrupt:
         logging.info("Shutting down the server.")
