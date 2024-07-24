@@ -45,13 +45,18 @@ class Analyser:
 
         except (FileNotFoundError, PermissionError, json.JSONDecodeError) as error:
             logging.error(f"Error: {error}")
+            raise error
 
     def get_settings_obj(self):
-        sett_dict = self.analysis_json_data["analysis_settings"]
-        self.log_info(f"settings read from analysis json")
-        sett_obj = ProcessingSettings.from_dict(sett_dict)
-        self.log_info(f"settings object created")
-        return sett_obj
+        try:
+            sett_dict = self.analysis_json_data["analysis_settings"]
+            self.log_info(f"settings read from analysis json")
+            sett_obj = ProcessingSettings.from_dict(sett_dict)
+            self.log_info(f"settings object created")
+            return sett_obj
+        except Exception as error:
+            logging.error(f"Error: {error}")
+            raise error
 
     # -----Init Methods END----
     # -----Analysis Methods START-----
@@ -100,7 +105,6 @@ class Analyser:
             max_wavelength=self.settings_obj.max_wavelength,
             inplace=True)
 
-        # Crop the chromatogram to the region of interest, 1.4 to 1.8 minutes
         chrom.extract_time(
             min_time=self.settings_obj.min_elution_time,
             max_time=self.settings_obj.max_elution_time,

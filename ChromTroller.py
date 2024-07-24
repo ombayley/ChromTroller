@@ -55,6 +55,7 @@ class ChromTroller:
         self.server = self.init_server()
         # Connect to the Arduino Controller
         self.lcms_controller_obj = self.init_controller()
+        # TODO change to init objs at time of need but verify the data path upon CT init
         # Start the directory monitor to identify data files
         self.monitor_obj = self.init_monitor()
         # Create the Analysis object
