@@ -54,9 +54,8 @@ class ChromTroller:
         # Client Socket
         self.client_socket = None
 
-        print("ChromTroller Initialisation Success")
+        print("\nChromTroller Ready For Analysis")
         print("REMINDER - Ensure OpenLab CDS is running and has the correct sequence queued")
-        print("Ready For Analysis")
 
     # -----Init Methods START-----
 
@@ -93,7 +92,7 @@ class ChromTroller:
         :return: dict containing the chromtroller_settings
         """
         try:
-            proj_path = os.path.dirname(os.path.dirname(__file__))
+            proj_path = os.path.dirname(__file__)
             settings_path = os.path.join(proj_path, 'settings_files', 'chromtroller_settings.json')
             with open(settings_path, 'r', encoding='utf-8') as settings_file:
                 hardware_settings = json.load(settings_file)
@@ -148,56 +147,60 @@ class ChromTroller:
 
     def init_server(self):
         """Initialises the server"""
+        message = "Server Initialization:"
         try:
             server = Server(self)
         except Exception as err:
-            logging.error(f"Failed to start the server: {err}")
-            print("Failed to start the server")
+            logging.error(f"{message} FAILURE - {err}")
+            print(f"{message} FAILURE")
             raise err
-        print("Successfully started the server")
-        logging.info("Successfully started the server")
+        print(f"{message} SUCCESS ")
+        logging.info(f"{message} SUCCESS ")
         return server
 
     # --
     @staticmethod
     def init_controller():
         """Initialise the hardware controller object"""
+        message = "Controller Connection:"
         try:
             controller = Controller()
         except Exception as err:
-            print("Failed to connect to controller")
-            logging.error(f"Failed to connect to controller: {err}")
+            logging.error(f"{message} FAILURE - {err}")
+            print(f"{message} FAILURE")
             raise err
-        print("Successfully connected to hardware controller")
-        logging.info("Successfully connected to hardware controller")
+        print(f"{message} SUCCESS ")
+        logging.info(f"{message} SUCCESS ")
         return controller
 
     # --
 
     def init_monitor(self):
         """Initialise the file monitor object"""
+        message = "File Monitor Initialization:"
         try:
             monitor = Monitor(self.file_monitor_queue)
         except Exception as err:
-            print("Failed to initialise file monitor")
-            logging.error(f"Failed to initialise file monitor: {err}")
+            logging.error(f"{message} FAILURE - {err}")
+            print(f"{message} FAILURE")
             raise err
-        print("Successfully initialised the file monitor")
-        logging.info("Successfully initialised the file monitor")
+        print(f"{message} SUCCESS ")
+        logging.info(f"{message} SUCCESS ")
         return monitor
 
     # --
     @staticmethod
     def init_analyser():
         """Initialise the analyser object"""
+        message = "Analyser Initialization:"
         try:
             analyser = Analyser()
         except Exception as err:
-            print("Failed to initialise file analyser")
-            logging.error(f"Failed to initialise file analyser: {err}")
+            logging.error(f"{message} FAILURE - {err}")
+            print(f"{message} FAILURE")
             raise err
-        print("Successfully initialised the analyser")
-        logging.info("Successfully initialised the analyser")
+        print(f"{message} SUCCESS ")
+        logging.info(f"{message} SUCCESS ")
         return analyser
 
     # -----Init Methods END-----
@@ -257,6 +260,7 @@ class ChromTroller:
 
     def start_hplc_run(self):
         """Starts the HPLC analysis procedure which is controlled by ct_controller"""
+        self.results_dirpath = self.set_result_dirpath()
         self.log_info("HPLC analysis initiated")
         result = self.lcms_controller_obj.run_analysis_cycle()
         self.runlog_list[-1].hplc_start = result
@@ -266,6 +270,7 @@ class ChromTroller:
 
     def start_file_monitoring(self):
         """Starts the file monitoring process to track the newly generated file"""
+        self.results_dirpath = self.set_result_dirpath()
         self.monitor_obj.set_dir(self.results_dirpath)
         self.log_info("Monitoring started.")
         self.monitor_obj.start_monitoring()
@@ -281,6 +286,7 @@ class ChromTroller:
         Gets the analyser object to prepare the campaign for tracked anlaysis
         using the data from the given calib_data_path
         """
+        self.results_dirpath = self.set_result_dirpath()
         self.analyser_obj.set_dirs(
             results_data_path=self.results_dirpath,
             calib_data_path=self.calib_data_dirpath
@@ -291,6 +297,7 @@ class ChromTroller:
 
     def run_data_analysis(self):
         """runs the automated data analysis for a given run"""
+        self.results_dirpath = self.set_result_dirpath()
         print("Analysis Initiated")
         return "SUCCESS"  # tmp bypass
 

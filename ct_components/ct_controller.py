@@ -68,7 +68,7 @@ class Controller:
         Runs the routine to start an analytical run.
         This involves the detection, sample loading and lcms method triggering
         """
-        self.log_info({'HPLC_analysis': 'INITIATED'})
+        logging.info({'HPLC_analysis': 'INITIATED'})
         try:
             # Check devices are connected and in valid states. Raise error if not
             ack = self._check_device_connectivity()
@@ -244,9 +244,10 @@ class Controller:
 
     # ----- Compound Command Methods START -----
     # -----Util Methods START-----
-    def log_info(self, message):
+    @staticmethod
+    def log_info(message):
         logging.info(message)
-        print(message)
+        print(f"    {message}")
 
     @staticmethod
     def check_ack(ack):

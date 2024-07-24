@@ -7,7 +7,7 @@ Description: An example client for connecting to the LCMS Server
 import socket
 import os
 import json
-import time
+from datetime import datetime
 from dotenv import load_dotenv
 
 
@@ -16,7 +16,7 @@ class HPLCServerClient:
 
     def __init__(self):
         # Get connection info from socket_settings.json or Sensitive_data.env
-        self.ids_dict = self.load_from_env()  # self.load_from_file()
+        self.ids_dict = self.load_from_file()  # self.load_from_env()
         # Make socket
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         # Connect socket to server
@@ -26,8 +26,8 @@ class HPLCServerClient:
     @staticmethod
     def load_from_file():
         """Get sensitive info such as IP address/ports, etc... from json file"""
-        # Set path to the socket_settings.json
-        path = os.path.join('../utils', 'socket_settings.json')
+        project_path = os.path.dirname(os.path.dirname(__file__))
+        path = os.path.join(project_path, 'settings_files', 'socket_settings.json')
         try:
             if path:
                 with open(path, 'r') as file:
@@ -51,7 +51,7 @@ class HPLCServerClient:
         host_server = 'localhost'  # self.ids_file['server_address']
         host_port = self.ids_dict['socket_port']
         try:
-            print(f"Connecting to server: {host_server} on port: {host_port} ...")
+            print(f"Connecting to server: {host_server} on port: {host_port}")
             self.socket.connect((host_server, host_port))
             connect_response = self._receive_from_server()
             print(connect_response)
@@ -103,7 +103,8 @@ class HPLCServerClient:
         """Close connection with the server"""
         if self.socket:
             self.socket.close()
-            print("Connection closed.")
+            date_str = datetime.now().strftime("%H:%M:%S_%d-%m-%Y")
+            print(f"Connection With Server Closed at: {date_str}")
 
     # -----BasicClient Methods END-----
     # -----CT Specific Methods START-----
@@ -138,19 +139,19 @@ class HPLCServerClient:
 if __name__ == "__main__":
     client = HPLCServerClient()
     try:
-        client.new_run(name="1")
+        client.new_run(name="2")
         client.set_reaction_conc(conc=0.999)
         client.add_reagents(reag_list=['EtPh', 'BP', 'One'])
         client.add_reaction_conditions(condit_dict={'light_intensity': 35, 'residence_time': 15})
 
         response1 = client.start_hplc_run()
-        print(response1)
+        print(f"HPLC: {response1}")
 
         response2 = client.start_file_monitoring()
-        print(response2)
+        print(f"File Monitor: {response2}")
 
         response3 = client.run_data_analysis()
-        print(response3)
+        print(f"Analysis: {response3}")
 
     except Exception as e:
         print(f"An error occurred: {e}")

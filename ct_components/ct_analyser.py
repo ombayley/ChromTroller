@@ -27,7 +27,7 @@ class Analyser:
 
         self.fast_bkg = False
         self.campaign = MoccaDataset()
-        self.log_info("Analyser Object Initialized Successfully")
+        logging.info("Analyser Object Initialized Successfully")
 
     # -----Init Methods START-----
 
@@ -38,7 +38,7 @@ class Analyser:
             project_dir = os.path.dirname(os.path.dirname(__file__))
             settings_json_path = os.path.join(project_dir, 'settings_files', 'analysis_settings.json')
             with open(settings_json_path, mode='r', encoding='utf-8') as infile:
-                self.log_info("loaded analysis settings from json")
+                logging.info("loaded analysis settings from json")
                 return json.load(infile)
 
         except (FileNotFoundError, PermissionError, json.JSONDecodeError) as error:
@@ -46,9 +46,9 @@ class Analyser:
 
     def get_settings_obj(self):
         sett_dict = self.analysis_json_data["analysis_settings"]
-        self.log_info(f"settings read from analysis json")
+        logging.info(f"settings read from analysis json")
         sett_obj = ProcessingSettings.from_dict(sett_dict)
-        self.log_info(f"settings object created")
+        logging.info(f"settings object created")
         return sett_obj
 
     # -----Init Methods END----
