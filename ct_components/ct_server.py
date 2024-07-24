@@ -40,6 +40,8 @@ class Server:
         self.server_socket = self.init_socket()
         # Public var
         self.active_connection = False
+        # Client Socket
+        self.client_socket = None
 
     # -----Init Methods START-----
 

@@ -55,12 +55,12 @@ class MoccaDataset:
         self.settings = ProcessingSettings()
 
     def add_chromatogram(
-        self,
-        chromatogram: Chromatogram,
-        istd_concentration: float | None = None,
-        reference_for_compound: str | None = None,
-        compound_concentration: float | None = None,
-        istd_reference: bool = False,
+            self,
+            chromatogram: Chromatogram,
+            istd_concentration: float | None = None,
+            reference_for_compound: str | None = None,
+            compound_concentration: float | None = None,
+            istd_reference: bool = False,
     ) -> int:
         """
         Adds chromatogram to the dataset, returns the assigned ID
@@ -93,7 +93,7 @@ class MoccaDataset:
         # check that the sampling is same as in existing chromatograms
         if len(self.chromatograms) > 0:
             if not next(iter(self._raw_2d_data.values())).check_same_sampling(
-                chromatogram
+                    chromatogram
             ):
                 raise Exception(
                     "Cannot add this chromatogram to the campaign, because the time or wavelength points are different"
@@ -178,7 +178,7 @@ class MoccaDataset:
         """Gives default name to all compounds and assigns concentration conversion factors to compounds"""
 
         def name_main_compound_in_chromatogram(
-            chromatogram_id: int, name: str, conc: float | None
+                chromatogram_id: int, name: str, conc: float | None
         ) -> int | None:
             chromatogram = self.chromatograms[chromatogram_id]
             components = chromatogram.all_components(sort_by=lambda c: -c.integral)
@@ -201,8 +201,8 @@ class MoccaDataset:
                     compound.concentration_factor = conc / integral
                     # Relative concentration factor
                     if (
-                        self.istd_compound is not None
-                        and chromatogram_id in self.istd_concentrations
+                            self.istd_compound is not None
+                            and chromatogram_id in self.istd_concentrations
                     ):
                         istd_integral = sum(
                             [
@@ -216,7 +216,7 @@ class MoccaDataset:
                             integral = component.integral
 
                             compound.concentration_factor_vs_istd = (
-                                conc / integral * istd_integral / istd_conc
+                                    conc / integral * istd_integral / istd_conc
                             )
 
                             print(
@@ -262,7 +262,7 @@ class MoccaDataset:
                 compound.name = f"@ {self.time()[compound.elution_time]:0.3f}"
 
     def process_all(
-        self, settings: ProcessingSettings, verbose: bool = True, cores: int = 1
+            self, settings: ProcessingSettings, verbose: bool = True, cores: int = 1
     ):
         """Processes all chromatograms: finds and deconvolves peaks, creates averaged compounds, and refines peaks"""
         self.settings = settings
@@ -360,7 +360,7 @@ class MoccaDataset:
         if cores == 1:
             for idx, chromatogram in enumerate(self.chromatograms.values()):
                 if verbose:
-                    print(f"Chromatogram {idx+1}/{len(self.chromatograms)}")
+                    print(f"Chromatogram {idx + 1}/{len(self.chromatograms)}")
                 chromatogram.deconvolve_peaks(**kwargs)
         else:
             with Pool(cores) as p:
@@ -394,40 +394,40 @@ class MoccaDataset:
         def are_same_compound(comp1: Component, comp2: Component) -> bool:
             # estimate peak width
             pw1 = (
-                np.sum(
-                    np.clip(
-                        comp1.concentration - np.max(comp1.concentration) / 2, 0, np.inf
+                    np.sum(
+                        np.clip(
+                            comp1.concentration - np.max(comp1.concentration) / 2, 0, np.inf
+                        )
+                        > 0
                     )
-                    > 0
-                )
-                / 2
+                    / 2
             )
             pw2 = (
-                np.sum(
-                    np.clip(
-                        comp2.concentration - np.max(comp2.concentration) / 2, 0, np.inf
+                    np.sum(
+                        np.clip(
+                            comp2.concentration - np.max(comp2.concentration) / 2, 0, np.inf
+                        )
+                        > 0
                     )
-                    > 0
-                )
-                / 2
+                    / 2
             )
             max_peak_dist = pw1 + pw2
 
             if (
-                abs(comp1.elution_time - comp2.elution_time)
-                > max_peak_dist * settings.max_peak_distance
+                    abs(comp1.elution_time - comp2.elution_time)
+                    > max_peak_dist * settings.max_peak_distance
             ):
                 return False
             if (
-                cosine_similarity(comp1.spectrum, comp2.spectrum)
-                < settings.min_spectrum_correl
+                    cosine_similarity(comp1.spectrum, comp2.spectrum)
+                    < settings.min_spectrum_correl
             ):
                 return False
 
             return True
 
         def importance(comp: Component) -> float:
-            return comp.integral * comp.peak_fraction**4
+            return comp.integral * comp.peak_fraction ** 4
 
         self.compounds = cluster_components(
             components, are_same=are_same_compound, weights=importance
@@ -564,7 +564,7 @@ class MoccaDataset:
                         None for ints in integrals
                     ]
                 )
-            else:                
+            else:
                 column_names.append(name)
                 columns.append(
                     [
@@ -595,7 +595,7 @@ class MoccaDataset:
         """
 
         assert (
-            self.istd_compound is not None
+                self.istd_compound is not None
         ), "Cannot calculate relative concentrations, the internal standard is not specified"
 
         columns = [
@@ -632,9 +632,9 @@ class MoccaDataset:
             if conc_factor is None:
                 column_names.append(name)
                 columns.append(
-                [
-                    None for ints in integrals
-                ]
+                    [
+                        None for ints in integrals
+                    ]
                 )
             else:
                 column_names.append(name)
@@ -648,7 +648,6 @@ class MoccaDataset:
         df = pd.DataFrame(zip(*columns), columns=column_names).dropna(axis=1, how='all')
 
         return df, compound_ids
-
 
     def get_integrals(self) -> Tuple[pd.DataFrame, List[int]]:
         """
@@ -708,7 +707,7 @@ class MoccaDataset:
         """
 
         assert (
-            self.istd_compound is not None
+                self.istd_compound is not None
         ), "Cannot calculate relative integrals, the internal standard is not specified"
 
         columns = [

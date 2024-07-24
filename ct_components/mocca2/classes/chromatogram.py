@@ -364,7 +364,6 @@ class Chromatogram(Data2D):
                 integrals[id] += component.integral
             else:
                 integrals[id] = component.integral
-
         return integrals
 
     def get_relative_integrals(self, relative_to: int) -> Dict[int, float]:
