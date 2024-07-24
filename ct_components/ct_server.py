@@ -182,10 +182,6 @@ class Server:
             # Read the incoming data
             if data:
                 reccieved_dict = json.loads(data.decode())
-                com = reccieved_dict['command']
-                command_data = reccieved_dict['data']
-                print(f"Command from client: {com} with message: {command_data}")
-                logging.info(f"Command from client: {com} with message: {command_data}")
                 return reccieved_dict
 
             return "no data found in server response"

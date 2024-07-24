@@ -46,7 +46,6 @@ class Monitor(FileSystemEventHandler):
     def start_monitoring(self):
         """Starts the monitoring process in a separate thread."""
         if not self.is_running:
-            print("Monitoring started.")
             self.initial_search()
             self.is_running = True
             self.observer = Observer()
@@ -71,7 +70,7 @@ class Monitor(FileSystemEventHandler):
         if event.is_directory:
             return
         filename = os.path.basename(event.src_path)
-        print(filename)
+        logging.info(f"New File identified by ct_monitor: {filename}")
         if self.data_file_tag.search(filename) and filename not in self.prior_filename_list:
             logging.info(filename)
             self.queue.put(filename)
@@ -89,5 +88,8 @@ if __name__ == "__main__":
     queue = Queue()
     monitor = Monitor(queue)
     monitor.set_dir(r"C:\Users\obayley\Platform_Data\Dummy_results_dir")
+    print("Monitoring started.")
     monitor.start_monitoring()
+    filename = queue.get()
+    print(f"file found: {filename}")
 

@@ -3,7 +3,7 @@
 """
 Code by: O.Bayley
 
-Efficiently read time, wavelength, and absorbance data from Agilent OpenLab CDS files.
+Efficiently read time, wavelength, and absorbance data from Agilent OpenLab CDS .dx data files.
 """
 import io
 import time
@@ -15,7 +15,7 @@ from ct_components.mocca2.classes import Data2D
 
 def parse_openlabcds(path):
     """
-    Chemstation read and processing function.
+    OpenLabs read and process function.
     :param path: path to a .dx file
     :return: Data 2D object made from np.arrays
                 times = 1D np.array of times (in min)
@@ -29,10 +29,12 @@ def parse_openlabcds(path):
     times, wavelengths, data = group_by_times(times, wavelengths, data)
     return Data2D(times, wavelengths, data)
 
+
 def group_by_times(times, wavelengths, data):
     times = smooth_timings(times)
     times, data = merge_times(times, data)
     return times, wavelengths, data
+
 
 def smooth_timings(times_ms):
     """
@@ -47,6 +49,7 @@ def smooth_timings(times_ms):
     times_min = np.round(times_min, 3)
 
     return times_min
+
 
 def merge_times(times, data):
     """Merges all identical time points to help with inter-run timing variations"""
@@ -64,6 +67,7 @@ def merge_times(times, data):
             new_absorbance[:, i] = data[:, mask].mean(axis=1)
 
     return unique_times, new_absorbance
+
 
 def parse_dx(dx_file_path):
     """

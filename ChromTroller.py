@@ -5,6 +5,7 @@ Author: O. Bayley
 Description: *Brief script description*.
 """
 import os
+import re
 import queue
 import threading
 import logging
@@ -19,21 +20,27 @@ from ct_components.ct_monitor import Monitor
 
 
 class ChromTroller:
+    """
+    The master class for the ChromTroller package. This class controls the communication
+    between the server, hardware controller, file monitoring, logging and data analysis.
+    """
+
     def __init__(self):
-        # Set path for saving the RunLog data
-        self.run_log_file_path = None
-        # TODO path set by OpenLabs CDS and must always be new. change this code to find the latest subdir
-        # Set path to the results directory.
-        self.results_data_dir_path = r"D:\CDSProjects\Polymer_Degradation\Results\RoboChem_test_1.rslt"
-        # Set path to the directory with the calibration data.
-        self.calib_data_dir_path = r"D:\CDSProjects\RoboChem_FGT\Results\RoboChem_FGT\FGT additive calibration -[completed].rslt"
         # Setup Log
-        self._setup_logging()
-
+        self.setup_logging()
+        # Load settings
+        self.settings = self.load_settings()
+        # Set path for saving the RunLog data
+        self.runlog_path = self.get_runlog_path()
         # List of 'RunLog' objects.
-        self.run_log_list = []
+        self.runlog_list = []  # TODO change to append to .json rather than store lost in memory
+        # Set path to the results directory.
+        self.results_dirpath = self.set_result_dirpath()
+        # Set path to the directory with the calibration data.
+        self.calib_data_dirpath = self.settings.get("calibration_data_path")
 
-        # Queues
+        # !!--- For info streaming (currently not implemented) ---!!
+        # Communication Queues
         self.controller_queue = queue.Queue()
         self.file_monitor_queue = queue.Queue()
         self.analyser_queue = queue.Queue()
@@ -42,9 +49,10 @@ class ChromTroller:
         self.lock = threading.Lock()
         # Start thread for monitoring log queue and logging
         # threading.Thread(target=self.stream_updates, daemon=True).start()
+        # !!--- For info streaming (currently not implemented) ---!!
 
         # Connect to the server
-        self.server = Server(self)
+        self.server = self.init_server()
         # Connect to the Arduino Controller
         self.lcms_controller_obj = self.init_controller()
         # Start the directory monitor to identify data files
@@ -55,10 +63,17 @@ class ChromTroller:
         # Client Socket
         self.client_socket = None
 
+        print("ChromTroller Initialisation Success")
+        print("REMINDER - Ensure OpenLab CDS is running and has the correct sequence queued")
+        print("Ready For Analysis")
+
     # -----Init Methods START-----
 
-    def _setup_logging(self):
-        """ Sets log format and file destination """
+    @staticmethod
+    def setup_logging():
+        """
+        Sets log format and file destination
+        """
         # Set path to the 'logs' directory.
         root_dir_path = os.path.dirname(os.path.abspath(__file__))
         log_dir_path = os.path.join(root_dir_path, 'logs')
@@ -75,55 +90,109 @@ class ChromTroller:
         logging.basicConfig(
             filename=log_file_path,
             level=logging.INFO,
-            format=f'%(asctime)s - %(levelname)s - %(filename)s - %(message)s',
+            format='%(asctime)s - %(levelname)s - %(filename)s - %(message)s',
             datefmt='%H-%M-%S_%d-%m-%Y ',
             filemode='w'  # w=write, a=append
         )
 
-        # Set pat for the Run Log Object Tracking
+    @staticmethod
+    def load_settings() -> dict:
+        """
+        Reads the hardware settings JSON and returns all hardware settings
+        :return: dict containing the chromtroller_settings
+        """
+        try:
+            proj_path = os.path.dirname(os.path.dirname(__file__))
+            settings_path = os.path.join(proj_path, 'settings_files', 'chromtroller_settings.json')
+            with open(settings_path, 'r', encoding='utf-8') as settings_file:
+                hardware_settings = json.load(settings_file)
+                logging.info("Loaded chromtroller settings successfully")
+            return hardware_settings
+        except (FileNotFoundError, json.JSONDecodeError, PermissionError) as err:
+            logging.error(f"Error occurred when loading settings {err}")
+            raise err
+
+    @staticmethod
+    def get_runlog_path() -> str:
+        """
+        Sets the file saving destination
+        :return: path to RunLog file
+        """
+        # Set path to the 'logs' directory.
+        root_dir_path = os.path.dirname(os.path.abspath(__file__))
+        log_dir_path = os.path.join(root_dir_path, 'logs')
+
+        # Set the runlog file name
+        date_str = datetime.now().strftime("%H-%M-%S_%d-%m-%Y")
         log_file_name = f"RunLog_{date_str}.json"
         log_file_path = os.path.join(log_dir_path, log_file_name)
-        self.run_log_file_path = log_file_path
+        logging.info("Set RunLog path successfully")
+        return log_file_path
 
-    def init_file_path(self):
-        base_dir = self.results_data_dir_path
-        subdirs_ctime = []
-        for root, dirs, files in os.walk(base_dir):
-            for dir_name in dirs:
-                subdir_path = os.path.join(root, dir_name)
-                ctime = os.path.getctime(subdir_path)
-                readable_ctime = time.ctime(ctime)  # Convert to human-readable form
-                subdirs_ctime.append((subdir_path, readable_ctime))
-            break  # Only scan the top-level directory
-        return subdirs_ctime
+    def set_result_dirpath(self) -> str:
+        """
+        Finds the most recently created .rslt directory inside the master Result dir
+        :return: path to the most recent dir (str)
+        """
+        master_result_dirpath = self.settings.get("results_master_directory")
+        subdirs = next(os.walk(master_result_dirpath))[1]
 
-        # Get basedir
-        # find ct times
-        # get latest dir
-        # print/check with user
-        # add override option - specify desired dir
+        dir_suffix = self.settings.get("results_subdir_tag")
+        escaped_dir_suffix = re.escape(dir_suffix)  # fix regex operators (i.e deals with '.')
+        results_dir_tag = re.compile(rf'{escaped_dir_suffix}$')
+
+        most_recent_dirpath = None
+        most_recent_ctime = 0
+        for subdir in subdirs:
+            if results_dir_tag.search(subdir):
+                subdir_path = os.path.join(master_result_dirpath, subdir)
+                if os.path.getctime(subdir_path) > most_recent_ctime:
+                    most_recent_ctime = os.path.getctime(subdir_path)
+                    most_recent_dirpath = subdir_path
+
+        logging.info(f"Current results directory set to: {most_recent_dirpath}")
+        return most_recent_dirpath
 
     # ---
 
+    def init_server(self):
+        """Initialises the server"""
+        try:
+            server = Server(self)
+        except Exception as err:
+            logging.error(f"Failed to start the server: {err}")
+            print("Failed to start the server")
+            raise err
+        print("Successfully started the server")
+        logging.info("Successfully started the server")
+        return server
+
+    # --
+
     def init_controller(self):
-        """Initialise the controller object"""
+        """Initialise the hardware controller object"""
         try:
             controller = Controller(self.controller_queue)
         except Exception as err:
+            print("Failed to connect to controller")
             logging.error(f"Failed to connect to controller: {err}")
             raise err
-        logging.info("Successfully connected to instrument controller")
+        print("Successfully connected to hardware controller")
+        logging.info("Successfully connected to hardware controller")
         return controller
 
     # --
 
     def init_monitor(self):
+        """Initialise the file monitor object"""
         try:
             monitor = Monitor(self.file_monitor_queue)
         except Exception as err:
-            logging.error(f"Failed to connect to monitor: {err}")
+            print("Failed to initialise file monitor")
+            logging.error(f"Failed to initialise file monitor: {err}")
             raise err
-        logging.info("Successfully connected to monitor")
+        print("Successfully initialised the file monitor")
+        logging.info("Successfully initialised the file monitor")
         return monitor
 
     # --
@@ -133,9 +202,11 @@ class ChromTroller:
         try:
             analyser = Analyser(self.analyser_queue)
         except Exception as err:
-            logging.error(f"Failed to connect to analyser: {err}")
+            print("Failed to initialise file analyser")
+            logging.error(f"Failed to initialise file analyser: {err}")
             raise err
-        logging.info("Successfully connected to analyser")
+        print("Successfully initialised the analyser")
+        logging.info("Successfully initialised the analyser")
         return analyser
 
     # -----Init Methods END-----
@@ -148,6 +219,7 @@ class ChromTroller:
         command = received_dict['command']
         data = received_dict['data']
         logging.info(f"Command received: {command} with data: {data}")
+        print(f"Command received from client: {command}")
 
         # Process command to trigger the correct method
         match command:
@@ -169,75 +241,89 @@ class ChromTroller:
     # -----Management Methods END-----
     # -----Action Methods START-----
     def add_new_run_log(self, name):
+        """Add a new RunLag of given name to the RunLog list"""
         new_log = RunLog(run_name=name)
-        self.run_log_list.append(new_log)
+        self.runlog_list.append(new_log)
         self.save_run_logs()
-        self.log_info(f"new run info object made with name: {name}")
+        self.log_info(f"new RunLog created: {name}")
 
     def add_run_conc(self, conc):
-        self.run_log_list[-1].run_conc = conc
+        """Add given conc to the current RunLog"""
+        self.runlog_list[-1].run_conc = conc
         self.save_run_logs()
-        self.log_info(f"conc: {conc} added to to run info")
+        self.log_info(f"RunLog updated with conc: {conc}")
 
     def add_reagents(self, reagent_list):
-        self.run_log_list[-1].reagent_list = reagent_list
+        """Add given reagents to the current RunLog"""
+        self.runlog_list[-1].reagent_list = reagent_list
         self.save_run_logs()
-        self.log_info(f"reagents: {reagent_list} added to to run info")
+        self.log_info(f"RunLog updated with reagents: {reagent_list}")
 
     def add_reaction_conditions(self, conditions_dict):
-        self.run_log_list[-1].run_conditions = conditions_dict
+        """Add given conditions to the current RunLog"""
+        self.runlog_list[-1].run_conditions = conditions_dict
         self.save_run_logs()
-        self.log_info(f"conditions: {conditions_dict} added to to run info")
+        self.log_info(f"RunLog updated with conditions: {conditions_dict}")
 
     def start_hplc_run(self):
+        """Starts the HPLC analysis procedure which is controlled by ct_controller"""
         result = self.lcms_controller_obj.run_analysis_cycle()
-        self.run_log_list[-1].hplc_start = result
+        self.runlog_list[-1].hplc_start = result
         self.save_run_logs()
-        self.log_info(f"HPLC initiation: {result}")
+        self.log_info(f"HPLC analysis initiation: {result}")
         return result
 
     def start_file_monitoring(self):
-        self.monitor_obj.set_dir(self.results_data_dir_path)
+        """Starts the file monitoring process to track the newly generated file"""
+        self.monitor_obj.set_dir(self.results_dirpath)
+        self.log_info("Monitoring started.")
         self.monitor_obj.start_monitoring()
         filename = self.file_monitor_queue.get()
-        self.log_info(f"file found: {filename}")
         self.monitor_obj.stop_monitoring()
-        self.run_log_list[-1].file = filename
+        self.log_info(f"newfile found: {filename}")
+        self.runlog_list[-1].file = filename
         self.save_run_logs()
-        self.log_info(f"new file found: {filename}")
         return filename
 
     def calib_analytical_camp(self):
+        """
+        Gets the analyser object to prepare the campaign for tracked anlaysis
+        using the data from the given calib_data_path
+        """
         self.analyser_obj.set_dirs(
-            results_data_path=self.results_data_dir_path,
-            calib_data_path=self.calib_data_dir_path
+            results_data_path=self.results_dirpath,
+            calib_data_path=self.calib_data_dirpath
         )
-        self.analyser_obj.reagents_to_calibrate = self.run_log_list[-1].reagent_list
+        self.analyser_obj.reagents_to_calibrate = self.runlog_list[-1].reagent_list
         ack = self.analyser_obj.prepare_camp()
         self.log_info(f"Campaign analysis calibration: {ack}")
 
     def run_data_analysis(self):
+        """runs the automated data analysis for a given run"""
 
         return "SUCCESS"  # tmp bypass
-        self.analyser_obj.set_expected_filename(self.run_log_list[-1].file)
+
+        self.analyser_obj.set_expected_filename(self.runlog_list[-1].file)
         result_dict = self.analyser_obj.analyse()
         self.log_info(f"Analysis result: {result_dict}")
-        self.run_log_list[-1].analysis = result_dict
+        self.runlog_list[-1].analysis = result_dict
         self.save_run_logs()
         return result_dict
 
     def save_run_logs(self):
+        """Save the RunLog info"""
         # Convert all RunLog objects to dictionaries
-        run_logs_dict = [run_log.to_dict() for run_log in self.run_log_list]
+        run_logs_dict = [run_log.to_dict() for run_log in self.runlog_list]
 
         # Open the file in write mode to clear its contents
-        with open(self.run_log_file_path, 'w') as file:
+        with open(self.runlog_path, 'w', encoding='utf-8') as file:
             # Write the list of run logs to the file
             json.dump(run_logs_dict, file, indent=4)
 
     # -----Output streaming Methods START-----
     # TODO implement client method to reccieve 'info' stream before using this
     def stream_updates(self):
+        """!NOT YET IMPLEMENTED! - stream info from the queues back to the client"""
         while True:
             if not self.controller_queue.empty():
                 self.server.send_to_client(
@@ -255,6 +341,7 @@ class ChromTroller:
     # -----Util Methods START-----
     @staticmethod
     def log_info(message):
+        """log and print info using one function"""
         logging.info(message)
         print(message)
 
