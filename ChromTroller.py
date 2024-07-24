@@ -12,7 +12,7 @@ import json
 from datetime import datetime
 from ct_components.ct_server import Server
 from ct_components.ct_controller import Controller
-from ct_components.ct_analyser import Analyser
+from ct_components.ct_analyser_simple import Analyser
 from ct_components.ct_runlog import RunLog
 from ct_components.ct_monitor import Monitor
 
@@ -31,7 +31,7 @@ class ChromTroller:
         # Set path for saving the RunLog data
         self.runlog_path = self.get_runlog_path()
         # Set path to the results directory.
-        self.results_dirpath = self.set_result_dirpath()
+        self.results_dirpath = self.get_result_dirpath()
         # Set path to the directory with the calibration data.
         self.calib_data_dirpath = self.settings.get("calibration_data_path")
         # queue for file monitoring thread
@@ -119,7 +119,7 @@ class ChromTroller:
         logging.info("Set RunLog path successfully")
         return log_file_path
 
-    def set_result_dirpath(self) -> str:
+    def get_result_dirpath(self) -> str:
         """
         Finds the most recently created .rslt directory inside the master Result dir
         :return: path to the most recent dir (str)
@@ -174,7 +174,7 @@ class ChromTroller:
         return controller
 
     # --
-
+    # TODO remove these two inits as they will instead be initialized when needed
     def init_monitor(self):
         """Initialise the file monitor object"""
         message = "File Monitor Initialization:"
@@ -260,7 +260,7 @@ class ChromTroller:
 
     def start_hplc_run(self):
         """Starts the HPLC analysis procedure which is controlled by ct_controller"""
-        self.results_dirpath = self.set_result_dirpath()
+        self.results_dirpath = self.get_result_dirpath()
         self.log_info("HPLC analysis initiated")
         result = self.lcms_controller_obj.run_analysis_cycle()
         self.runlog_list[-1].hplc_start = result
@@ -270,15 +270,22 @@ class ChromTroller:
 
     def start_file_monitoring(self):
         """Starts the file monitoring process to track the newly generated file"""
-        self.results_dirpath = self.set_result_dirpath()
-        self.monitor_obj.set_dir(self.results_dirpath)
-        self.log_info("Monitoring started.")
-        self.monitor_obj.start_monitoring()
-        filename = self.file_monitor_queue.get()
-        self.monitor_obj.stop_monitoring()
+        # Set Up Monitor
+        results_dirpath = self.get_result_dirpath()
+        monitor_queue = queue.Queue()
+        monitor = Monitor(monitor_queue=monitor_queue, data_dir=results_dirpath)
+
+        self.log_info("File Monitoring Started.")
+
+        # Monitor dir until new file observed
+        monitor.start_monitoring()
+        filename = monitor_queue.get()
+        monitor.stop_monitoring()
+
         self.log_info(f"New File Found: {filename}")
         self.runlog_list[-1].file = filename
         self.save_run_logs()
+
         return filename
 
     def calib_analytical_camp(self):
@@ -286,7 +293,7 @@ class ChromTroller:
         Gets the analyser object to prepare the campaign for tracked anlaysis
         using the data from the given calib_data_path
         """
-        self.results_dirpath = self.set_result_dirpath()
+        results_dirpath = self.get_result_dirpath()
         self.analyser_obj.set_dirs(
             results_data_path=self.results_dirpath,
             calib_data_path=self.calib_data_dirpath
@@ -297,8 +304,12 @@ class ChromTroller:
 
     def run_data_analysis(self):
         """runs the automated data analysis for a given run"""
-        self.results_dirpath = self.set_result_dirpath()
+        results_dirpath = self.get_result_dirpath()
+        filename = self.runlog_list[-1].file  # Could also find file using ctime
+        sample_filepath = os.path.join(results_dirpath, filename + self.settings.get("data_file_type"))
+        analyser = Analyser(sample_filepath)
         print("Analysis Initiated")
+
         return "SUCCESS"  # tmp bypass
 
         self.analyser_obj.set_expected_filename(self.runlog_list[-1].file)

@@ -20,14 +20,14 @@ from watchdog.events import FileSystemEventHandler
 
 
 class Monitor(FileSystemEventHandler):
-    def __init__(self, file_mon_queue):
+    def __init__(self, monitor_queue, data_dir):
         super().__init__()
         self.monitor_thread = None
         self.observer = None
         self.is_running = False
-        self.queue = file_mon_queue
+        self.queue = monitor_queue
 
-        self.results_dir = None
+        self.results_dir = data_dir
         self.data_file_tag = re.compile(r'\.dx$')
         self.prior_filename_list = []
         self.wait_time = 0.5  # Sleep time between checks. Default is 500ms.
@@ -86,7 +86,9 @@ class Monitor(FileSystemEventHandler):
 
 if __name__ == "__main__":
     queue = Queue()
+    # start_time = time.time()
     monitor = Monitor(queue)
+    # print(time.time()-start_time)
     monitor.set_dir(r"C:\Users\obayley\Platform_Data\Dummy_results_dir")
     print("Monitoring started.")
     monitor.start_monitoring()
