@@ -233,14 +233,6 @@ class Analyser:
         filename = os.path.splitext(filename)[0]
         self.expected_filename = filename
 
-    def save_campaign(self):
-        with open("campaign.pkl", "wb") as file:
-            pickle.dump(self.campaign, file)
-
-    def load_campaign(self):
-        with open("campaign.pkl", "rb") as file:
-            self.campaign = pickle.load(file)
-
     @staticmethod
     def log_info(message):
         logging.info(message)
