@@ -129,7 +129,7 @@ class Server:
                 # Check the socket is an active socket
                 if self.is_socket_closed(client_socket):
                     # Info/logging
-                    date_str = datetime.now().strftime("%H_%M_%S-%d_%m_%Y")
+                    date_str = datetime.now().strftime("%H:%M:%S_%d-%m-%Y")
                     disconnect_message = f"Client disconnected at {date_str}"
                     logging.info(disconnect_message)
                     print(disconnect_message)

@@ -210,7 +210,6 @@ class ChromTroller:
         command = received_dict['command']
         data = received_dict['data']
         logging.info(f"Command received: {command} with data: {data}")
-        print(f"Command received from client: {command}")
 
         # Process command to trigger the correct method
         match command:
@@ -236,7 +235,7 @@ class ChromTroller:
         new_log = RunLog(run_name=name)
         self.runlog_list.append(new_log)
         self.save_run_logs()
-        self.log_info(f"new RunLog created: {name}")
+        self.log_info(f"New RunLog created: {name}")
 
     def add_run_conc(self, conc):
         """Add given conc to the current RunLog"""
@@ -258,6 +257,7 @@ class ChromTroller:
 
     def start_hplc_run(self):
         """Starts the HPLC analysis procedure which is controlled by ct_controller"""
+        self.log_info("HPLC analysis initiated")
         result = self.lcms_controller_obj.run_analysis_cycle()
         self.runlog_list[-1].hplc_start = result
         self.save_run_logs()
@@ -271,7 +271,7 @@ class ChromTroller:
         self.monitor_obj.start_monitoring()
         filename = self.file_monitor_queue.get()
         self.monitor_obj.stop_monitoring()
-        self.log_info(f"newfile found: {filename}")
+        self.log_info(f"New File Found: {filename}")
         self.runlog_list[-1].file = filename
         self.save_run_logs()
         return filename
@@ -291,7 +291,7 @@ class ChromTroller:
 
     def run_data_analysis(self):
         """runs the automated data analysis for a given run"""
-
+        print("Analysis Initiated")
         return "SUCCESS"  # tmp bypass
 
         self.analyser_obj.set_expected_filename(self.runlog_list[-1].file)
