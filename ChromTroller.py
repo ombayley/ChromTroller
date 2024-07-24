@@ -103,8 +103,7 @@ class ChromTroller:
         # print/check with user
         # add override option - specify desired dir
 
-
-    # --
+    # ---
 
     def init_controller(self):
         """Initialise the controller object"""
@@ -218,7 +217,8 @@ class ChromTroller:
         self.log_info(f"Campaign analysis calibration: {ack}")
 
     def run_data_analysis(self):
-        return "SUCCESS"
+
+        return "SUCCESS"  # tmp bypass
         self.analyser_obj.set_expected_filename(self.run_log_list[-1].file)
         result_dict = self.analyser_obj.analyse()
         self.log_info(f"Analysis result: {result_dict}")
@@ -262,8 +262,8 @@ class ChromTroller:
 
 
 if __name__ == "__main__":
-    chrom_troller = ChromTroller()
     try:
+        chrom_troller = ChromTroller()
         chrom_troller.server.listen_for_new_connections()
     except KeyboardInterrupt:
         logging.info("Shutting down the server.")

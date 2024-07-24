@@ -97,9 +97,9 @@ External Device Pinouts:
  -Phase Sensor
    Assumed calibration procedure: Place the tubing in the device with no liquid and then run the calibration (takes a second or so).
      pin A - HIGH &  pin B - LOW = Clear Solution
-     pin A - LOW &  pin B - HIGH = Empty
-     pin A - HIGH &  pin B - HIGH = UNK (Absorbing Sol or Error)
-     pin A - LOW &  pin B - LOW = UNK (Absorbing Sol or Error)
+     pin A - LOW &  pin B - HIGH = Absorbing Solution
+     pin A - HIGH &  pin B - HIGH = Gas/Empty
+     pin A - LOW &  pin B - LOW = Error
 
   -Switch:
      2 - 1 - 6
@@ -224,9 +224,9 @@ int read_phase_sensor(){
   if(phase_sensor_a_pin == HIGH && phase_sensor_b_pin == LOW){
     state = 0; //Clear Solution
   }else if(phase_sensor_a_pin == LOW && phase_sensor_b_pin == HIGH){
-    state = 1; //Empty
+    state = 1; //Absorbing Solution
   }else if(phase_sensor_a_pin == HIGH && phase_sensor_b_pin == HIGH){
-    state = 2; //Absorbing Solution
+    state = 2; //Empty
   }
   return state;
 }
@@ -448,7 +448,9 @@ void setup()
   // Initialize Phase Sensor Pins
   pinMode(PHASE_SENSOR_OUT_A_PIN, INPUT);
   pinMode(PHASE_SENSOR_OUT_B_PIN, INPUT);
+  digitalWrite(PHASE_SENSOR_CALIBRATE_PIN, HIGH);
   pinMode(PHASE_SENSOR_CALIBRATE_PIN, OUTPUT);
+  digitalWrite(PHASE_SENSOR_CALIBRATE_PIN, HIGH);
   
   //Read in current switch valve positionread();
   read_valve_pos();  // Ensure 
