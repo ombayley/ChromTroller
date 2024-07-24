@@ -22,7 +22,8 @@ class ChromTroller:
     def __init__(self):
         # Set path for saving the RunLog data
         self.run_log_file_path = None
-        # Set path to the results directory. TODO path set by OpenLabs CDS, Find a way to link CT and OL.
+        # TODO path set by OpenLabs CDS and must always be new. change this code to find the latest subdir
+        # Set path to the results directory.
         self.results_data_dir_path = r"D:\CDSProjects\Polymer_Degradation\Results\RoboChem_test_1.rslt"
         # Set path to the directory with the calibration data.
         self.calib_data_dir_path = r"D:\CDSProjects\RoboChem_FGT\Results\RoboChem_FGT\FGT additive calibration -[completed].rslt"
@@ -83,6 +84,26 @@ class ChromTroller:
         log_file_name = f"RunLog_{date_str}.json"
         log_file_path = os.path.join(log_dir_path, log_file_name)
         self.run_log_file_path = log_file_path
+
+    def init_file_path(self):
+        base_dir = self.results_data_dir_path
+        subdirs_ctime = []
+        for root, dirs, files in os.walk(base_dir):
+            for dir_name in dirs:
+                subdir_path = os.path.join(root, dir_name)
+                ctime = os.path.getctime(subdir_path)
+                readable_ctime = time.ctime(ctime)  # Convert to human-readable form
+                subdirs_ctime.append((subdir_path, readable_ctime))
+            break  # Only scan the top-level directory
+        return subdirs_ctime
+
+        # Get basedir
+        # find ct times
+        # get latest dir
+        # print/check with user
+        # add override option - specify desired dir
+
+
     # --
 
     def init_controller(self):
