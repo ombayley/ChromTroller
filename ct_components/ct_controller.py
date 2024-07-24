@@ -23,6 +23,8 @@ class Controller:
         self.hardware_settings = self.get_hardware_settings()
         # Create LCMSDevice object
         self.lcms_device = self.init_device()
+        self.sensor_monitor_instance = None
+        self.sensor_monitor_thread = None
         # Start phase sensor monitoring (seperate thread)
         self.start_ps_monitor()
         # Report init success
@@ -57,9 +59,16 @@ class Controller:
         """
         Starts a new thread to monitor the data from the phase sensor using the SensorMonitor object
         """
-        sensor_monitor = SensorMonitor(self.lcms_device, self.hardware_settings)
-        threading.Thread(target=sensor_monitor.monitor_loop).start()
+        self.sensor_monitor_instance = SensorMonitor(self.lcms_device, self.hardware_settings)
+        self.sensor_monitor_thread = threading.Thread(target=self.sensor_monitor_instance.monitor_loop)
+        self.sensor_monitor_thread.start()
         logging.info("Phase sensor monitoring started on separate thread.")
+
+    def stop_ps_monitor(self):
+        if self.sensor_monitor_instance:
+            self.sensor_monitor_instance.stop()
+        if self.sensor_monitor_thread:
+            self.sensor_monitor_thread.join()
 
     # -----Init Methods END-----
     # ----- Analysis Method START -----
@@ -122,7 +131,7 @@ class Controller:
 
             # Wait for the sample loop to be flushed through
             self.log_info({'sample_loading': 'WAITING'})
-            time.sleep(self.hardware_settings["sample_loop_fill_time"]*5)
+            time.sleep(self.hardware_settings["sample_loop_fill_time"] * 5)
             self.log_info({'sample_loading': 'SUCCESS'})
 
             # Return to initial filling position
@@ -272,13 +281,14 @@ class SensorMonitor:
         self.change_detected_flag = False
         self.change_stable_flag = False
         self.time_of_ps_change = time.time()
+        self.is_running = True
 
     def monitor_loop(self):
         """
         Central monitoring loop. Starts by reading data, checks for stable changes, updates previous
         run data and then sleeps.
         """
-        while True:
+        while self.is_running:
             # Get current sensor value
             current_ps_value = self.lcms_device.read_phase_sensor()
 
@@ -300,6 +310,13 @@ class SensorMonitor:
             # Update the previous_ps_value the loop again
             self.previous_ps_value = current_ps_value
             time.sleep(self.param_config["phase_sensor_polling_time"])
+
+    def stop(self):
+        self.is_running = False
+
+    def start(self):
+        self.is_running = True
+        self.monitor_loop()
 
     def check_ps_change(self, curr_ps_val):
         """
@@ -336,3 +353,13 @@ class SensorMonitor:
             self.lcms_device.set_phase_sensor_value(False)
         elif new_stable_value in full_vals:
             self.lcms_device.set_phase_sensor_value(True)
+
+
+if __name__ == "__main__":
+    controller = Controller()
+
+    controller.switch_valve_to(0)
+    # controller._check_device_connectivity()
+    # controller._send_start_request()
+
+    controller.stop_ps_monitor()
