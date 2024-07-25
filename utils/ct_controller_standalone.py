@@ -11,7 +11,7 @@ import json
 from datetime import datetime
 
 
-class StanaloneController:
+class StandaloneController:
 
     def __init__(self):
         # Setup Logging
@@ -116,3 +116,9 @@ class StanaloneController:
         self.lcms_device.close()
 
     # ----- Simple Command Methods END -----
+
+
+if __name__ == "__main__":
+    controller = StandaloneController()
+    print(controller.get_device_id())
+    controller.set_valve_pos("A")
