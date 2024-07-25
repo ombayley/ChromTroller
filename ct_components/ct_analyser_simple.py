@@ -7,6 +7,7 @@ Description: *Brief script description*.
 import logging
 import os
 import json
+from ct_components.mocca2.math import cosine_similarity
 from matplotlib import pyplot as plt
 from glob import glob
 from ct_components.mocca2 import ProcessingSettings, Chromatogram
@@ -56,22 +57,17 @@ class Analyser:
         Central run method.
         """
         bkg_filepath = self.get_bkg_filepath(sample_filepath)
-        smpl_chrom = Chromatogram(sample=sample_filepath, blank=bkg_filepath, name='sample')
-        smpl_chrom = self.process_chrom(smpl_chrom)
-
-        components = smpl_chrom.all_components()
+        smpl_chromatogram = Chromatogram(sample=sample_filepath, blank=bkg_filepath, name='sample')
+        smpl_chromatogram = self.process_chrom(smpl_chromatogram)
+        components = smpl_chromatogram.all_components()
         for component in components:
             elut_time_index = component.elution_time
-            elut_time = smpl_chrom.time[elut_time_index]
+            elut_time = smpl_chromatogram.time[elut_time_index]
             integral = component.integral
             id = component.compound_id
             spectrum = component.spectrum
 
-            print(f"\nElution time: {elut_time}\nIntegral: {integral}")
-
-
-
-        smpl_chrom.plot()
+        smpl_chromatogram.plot()
         plt.show()
         # return integrals
 
@@ -83,13 +79,12 @@ class Analyser:
 
         chrom = chrom.extract_wavelength(
             min_wavelength=self.settings_obj.min_wavelength,
-            max_wavelength=self.settings_obj.max_wavelength,
-            inplace=True)
+            max_wavelength=self.settings_obj.max_wavelength
+        )
 
         chrom = chrom.extract_time(
             min_time=self.settings_obj.min_elution_time,
-            max_time=self.settings_obj.max_elution_time,
-            inplace=True
+            max_time=self.settings_obj.max_elution_time
         )
 
         chrom = chrom.find_peaks(
@@ -109,6 +104,24 @@ class Analyser:
         )
 
         return chrom
+
+    def match_component(self, chromatogram, components_list, retention_time, uv_spectra=None, ms_spectra_peak=None):
+        # check within expected expectred r.t
+        min_elut_time = retention_time - self.settings_obj.max_peak_distance
+        max_elut_time = retention_time + self.settings_obj.max_peak_distance
+
+        for component in components_list:
+            elut_time = chromatogram.time[component.elution_time]
+            if min_elut_time <= elut_time <= max_elut_time:
+                print("Component found with desire retention times")
+
+            if uv_spectra and cosine_similarity(component.spectrum, uv_spectra) >= self.settings_obj.min_spectrum_correl:
+                print("Component found with matching UV spectra")
+
+            if ms_spectra_peak and ms_spectra_peak in component.ms_spectrum:
+                print("Component found with desired mass")
+
+
 
     # -----Analysis Methods END-----
     # -----Basic Task Methods START-----
