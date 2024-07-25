@@ -10,7 +10,6 @@ import json
 from datetime import datetime
 from dotenv import load_dotenv
 
-
 class HPLCServerClient:
     """Simple client interface to send commands to the LCMS server"""
 
@@ -78,7 +77,7 @@ class HPLCServerClient:
         try:
             # Check the sockect hasn't been closed
             if not self.socket:
-                return "No connected Socket"
+                return "No Connected Socket"
 
             # Read the length of the incoming message (4 bytes) then read message
             message_length_bytes = self.socket.recv(4)
@@ -90,7 +89,7 @@ class HPLCServerClient:
             # Read the incoming data
             if data:
                 reccieved_dict = json.loads(data.decode())
-                # reply_check = 'reply' in reccieved_dict['command'] # Future use - confirm data a reply
+                reply_check = 'reply' in reccieved_dict['command']  # Future use - confirm data a reply
                 message = reccieved_dict['data']
                 return message
 

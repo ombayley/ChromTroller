@@ -213,9 +213,11 @@ class ChromTroller:
         results_dirpath = self.get_result_dirpath()
         filename = self.runlog_list[-1].file  # filename = self.get_latest_filename(results_dirpath)
         sample_filepath = os.path.join(results_dirpath, filename)
-        analyser = Analyser(sample_filepath)
+        analyser = Analyser()
         print("Analysis Initiated")
-        result_dict = analyser.run_analysis()
+
+        result_dict = analyser.run_analysis(sample_filepath)
+
         self.log_info(f"Analysis result: {result_dict}")
         self.runlog_list[-1].analysis = result_dict
         self.save_run_logs()

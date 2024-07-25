@@ -23,7 +23,8 @@ class Analyser:
 
     # -----Init Methods START-----
 
-    def load_analysis_json(self) -> dict:
+    @staticmethod
+    def load_analysis_json() -> dict:
         """Load all analysis info from JSON file."""
         try:
 
@@ -57,22 +58,22 @@ class Analyser:
         bkg_filepath = self.get_bkg_filepath(sample_filepath)
         smpl_chrom = Chromatogram(sample=sample_filepath, blank=bkg_filepath, name='sample')
         smpl_chrom = self.process_chrom(smpl_chrom)
-        peaks = smpl_chrom.peaks
-        integrals = []
-        for peak in peaks:
-            elut_time = max(peak.time(smpl_chrom.time))
-            integral = round(peak.components[0].integral, 0)
-            spectrum = peak.components[0].spectrum
-            print(f"peak at: {elut_time} has integral of: {integral}")
-            integrals.append(integral)
-        max_integral = max(integrals)
-        for integral in integrals:
-            rel_integral = round((integral/max_integral)*100, 0)
-            print(rel_integral)
+
+        components = smpl_chrom.all_components()
+        for component in components:
+            elut_time_index = component.elution_time
+            elut_time = smpl_chrom.time[elut_time_index]
+            integral = component.integral
+            id = component.compound_id
+            spectrum = component.spectrum
+
+            print(f"\nElution time: {elut_time}\nIntegral: {integral}")
+
+
 
         smpl_chrom.plot()
         plt.show()
-        return integrals
+        # return integrals
 
     def process_chrom(self, chrom):
         chrom = chrom.correct_baseline(

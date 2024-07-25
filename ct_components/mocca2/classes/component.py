@@ -43,6 +43,7 @@ class Component:
         self.compound_id = compound_id
         self.peak_fraction = peak_fraction
 
+
     def get_area(self, wl_idx: int) -> float:
         """Returns peak area at given wavelength (specified by index)"""
 
