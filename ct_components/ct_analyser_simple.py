@@ -72,19 +72,25 @@ class Analyser:
         # return integrals
 
     def process_chrom(self, chrom):
+        """
+        Processes the chromatogram. NOTE: the methods using inplace rather than
+        chrom = chrom.method(...) return Data2D objects not Chromatogram Objects
+        """
         chrom = chrom.correct_baseline(
             method=self.settings_obj.baseline_model,
             smoothness=self.settings_obj.baseline_smoothness
         )
 
-        chrom = chrom.extract_wavelength(
+        chrom.extract_wavelength(
             min_wavelength=self.settings_obj.min_wavelength,
-            max_wavelength=self.settings_obj.max_wavelength
+            max_wavelength=self.settings_obj.max_wavelength,
+            inplace=True
         )
 
-        chrom = chrom.extract_time(
+        chrom.extract_time(
             min_time=self.settings_obj.min_elution_time,
-            max_time=self.settings_obj.max_elution_time
+            max_time=self.settings_obj.max_elution_time,
+            inplace=True
         )
 
         chrom = chrom.find_peaks(
@@ -180,7 +186,8 @@ class Analyser:
 
 
 if __name__ == "__main__":
-    filepath = r"C:\Users\obayley\Platform_Data\Dummy_results_dir\RoboChem Sample292024-06-07 07-42-09+02-00.dx"
+    # filepath = r"C:\Users\obayley\Platform_Data\Dummy_results_dir\RoboChem Sample292024-06-07 07-42-09+02-00.dx"
+    filepath = r"C:\Users\obayley\Documents\Project_Notes\SuFEX\Early_Results\Merve - NN_10_02.dx"
     analyser = Analyser()
     res = analyser.run_analysis(filepath)
     print(res)

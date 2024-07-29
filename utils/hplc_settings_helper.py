@@ -20,8 +20,10 @@ class ChromPlotter:
         # Initialize instance variables for storing data
         self.parent = parent
         self.json_file_path = self.get_json_pathname()
-        self.sample_file_path = r"C:\Users\obayley\Platform_Data\Dummy_results_dir\0.1 M sm 01.dx"
-        self.bkg_file_path = r"C:\Users\obayley\Platform_Data\Dummy_results_dir\Gradient-03.dx"
+        # self.sample_file_path = r"C:\Users\obayley\Platform_Data\Dummy_results_dir\0.1 M sm 01.dx"
+        # self.bkg_file_path = r"C:\Users\obayley\Platform_Data\Dummy_results_dir\Gradient-03.dx"
+        self.sample_file_path = r"C:\Users\obayley\Documents\Project_Notes\SuFEX\Early_Results\Merve - NN_10_02.dx"
+        self.bkg_file_path = r"C:\Users\obayley\Documents\Project_Notes\SuFEX\Early_Results\Gradient_01.dx"
         self.chrom = self.get_chrom()
         self.settings = self.load_analysis_json()
 
@@ -189,7 +191,14 @@ class ChromPlotter:
         self.ax.add_patch(rect)
 
     def pick_peaks(self):
-        self.chrom.find_peaks(min_height=self.settings['min_prominence'])
+        self.chrom.find_peaks(
+            min_rel_height=self.settings["min_rel_prominence"],
+            min_height=self.settings["min_prominence"],
+            width_at=self.settings["border_max_peak_cutoff"],
+            split_threshold=self.settings["split_threshold"],
+            min_elution_time=self.settings["min_elution_time"],
+            max_elution_time=self.settings["max_elution_time"]
+        )
         self.chrom.plot(ax=self.ax)
 
     def deconvolve_peaks(self):
@@ -200,14 +209,6 @@ class ChromPlotter:
             max_comps=self.settings["max_peak_comps"]
         )
         self.chrom.plot(ax=self.ax)
-
-    def reset_chrom(self):
-        self.chrom = Chromatogram(
-            sample=r"C:\Users\obayley\Platform_Data\Dummy_results_dir\0.1 M sm 01.dx",
-            blank=r"C:\Users\obayley\Platform_Data\Dummy_results_dir\Gradient-03.dx",
-            name="sample"
-        )
-
 
 # --- Chromatogram Methods END ---
 # --- Standalone Methods START ---
