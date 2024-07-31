@@ -10,6 +10,7 @@ import logging
 import threading
 import time
 import json
+import serial.tools.list_ports
 from ct_components.devices.lcms_device import LCMSDevice
 
 
@@ -50,10 +51,20 @@ class Controller:
         """
         Create the Device object
         """
-        port = self.hardware_settings["serial_port"]
+        serial_num = self.hardware_settings["serial_number"]
+        device_port = None
+        ports = serial.tools.list_ports.comports()
+        for port in ports:
+            if port.serial_number == serial_num:
+                device_port = port.device
+                break
+
+        if device_port is None:
+            raise ValueError(f"No serial port found for the device: {serial_num}")
+
         baud_rate = self.hardware_settings["serial_baud_rate"]
         timeout = self.hardware_settings["serial_timeout"]
-        return LCMSDevice(port, baud_rate, timeout)
+        return LCMSDevice(device_port, baud_rate, timeout)
 
     def start_ps_monitor(self):
         """

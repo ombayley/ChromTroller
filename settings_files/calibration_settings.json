@@ -1,29 +1,4 @@
 {
-    "analysis_settings": {
-        "baseline_model": "flatfit",
-        "baseline_smoothness": 1.0,
-        "min_rel_prominence": 0.01,
-        "min_prominence": 2000000.0,
-        "border_max_peak_cutoff": 0.1,
-        "split_threshold": 0.05,
-        "explained_threshold": 0.995,
-        "peak_model": "Bemg",
-        "max_peak_comps": 3,
-        "max_peak_distance": 1.0,
-        "min_spectrum_correl": 0.99,
-        "min_elution_time": 0.5,
-        "max_elution_time": 4.0,
-        "min_wavelength": 260.0,
-        "max_wavelength": 280.0,
-        "min_rel_integral": 0.01,
-        "relaxe_concs": true,
-        "__classname__": "ProcessingSettings"
-    },
-    "file_tags": {
-        "bkg_tag": "gradient",
-        "sample_tag": "sample",
-        "data_file_type": ".dx"
-    },
     "internal_standard": {
         "name": "Internal Standard",
         "conc": 0.02

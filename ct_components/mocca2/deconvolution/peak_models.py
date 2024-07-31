@@ -327,3 +327,45 @@ class Bemg(PeakModel):
         ]
 
         return const
+
+class BiGaussianSingle(PeakModel):
+    """BiGaussian peak model with single maxima constraint"""
+
+    def n_params(self) -> int:
+        return 4
+
+    def val(self, t: float | NDArray, *params: float) -> float | NDArray:
+        h, mu, s1, s2 = params
+        v = (t < mu) * np.exp(-((t - mu) ** 2) / (2 * s1 ** 2))
+        v += (t > mu) * np.exp(-((t - mu) ** 2) / (2 * s2 ** 2))
+        return v * h
+
+    def grad(self, t: float | NDArray, *params: float) -> NDArray:
+        h, mu, s1, s2 = params
+
+        left_gauss = (t < mu) * np.exp(-((t - mu) ** 2) / (2 * s1 ** 2))
+        right_gauss = (t > mu) * np.exp(-((t - mu) ** 2) / (2 * s2 ** 2))
+
+        grad_h = left_gauss + right_gauss
+        grad_mu = h * (t - mu) * (left_gauss / s1 ** 2 + right_gauss / s2 ** 2)
+        grad_s1 = h * (t - mu) ** 2 / s1 ** 3 * left_gauss
+        grad_s2 = h * (t - mu) ** 2 / s2 ** 3 * right_gauss
+
+        return np.array([grad_h, grad_mu, grad_s1, grad_s2])
+
+    def init_guess(
+            self, height: float, maximum: float, width_left: float, width_right: float
+    ) -> NDArray:
+        # Enforcing a constraint that the widths are similar to prevent multiple peaks
+        width_left = max(width_left, width_right / 2)
+        width_right = max(width_right, width_left / 2)
+        x0 = [height, maximum, width_left, width_right]
+
+        return np.array(x0)
+
+    def get_bounds(self, max_t: float) -> List[Tuple[float, float]]:
+        # Enforcing constraints on the width to prevent the formation of multiple peaks
+        const = [(0.0, np.inf), (0.0, max_t), (1.0, max_t / 4.0), (1.0, max_t / 4.0)]
+
+        return const
+

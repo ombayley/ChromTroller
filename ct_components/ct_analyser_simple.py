@@ -186,8 +186,8 @@ class Analyser:
 
 
 if __name__ == "__main__":
-    # filepath = r"C:\Users\obayley\Platform_Data\Dummy_results_dir\RoboChem Sample292024-06-07 07-42-09+02-00.dx"
-    filepath = r"C:\Users\obayley\Documents\Project_Notes\SuFEX\Early_Results\Merve - NN_10_02.dx"
+    filepath = r"C:\Users\obayley\Platform_Data\Dummy_results_dir\RoboChem Sample292024-06-07 07-42-09+02-00.dx"
+    # filepath = r"C:\Users\obayley\Documents\Project_Notes\SuFEX\Early_Results\Merve - NN_10_02.dx"
     analyser = Analyser()
     res = analyser.run_analysis(filepath)
     print(res)

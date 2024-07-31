@@ -1,5 +1,6 @@
 {
     "serial_port": "COM5",
+    "serial_number": "24235313636351D04271",
     "serial_baud_rate": 9600,
     "serial_timeout": 1,
     "sample_filling_position": "A",

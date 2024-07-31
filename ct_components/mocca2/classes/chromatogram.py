@@ -20,6 +20,7 @@ from ct_components.mocca2.deconvolution.peak_models import (
     FraserSuzuki,
     BiGaussian,
     BiGaussianTailing,
+    BiGaussianSingle
 )
 from ct_components.mocca2.serializing import dict_encoder
 
@@ -232,7 +233,7 @@ class Chromatogram(Data2D):
         self,
         model: (
             PeakModel
-            | Literal["BiGaussian", "BiGaussianTailing", "FraserSuzuki", "Bemg"]
+            | Literal["BiGaussian", "BiGaussianTailing", "FraserSuzuki", "Bemg", "BiGaussianSingle"]
         ),
         min_r2: float,
         relaxe_concs: bool,
