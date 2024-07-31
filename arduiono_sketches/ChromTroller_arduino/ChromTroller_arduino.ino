@@ -448,9 +448,9 @@ void setup()
   // Initialize Phase Sensor Pins
   pinMode(PHASE_SENSOR_OUT_A_PIN, INPUT);
   pinMode(PHASE_SENSOR_OUT_B_PIN, INPUT);
-  digitalWrite(PHASE_SENSOR_CALIBRATE_PIN, HIGH);
-  pinMode(PHASE_SENSOR_CALIBRATE_PIN, OUTPUT);
-  digitalWrite(PHASE_SENSOR_CALIBRATE_PIN, HIGH);
+  // digitalWrite(PHASE_SENSOR_CALIBRATE_PIN, HIGH);
+  // pinMode(PHASE_SENSOR_CALIBRATE_PIN, OUTPUT);
+  // digitalWrite(PHASE_SENSOR_CALIBRATE_PIN, HIGH);
   
   //Read in current switch valve positionread();
   read_valve_pos();  // Ensure 
