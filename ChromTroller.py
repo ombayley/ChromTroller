@@ -43,7 +43,7 @@ class ChromTroller:
         self.runlog_list = []
 
         print("\nChromTroller Ready For Analysis")
-        print("REMINDER - Ensure OpenLab CDS is running and has the correct sequence queued")
+        print("REMINDER - Ensure OpenLab CDS is running and has the correct sequence queued\n")
 
     # -----Init Methods START-----
 

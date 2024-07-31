@@ -4,7 +4,7 @@
 Author: O. Bayley
 Description: *Brief script description*.
 """
-from ct_components.devices.lcms_device_dummy import LCMSDevice
+from ct_components.devices.lcms_device import LCMSDevice
 import logging
 import os
 import json
