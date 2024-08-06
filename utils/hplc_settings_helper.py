@@ -180,26 +180,37 @@ class ChromPlotter:
         min_time = self.settings['min_elution_time']
         max_time = self.settings['max_elution_time']
         top = self.ax.get_ylim()[1]  # top side (top of the plot)
-        rect = plt.Rectangle(
-            xy=(min_time, min_peak_height),
-            width=max_time - min_time,
-            height=top - min_peak_height,
-            linewidth=1,
-            facecolor='orange',
-            alpha=0.2
-        )
-        self.ax.add_patch(rect)
+        # rect = plt.Rectangle(
+        #     xy=(min_time, min_peak_height),
+        #     width=max_time - min_time,
+        #     height=top - min_peak_height,
+        #     linewidth=1,
+        #     facecolor='orange',
+        #     alpha=0.2
+        # )
+        # self.ax.add_patch(rect)
 
     def pick_peaks(self):
         self.chrom.find_peaks(
             min_rel_height=self.settings["min_rel_prominence"],
             min_height=self.settings["min_prominence"],
             width_at=self.settings["border_max_peak_cutoff"],
+            merge_overlapping=False,
+            expand_borders=False,
             split_threshold=self.settings["split_threshold"],
             min_elution_time=self.settings["min_elution_time"],
             max_elution_time=self.settings["max_elution_time"]
         )
+        for peak in self.chrom.peaks:
+            print(f"Peak at {self.chrom.time[peak.maximum]} with height {peak.height}")
+            self.ax.annotate(f'{peak.height:.2f}',
+                             xy=(peak.maximum, peak.height),
+                             xytext=(peak.maximum, peak.height + 0.1 * peak.height),
+                             arrowprops=dict(facecolor='black', shrink=0.05),
+                             horizontalalignment='center')
+
         self.chrom.plot(ax=self.ax)
+        self.canvas.draw()
 
     def deconvolve_peaks(self):
         self.chrom.deconvolve_peaks(

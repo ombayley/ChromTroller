@@ -158,5 +158,7 @@ class LCMSDevice(ArduinoDevice):
         self.load_detection_event.wait()
 
 if __name__ == "__main__":
-    dev = LCMSDevice(port="COM5")
-    dev.set_valve_pos("B")
+    dev = LCMSDevice(port="COM4")
+    id=dev.get_id()
+    print(id)
+    # dev.set_valve_pos("B")

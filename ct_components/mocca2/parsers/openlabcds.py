@@ -40,7 +40,7 @@ def smooth_timings(times_ms):
     """
     The exact times will vary slightly between runs (millisecond variations) and therefore need correction.
     This finds the average time between each timepoint and constructs a 'tidied' time list
-    :param times_ms: sorted np.array of times in ms (machine spacing)
+    :param times_ms: sorted np.array of times in ms
     :return: sorted np.array of times in min (averaged spacing)
     """
     aqq_time_ms = times_ms[-1] / len(times_ms)

@@ -41,20 +41,31 @@ class ArduinoDevice:
         self.connection.reset_input_buffer()
         self.connection.write(f"{cmd}\n".encode())
 
+    # def read_response(self) -> str:
+    #     """Read response from Arduino. Thread lock included to allow multi-threading"""
+    #     # with self.lock:
+    #     timeout = copy.deepcopy(self.timeout)
+    #     reply = ""
+    #     while reply == "" and timeout > 0.0:
+    #         time.sleep(0.01)
+    #         timeout -= 0.01
+    #         reply = self.connection.readline().decode().strip()
+    #     if timeout < 0.0:
+    #         print("serial response timeout reached")
+    #
+    #     return reply
     def read_response(self) -> str:
-        """Read response from Arduino. Thread lock included to allow multi-threading"""
-        # with self.lock:
-        timeout = copy.deepcopy(self.timeout)
+        """Read response from Arduino"""
+        start_time = 0.0
         reply = ""
-        while reply == "" and timeout > 0.0:
+        while reply == "" and start_time < self.timeout:
             time.sleep(0.01)
-            timeout -= 0.01
+            start_time += 0.01
             reply = self.connection.readline().decode().strip()
-        if timeout < 0.0:
+        if start_time >= self.timeout:
             print("serial response timeout reached")
 
         return reply
-
     def close(self):
         """Close the serial connection."""
         self.connection.close()

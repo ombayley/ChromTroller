@@ -7,6 +7,7 @@ Description: *Brief script description*.
 import logging
 import os
 import json
+import pandas as pd
 from ct_components.mocca2.math import cosine_similarity
 from matplotlib import pyplot as plt
 from glob import glob
@@ -56,7 +57,7 @@ class Analyser:
         """
         Central run method.
         """
-        return "SUCCESS"
+        # return "SUCCESS"
 
         bkg_filepath = self.get_bkg_filepath(sample_filepath)
         smpl_chromatogram = Chromatogram(sample=sample_filepath, blank=bkg_filepath, name='sample')
@@ -68,9 +69,43 @@ class Analyser:
             integral = component.integral
             id = component.compound_id
             spectrum = component.spectrum
+            print(f"peak at: {elut_time}\nintegral: {integral}\n")
 
         smpl_chromatogram.plot()
         plt.show()
+        # return integrals
+
+    def run_multi_analysis(self, dirpath):
+        """
+        Central run method.
+        """
+        files = [file for file in next(os.walk(dirpath))[2] if file.endswith(".dx") and "Sample" in file]
+        data = []
+        for file in files:
+            sample_filepath = os.path.join(dirpath, file)
+            bkg_filepath = self.get_bkg_filepath(sample_filepath)
+            smpl_chromatogram = Chromatogram(sample=sample_filepath, blank=bkg_filepath, name='sample')
+            smpl_chromatogram = self.process_chrom(smpl_chromatogram)
+            components = smpl_chromatogram.all_components()
+            for component in components:
+                elut_time_index = component.elution_time
+                elut_time = smpl_chromatogram.time[elut_time_index]
+                integral = component.integral
+                id = component.compound_id
+                spectrum = component.spectrum
+                print(f"peak at: {elut_time}\nintegral: {integral}\n")
+                data.append({
+                    'file': file,
+                    'elut_time': elut_time,
+                    'integral': integral
+                })
+
+            smpl_chromatogram.plot()
+            plt.show()
+            df = pd.DataFrame(data)
+            df.to_csv('output.csv', index=False)
+
+
         # return integrals
 
     def process_chrom(self, chrom):
@@ -78,10 +113,7 @@ class Analyser:
         Processes the chromatogram. NOTE: the methods using inplace rather than
         chrom = chrom.method(...) return Data2D objects not Chromatogram Objects
         """
-        chrom = chrom.correct_baseline(
-            method=self.settings_obj.baseline_model,
-            smoothness=self.settings_obj.baseline_smoothness
-        )
+
 
         chrom.extract_wavelength(
             min_wavelength=self.settings_obj.min_wavelength,
@@ -95,11 +127,19 @@ class Analyser:
             inplace=True
         )
 
+        chrom = chrom.correct_baseline(
+            method=self.settings_obj.baseline_model,
+            smoothness=self.settings_obj.baseline_smoothness
+        )
+
         chrom = chrom.find_peaks(
+            contraction="max",
             min_rel_height=self.settings_obj.min_rel_prominence,
             min_height=self.settings_obj.min_prominence,
             width_at=self.settings_obj.border_max_peak_cutoff,
             split_threshold=self.settings_obj.split_threshold,
+            expand_borders=True,
+            merge_overlapping=True,
             min_elution_time=self.settings_obj.min_elution_time,
             max_elution_time=self.settings_obj.max_elution_time
         )
@@ -190,7 +230,8 @@ class Analyser:
 if __name__ == "__main__":
     filepath = r"C:\Users\obayley\Platform_Data\Dummy_results_dir\RoboChem Sample292024-06-07 07-42-09+02-00.dx"
     # filepath = r"C:\Users\obayley\Documents\Project_Notes\SuFEX\Early_Results\Merve - NN_10_02.dx"
+    dirpath = r"C:\Users\obayley\Documents\File Transfer\FGT_Sequence_30-7-24.rslt"
     analyser = Analyser()
-    res = analyser.run_analysis(filepath)
-    print(res)
+    # res = analyser.run_analysis(filepath)
+    analyser.run_multi_analysis(dirpath)
 

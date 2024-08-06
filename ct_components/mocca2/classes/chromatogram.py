@@ -46,6 +46,7 @@ class Chromatogram(Data2D):
         blank: Data2D | str | None = None,
         name: str | None = None,
         interpolate_blank=False,
+        overwrite_blank_time=False,
     ):
         """
         Creates chromatogram from the given sample. Substracts blank if provided.
@@ -84,11 +85,16 @@ class Chromatogram(Data2D):
                 blank_data, time=False
             ), "The wavelength sampling of the sample and blank are different"
 
+            overwrite_blank_time = True
+
             if not self.check_same_sampling(blank_data, wavelength=False):
-                assert (
-                    interpolate_blank
-                ), "The time sampling of the sample and blank are different, and `interpolate_blank` is False"
-                blank_data = blank_data.interpolate_time(self.time)
+                if overwrite_blank_time:
+                    # Overwrite the timing of the blank to match the sample's time points
+                    blank_data.time = self.time
+                    blank_data.data = np.interp(self.time, blank_data.time, blank_data.data)
+                else:
+                    assert interpolate_blank, "The time sampling of the sample and blank are different."
+                    blank_data = blank_data.interpolate_time(self.time)
 
             self.data -= blank_data.data
 
