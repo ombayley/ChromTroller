@@ -82,30 +82,35 @@ class Analyser:
         files = [file for file in next(os.walk(dirpath))[2] if file.endswith(".dx") and "Sample" in file]
         data = []
         for file in files:
-            sample_filepath = os.path.join(dirpath, file)
-            bkg_filepath = self.get_bkg_filepath(sample_filepath)
-            smpl_chromatogram = Chromatogram(sample=sample_filepath, blank=bkg_filepath, name='sample')
-            smpl_chromatogram = self.process_chrom(smpl_chromatogram)
-            components = smpl_chromatogram.all_components()
-            for component in components:
-                elut_time_index = component.elution_time
-                elut_time = smpl_chromatogram.time[elut_time_index]
-                integral = component.integral
-                id = component.compound_id
-                spectrum = component.spectrum
-                print(f"peak at: {elut_time}\nintegral: {integral}\n")
-                data.append({
-                    'file': file,
-                    'elut_time': elut_time,
-                    'integral': integral
-                })
+            try:
+                sample_filepath = os.path.join(dirpath, file)
+                bkg_filepath = self.get_bkg_filepath(sample_filepath)
+                smpl_chromatogram = Chromatogram(sample=sample_filepath, blank=bkg_filepath, name='sample')
+                smpl_chromatogram = self.process_chrom(smpl_chromatogram)
+                components = smpl_chromatogram.all_components()
+                for component in components:
+                    elut_time_index = component.elution_time
+                    elut_time = smpl_chromatogram.time[elut_time_index]
+                    integral = component.integral
+                    id = component.compound_id
+                    spectrum = component.spectrum
+                    print(f"peak at: {elut_time}\nintegral: {integral}\n")
+                    data.append({
+                        'file': file,
+                        'elut_time': elut_time,
+                        'integral': integral
+                    })
 
-            smpl_chromatogram.plot()
-            plt.show()
+                # smpl_chromatogram.plot()
+                # plt.show()
+            except Exception as e:
+                print(f"Error processing file {file}: {e}")
+                continue  # Skip to the next file
+
+        if data:
             df = pd.DataFrame(data)
             df.to_csv('output.csv', index=False)
-
-
+            print("Results saved to 'output.csv'")
         # return integrals
 
     def process_chrom(self, chrom):
