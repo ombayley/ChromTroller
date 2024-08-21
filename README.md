@@ -1,17 +1,48 @@
 # <img src = "utils/CrocLogo.png" width = "100"> ChromTroller
 
 ## Overview
-This package controls the triggering of the LCMS unit used in the NRG's RoboChem systems. 
-The package includes a server interface to communicate with RoboChem (or any external program), controller software to interpret server commands and instrument data, and code for the arduino microcontroller.
+ChromTroller is an automated control and analysis package for triggering an Agilent UPLC-MS system
+(via a microcontroller) and automatically analysing the resulting data.
+
+### Software
+- A server interface to communicate with an external control program/PC (network or localhost)
+- Software to trigger the hardware components 
+- Arduino microcontroller sketch to convert the software commands to simple digital outputs
+- Data Analysis software based on MOCCA2 by the Bayer Group (https://github.com/Bayer-Group/MOCCA)
+- Agilent UPLC-MS methods (sample prep, and run). The sample prep method is important as it provides the necessary feedback signals from the UPLC.
+
+### Hardware
+The LCMS unit is composed of:
+- Agilent 1290 Infinity II UPLC-MS
+- VICI switch valve controlled by a VICI Two Position Actuator Controller
+- OCB350 phase sensor board
+- Arduino Uno R3 microcontroller.
+
+---
+## Installation and Setup
+pip install server side to server computer ...
+conda env...
+Arduino IDE ...
+Wire pins to Ard and set the pins in the Ard code...
+Flash Arduino code and identify COM port ...
+config file setup ...
+    set COM for Serial comm with Ard in python prog ...
+    set the host, port and user/password for the server side...
+start server ...
+Calibrate phase sensor to empty
+
+---
+## Useage
+
+Client example code
+
+---
+## Platform
+<img src = "utils/Platform_Overview.png" width = "500">
 
 ---
 
-## Hardware
-The LCMS unit is composed of an Agilent 1290 Infinity II UPLC-MS, an external VICI switch valve controlled by a VICI Two Position Actuator Controller and an OCB350 phase sensor board which are all controlled by a central Arduino microcontroller.
-
----
-
-## General Architecture
+## Code Structure
 The codebase is built in 3 parts: the **Arduino code** (found in the Arduino Sketches directory), the **device** programs, the **controller** program and the **server** program.
 
 ```mermaid
@@ -20,29 +51,25 @@ graph TD;
     cli(CT Client)
     ser(CT Server)
     CT(ChromTroller)
-    Ard(Arduino)
+    Ard(Arduino Microcontroller)
     dev(LCMSDevice)
     lcms(Agilent LCMS)
     SW(Switch Valve)
     PS(Phase Sensor)
-    log(CT RunLog)
     mon(CT Monitor)
     anal(CT Analysis)
-    cal(Calibration)
-    lams(Analysis)
     
     RbC --> cli
     cli<--Socket-->ser
     ser <--> CT
-    log <--> CT
-    CT <--> mon
     CT --> Hardware & Analysis
     subgraph Hardware
     dev <--Serial-->Ard;
     Ard-->lcms & SW & PS;
     end
     subgraph Analysis
-    anal --> cal & lams    ;
+    anal;
+    mon;
     end
 ```
 ### LCMS Server
@@ -69,34 +96,11 @@ Set variable x to value y. Variable numbers are integer, values type depends on 
 Read variable x and print its value to serial.<br>
 
 ---
-## Installation and Setup
-pip install server side to server computer ...
-conda env...
-Arduino IDE ...
-Wire pins to Ard and set the pins in the Ard code...
-Flash Arduino code and identify COM port ...
-config file setup ...
-    set COM for Serial comm with Ard in python prog ...
-    set the host, port and user/password for the server side...
-start server ...
-Calibrate phase sensor to empty
+## License
 
 ---
-## Useage
-
-Client example code
-
----
-
-### Header 2
-**Bold Text** , *Italic Text* , Normal text
-- Bullet Point
-
-``Text Box`` 
-
-
-    Copy Box
+## Acknowledgements
+Bayer Group for the MOCCA 2 Package (https://github.com/Bayer-Group/MOCCA)
 
 ---
-
 *Author: ***Olly Bayley*** <o.m.bayley at uva.nl>,* ***Noël Research Group, 2024***
