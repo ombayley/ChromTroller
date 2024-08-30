@@ -22,6 +22,8 @@ class Analyser:
         self.file_tags = self.analysis_json_data["file_tags"]
         self.fast_bkg = False
         self.log_info("Analyser Object Initialized Successfully")
+        self.expected_time = None
+        self.peak_match_rt_tolerance = 0.1
 
     # -----Init Methods START-----
 
@@ -50,6 +52,11 @@ class Analyser:
             logging.error(f"Error: {error}")
             raise error
 
+    def set_peak_search(self, peak_rt, rt_tolerance=0.1):
+        self.expected_time = peak_rt
+        self.peak_match_rt_tolerance = rt_tolerance
+
+
     # -----Init Methods END----
     # -----Analysis Methods START-----
 
@@ -63,62 +70,186 @@ class Analyser:
         smpl_chromatogram = Chromatogram(sample=sample_filepath, blank=bkg_filepath, name='sample')
         smpl_chromatogram = self.process_chrom(smpl_chromatogram)
         components = smpl_chromatogram.all_components()
+        min_time = self.expected_time - self.peak_match_rt_tolerance
+        max_time = self.expected_time + self.peak_match_rt_tolerance
+        peaks_dict_list = []
+
         for component in components:
             elut_time_index = component.elution_time
             elut_time = smpl_chromatogram.time[elut_time_index]
-            integral = component.integral
-            id = component.compound_id
-            spectrum = component.spectrum
-            print(f"peak at: {elut_time}\nintegral: {integral}\n")
+            if min_time <= elut_time <= max_time:
+                integral = component.integral
+                peaks_dict_list.append({"Peak": elut_time, "Integral": integral})
+                print(f"peak at: {elut_time}\nintegral: {integral}\n")
 
-        smpl_chromatogram.plot()
-        plt.show()
-        # return integrals
+        # !!!Here as a place holder for final filter!!!
+        closest_dict = None
+        smallest_diff = float('inf')
+        for dict in peaks_dict_list:
+            current_time = dict["Time"]
+            diff = abs(current_time - self.expected_time)
+            # If the current difference is smaller than the smallest_diff, update
+            if diff < smallest_diff:
+                smallest_diff = diff
+                closest_dict = dict
+
+        return closest_dict
+
+        # smpl_chromatogram.plot()
+        # plt.show()
 
     def run_multi_analysis(self, dirpath):
         """
         Central run method.
         """
-        files = [file for file in next(os.walk(dirpath))[2] if file.endswith(".dx") and "Sample" in file]
+        files = [file for file in next(os.walk(dirpath))[2] if file.endswith(".dx") and "sample" in file.lower()]
         data = []
         for file in files:
             try:
                 sample_filepath = os.path.join(dirpath, file)
                 bkg_filepath = self.get_bkg_filepath(sample_filepath)
-                smpl_chromatogram = Chromatogram(sample=sample_filepath, blank=bkg_filepath, name='sample')
+                smpl_chromatogram = Chromatogram(sample=sample_filepath, blank=bkg_filepath, name=file)
                 smpl_chromatogram = self.process_chrom(smpl_chromatogram)
                 components = smpl_chromatogram.all_components()
-                for component in components:
+                for index, component in enumerate(components):
                     elut_time_index = component.elution_time
                     elut_time = smpl_chromatogram.time[elut_time_index]
                     integral = component.integral
-                    id = component.compound_id
-                    spectrum = component.spectrum
                     print(f"peak at: {elut_time}\nintegral: {integral}\n")
                     data.append({
                         'file': file,
+                        'peak': index,
                         'elut_time': elut_time,
                         'integral': integral
                     })
 
-                # smpl_chromatogram.plot()
-                # plt.show()
             except Exception as e:
                 print(f"Error processing file {file}: {e}")
                 continue  # Skip to the next file
 
         if data:
+            save_path = os.path.join(dirpath, 'integral_summary.csv')
             df = pd.DataFrame(data)
-            df.to_csv('output.csv', index=False)
-            print("Results saved to 'output.csv'")
+            df.to_csv(save_path, index=False)
+            print("Results saved to 'integral_summary.csv'")
         # return integrals
+
+    def trim_integral_summary(self, path):
+
+        # Load the CSV file into a DataFrame
+        df = pd.read_csv(path)
+        # Extract the concentration value before 'M' and add it to a new column called 'conc'
+        df['conc'] = df['file'].str.extract(r'(\d+\.\d+)\s*M')
+        # Remove the concentration part and '.dx' suffix to update the 'name' column
+        df['file'] = df['file'].str.replace(r'\d+\.\d+\s*M\s*-\s*', '', regex=True) \
+            .str.replace(r'-\d+\.dx$', '', regex=True)
+        save_path = os.path.join(os.path.dirname(path), 'modified_file.csv')
+        # Save the modified DataFrame back to a CSV file if needed
+        df.to_csv(save_path, index=False)
+
+        self.get_compound_peaks(save_path)
+
+    def get_compound_peaks (self, path):
+
+        # Load the CSV file into a DataFrame
+        df = pd.read_csv(path)
+
+        # Identify the Internal Standard rows
+        internal_standard_rows = df[df['file'] == 'Internal Standard']
+
+        # Initialize a list to store the indices of rows to remove
+        rows_to_remove = []
+
+        # Loop through each internal standard entry
+        for _, internal_row in internal_standard_rows.iterrows():
+            internal_rt = internal_row['elut_time']
+            internal_integral = internal_row['integral']
+
+            # Define the tolerance ranges for retention time and integral (10% tolerance)
+            rt_lower = internal_rt * 0.9
+            rt_upper = internal_rt * 1.1
+            integral_lower = internal_integral * 0.9
+            integral_upper = internal_integral * 1.1
+
+            # Find the rows in other files that fall within these tolerance ranges
+            for idx, row in df[df['file'] != 'Internal Standard'].iterrows():
+                if (rt_lower <= row['elut_time'] <= rt_upper) and (integral_lower <= row['integral'] <= integral_upper):
+                    rows_to_remove.append(idx)
+
+        # Remove the identified rows
+        df_filtered = df.drop(rows_to_remove)
+
+        save_path = os.path.join(os.path.dirname(path), 'compound_peaks.csv')
+        # Save the modified DataFrame back to a CSV file if needed
+        df_filtered.to_csv(save_path, index=False)
+
+        self.match_peaks()
+
+    def match_peaks(self):
+        calibration_df = pd.read_csv(r"C:\Users\obayley\Documents\UPLCMS_Data\fgt_calibration.csv")  # Replace with your actual file path
+        data_df = pd.read_csv(r"C:\Users\obayley\Documents\UPLCMS_Data\FGT_Samples\second_half\integral_summary.csv")  # Replace with your actual file path
+
+        # Initialize a new column in the data DataFrame to store the assigned peak
+        data_df['assigned_peak'] = None
+
+        # Loop through each row in the data DataFrame
+        for data_idx, data_row in data_df.iterrows():
+            # Get the retention time of the current data peak
+            data_rt = data_row['elut_time']
+
+            # Find matching rows in the calibration DataFrame based on a 5% tolerance in retention time
+            matching_calibration = calibration_df[
+                (calibration_df['elut_time'] >= data_rt * 0.98) &
+                (calibration_df['elut_time'] <= data_rt * 1.02)
+                ]
+
+            # If there is a match, assign the peak from the calibration DataFrame
+            if not matching_calibration.empty:
+                # In case there are multiple matches, we can take the first one
+                matched_peak = matching_calibration.iloc[0]
+                data_df.at[data_idx, 'assigned_peak'] = matched_peak['file']
+
+        path = r"C:\Users\obayley\Documents\UPLCMS_Data"
+        save_path = os.path.join(path, 'id_peaks.csv')
+        # Save the modified DataFrame back to a CSV file if needed
+        data_df.to_csv(save_path, index=False)
+
+    def get_conc_factor_df(self, path):
+        calibration_df = pd.read_csv(path)
+
+        # Initialize a list to store the results
+        results = []
+
+        # Group the data by 'file' (name)
+        grouped = calibration_df.groupby('file')
+
+        # Iterate over each group to calculate the average elution time and the calibration factor
+        for name, group in grouped:
+            # Calculate the average elution time for the group
+            avg_elut_time = group['elut_time'].mean()
+
+            # Calculate the slope (calibration factor) assuming the line passes through the origin
+            slope = sum(group['conc'] * group['integral']) / sum(group['integral'] ** 2)
+
+            # Calculate the concentration factor (inverse of slope)
+            calibration_factor = 1 / slope
+
+            # Append the results to the list
+            results.append({'name': name, 'elut_time': avg_elut_time, 'concentration_factor': calibration_factor})
+
+        # Convert the results list to a DataFrame
+        result_df = pd.DataFrame(results)
+
+        # Save the DataFrame to a CSV file
+        save_path = os.path.join(os.path.dirname(path), 'correction_factor.csv')
+        result_df.to_csv(save_path, index=False)
+
 
     def process_chrom(self, chrom):
         """
         Processes the chromatogram. NOTE: the methods using inplace rather than
         chrom = chrom.method(...) return Data2D objects not Chromatogram Objects
         """
-
 
         chrom.extract_wavelength(
             min_wavelength=self.settings_obj.min_wavelength,
@@ -168,13 +299,12 @@ class Analyser:
             if min_elut_time <= elut_time <= max_elut_time:
                 print("Component found with desire retention times")
 
-            if uv_spectra and cosine_similarity(component.spectrum, uv_spectra) >= self.settings_obj.min_spectrum_correl:
+            if uv_spectra and cosine_similarity(component.spectrum,
+                                                uv_spectra) >= self.settings_obj.min_spectrum_correl:
                 print("Component found with matching UV spectra")
 
             if ms_spectra_peak and ms_spectra_peak in component.ms_spectrum:
                 print("Component found with desired mass")
-
-
 
     # -----Analysis Methods END-----
     # -----Basic Task Methods START-----
@@ -233,10 +363,9 @@ class Analyser:
 
 
 if __name__ == "__main__":
-    filepath = r"C:\Users\obayley\Platform_Data\Dummy_results_dir\RoboChem Sample292024-06-07 07-42-09+02-00.dx"
-    # filepath = r"C:\Users\obayley\Documents\Project_Notes\SuFEX\Early_Results\Merve - NN_10_02.dx"
-    dirpath = r"C:\Users\obayley\Documents\File Transfer\FGT_Sequence_30-7-24.rslt"
+    dirpath = r"C:\Users\obayley\Documents\UPLCMS_Data\FGT_Calibration"
     analyser = Analyser()
-    # res = analyser.run_analysis(filepath)
-    analyser.run_multi_analysis(dirpath)
-
+    # analyser.run_multi_analysis(dirpath)
+    analyser.trim_integral_summary(r"C:\Users\obayley\Documents\UPLCMS_Data\FGT_Calibration\integral_summary.csv")
+    analyser.match_peaks()
+    analyser.get_conc_factor_df(r"C:\Users\obayley\Documents\UPLCMS_Data\fgt_calibration.csv")

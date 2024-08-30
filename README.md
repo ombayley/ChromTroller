@@ -1,4 +1,4 @@
-# <img src = "utils/CrocLogo.png" width = "100"> ChromTroller
+# <img src = "utils/CrocLogo.png" width = "100" style="vertical-align: middle;"> ChromTroller
 
 ## Overview
 ChromTroller is an automated control and analysis package for triggering an Agilent UPLC-MS system

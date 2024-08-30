@@ -218,7 +218,7 @@ class ChromTroller:
 
         result_dict = analyser.run_analysis(sample_filepath)
 
-        self.log_info(f"Analysis result: {result_dict}")
+        self.log_info(f"Identified Peak: {result_dict}")
         self.runlog_list[-1].analysis = result_dict
         self.save_run_logs()
         return result_dict
