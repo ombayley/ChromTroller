@@ -216,6 +216,8 @@ class ChromTroller:
         analyser = Analyser()
         print("Analysis Initiated")
 
+        analyser.set_peak_search(peak_rt=1.8, rt_tolerance=0.5)
+
         result_dict = analyser.run_analysis(sample_filepath)
 
         self.log_info(f"Identified Peak: {result_dict}")
