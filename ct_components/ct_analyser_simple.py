@@ -86,7 +86,7 @@ class Analyser:
         closest_dict = None
         smallest_diff = float('inf')
         for dict in peaks_dict_list:
-            current_time = dict["Time"]
+            current_time = dict["Peak"]
             diff = abs(current_time - self.expected_time)
             # If the current difference is smaller than the smallest_diff, update
             if diff < smallest_diff:
