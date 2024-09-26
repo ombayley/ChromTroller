@@ -13,7 +13,7 @@ import json
 from datetime import datetime
 from ct_components.ct_server import Server
 from ct_components.ct_controller import Controller
-from ct_components.ct_analyser_simple import Analyser
+from ct_components.ct_analyser import Analyser
 from ct_components.ct_runlog import RunLog
 from ct_components.ct_monitor import Monitor
 
