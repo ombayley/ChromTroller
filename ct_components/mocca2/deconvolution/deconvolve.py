@@ -65,9 +65,7 @@ def deconvolve_adaptive(
 
     for n_comps in range(min_comps, max_comps+1):
         # Deconvolve peak with some increasing number of components
-        concs, spectra, mse = deconvolve_fixed(
-            data, n_comps, model, relaxe_concs
-        )
+        concs, spectra, mse = deconvolve_fixed(data, n_comps, model, relaxe_concs)
         # Check whether MSE is sufficiently small
         if mse < max_mse:
             break

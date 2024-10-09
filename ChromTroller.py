@@ -227,12 +227,7 @@ class ChromTroller:
         self.log_info(f"Identified Peak: {result_dict}")
         self.runlog_list[-1].analysis = result_dict
         self.save_run_logs()
-        if reagent_conc is not None:
-            return {'conc': reagent_conc}
-        elif result_dict is not None:
-            return result_dict
-        else:
-            return "No Peaks Identified"
+        return result_dict if result_dict is not None else {"peak_rt": None, "integral": None}
 
     def save_run_logs(self):
         """Save the RunLog info"""

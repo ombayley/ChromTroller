@@ -91,7 +91,7 @@ class Analyser:
             elut_time = smpl_chromatogram.time[elut_time_index]
             if min_time <= elut_time <= max_time:
                 integral = component.integral
-                peaks_dict_list.append({"Peak": elut_time, "Integral": integral})
+                peaks_dict_list.append({"peak_rt": elut_time, "integral": integral})
                 print(f"peak at: {elut_time}\nintegral: {integral}\n")
 
         # Filter the peaks that were close to the given retention time
@@ -99,7 +99,7 @@ class Analyser:
         closest_dict = None
         smallest_diff = float('inf')
         for dict in peaks_dict_list:
-            current_time = dict["Time"]
+            current_time = dict["peak_rt"]
             diff = abs(current_time - self.expected_time)
             # If the current difference is smaller than the smallest_diff, update
             if diff < smallest_diff:
@@ -133,6 +133,9 @@ class Analyser:
                         'elut_time': elut_time,
                         'integral': integral
                     })
+
+                # smpl_chromatogram.plot()
+                # plt.show()
 
             except Exception as e:
                 print(f"Error processing file {file}: {e}")
