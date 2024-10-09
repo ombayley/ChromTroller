@@ -134,6 +134,9 @@ class Analyser:
                         'integral': integral
                     })
 
+                # smpl_chromatogram.plot()
+                # plt.show()
+
             except Exception as e:
                 print(f"Error processing file {file}: {e}")
                 continue  # Skip to the next file
