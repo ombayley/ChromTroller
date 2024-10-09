@@ -137,7 +137,7 @@ class ChromTroller:
             case 'start_file_monitoring':
                 return self.start_file_monitoring()
             case 'run_data_analysis':
-                return self.run_data_analysis()
+                return self.run_data_analysis(data)
 
     # -----Management Methods END-----
     # -----Action Methods START-----
@@ -208,7 +208,7 @@ class ChromTroller:
     #     ack = self.analyser_obj.prepare_camp()
     #     self.log_info(f"Campaign analysis calibration: {ack}")
 
-    def run_data_analysis(self):
+    def run_data_analysis(self, target_rt):
         """runs the automated data analysis for a given run"""
         results_dirpath = self.get_result_dirpath()
         filename = self.runlog_list[-1].file  # filename = self.get_latest_filename(results_dirpath)
@@ -227,12 +227,7 @@ class ChromTroller:
         self.log_info(f"Identified Peak: {result_dict}")
         self.runlog_list[-1].analysis = result_dict
         self.save_run_logs()
-        if reagent_conc is not None:
-            return {'conc': reagent_conc}
-        elif result_dict is not None:
-            return result_dict
-        else:
-            return "No Peaks Identified"
+        return result_dict if result_dict is not None else {"peak_rt": None, "integral": None}
 
     def save_run_logs(self):
         """Save the RunLog info"""
