@@ -216,7 +216,9 @@ class ChromTroller:
         analyser = Analyser()
         print("Analysis Initiated")
 
-        analyser.set_peak_search(peak_rt=target_rt, rt_tolerance=0.1)
+        rt_tolerance = 0.1
+        analyser.set_peak_search(peak_rt=target_rt, rt_tolerance=rt_tolerance)
+        print(f"Target peak set to {target_rt} min with a tolerance of {rt_tolerance}")
 
         result_dict = analyser.run_analysis(sample_filepath)
         reagent_conc = None
