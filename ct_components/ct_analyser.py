@@ -70,6 +70,8 @@ class Analyser:
         """
         Central run method.
         """
+
+        # TODO catch whether a gradient file is present !! either allow the run without or reind the user up startup
         # Identify bkg file. File tag for searching specified in analysis.json but is typically 'gradient'
         bkg_filepath = self.get_bkg_filepath(sample_filepath)
 
