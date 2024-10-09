@@ -101,21 +101,22 @@ class Controller:
             self.check_ack(ack)
 
             # Ensure phase sensor sees sample. Wait if not there
-            self.log_info({'ps_sample_detection': 'WAITING'})
-            ack = self.wait_for_sample()
-            self.log_info({'ps_sample_detection': ack})
-            self.check_ack(ack)
+            self.log_info({'ps_sample_detection': 'BYPASSED'})
+            # ack = self.wait_for_sample()
+            # self.log_info({'ps_sample_detection': ack})
+            # self.check_ack(ack)
+
 
             attempt = 0
             max_attempts = 3
-            start_ack = "FAIL- HPLC not starting after 3 attempts"
+            start_ack = f"FAIL- HPLC not starting after {max_attempts} attempts"
             while attempt < max_attempts:
                 # Send start analysis and check acknowledgement.
                 send_ack = self._send_start_request()
                 self.log_info({'send_start_signal': send_ack})
 
                 # Check request acknowledgement from spectrometer (LCMS method must include this!)
-                self.log_info({'start_request_acknowledged': 'WAITING'})
+                self.log_info({'start_request_acknowledged': 'INITIATED'})
                 recc_ack = self._wait_on_lcms_response()
                 self.log_info({'start_request_acknowledged': recc_ack})
 
@@ -126,7 +127,7 @@ class Controller:
 
             self.check_ack(start_ack)
 
-            time.sleep(5)
+            time.sleep(0.5)
 
             # Wait for start signal/sample prep completion from spectrometer (LCMS method must include this!)
             self.log_info({'start_signal': 'WAITING'})
@@ -222,7 +223,7 @@ class Controller:
         This signal should be a change in the 'ready' line directly after the LC gets the start request
         """
         timeout = self.hardware_settings["lcms_response_timeout"]
-        polling_time = 0.05
+        polling_time = 0.01
         start_time = time.time()
         while time.time() - start_time < timeout:
             initialization_ack = self.lcms_device.get_lcms_start_request()
@@ -369,8 +370,6 @@ class SensorMonitor:
 if __name__ == "__main__":
     controller = Controller()
 
-    controller.switch_valve_to(0)
-    # controller._check_device_connectivity()
-    # controller._send_start_request()
+    controller.run_analysis_cycle()
 
     controller.stop_ps_monitor()

@@ -216,14 +216,23 @@ class ChromTroller:
         analyser = Analyser()
         print("Analysis Initiated")
 
-        analyser.set_peak_search(peak_rt=1.8, rt_tolerance=0.5)
+        analyser.set_peak_search(peak_rt=2.3, rt_tolerance=0.1)
 
         result_dict = analyser.run_analysis(sample_filepath)
+        reagent_conc = None
+        if result_dict['Integral'].exists():
+            correction_factor = 6129421050/0.02  # integral/conc  # TODO 'dumb'hardcode for testing change when working!
+            reagent_conc = float(result_dict['Integral'])/correction_factor
 
         self.log_info(f"Identified Peak: {result_dict}")
         self.runlog_list[-1].analysis = result_dict
         self.save_run_logs()
-        return result_dict
+        if reagent_conc is not None:
+            return {'conc': reagent_conc}
+        elif result_dict is not None:
+            return result_dict
+        else:
+            return "No Peaks Identified"
 
     def save_run_logs(self):
         """Save the RunLog info"""
@@ -275,7 +284,7 @@ class ChromTroller:
         escaped_dir_suffix = re.escape(dir_suffix)  # fix regex operators (i.e deals with '.')
         results_dir_tag = re.compile(rf'{escaped_dir_suffix}$')
 
-        most_recent_dirpath = None
+        most_recent_dirpath = ""
         most_recent_ctime = 0
         for subdir in subdirs:
             if results_dir_tag.search(subdir):
