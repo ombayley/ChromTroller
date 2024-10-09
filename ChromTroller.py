@@ -137,7 +137,7 @@ class ChromTroller:
             case 'start_file_monitoring':
                 return self.start_file_monitoring()
             case 'run_data_analysis':
-                return self.run_data_analysis()
+                return self.run_data_analysis(data)
 
     # -----Management Methods END-----
     # -----Action Methods START-----
@@ -208,7 +208,7 @@ class ChromTroller:
     #     ack = self.analyser_obj.prepare_camp()
     #     self.log_info(f"Campaign analysis calibration: {ack}")
 
-    def run_data_analysis(self):
+    def run_data_analysis(self, target_rt):
         """runs the automated data analysis for a given run"""
         results_dirpath = self.get_result_dirpath()
         filename = self.runlog_list[-1].file  # filename = self.get_latest_filename(results_dirpath)
@@ -216,7 +216,7 @@ class ChromTroller:
         analyser = Analyser()
         print("Analysis Initiated")
 
-        analyser.set_peak_search(peak_rt=2.3, rt_tolerance=0.1)
+        analyser.set_peak_search(peak_rt=target_rt, rt_tolerance=0.1)
 
         result_dict = analyser.run_analysis(sample_filepath)
         reagent_conc = None
