@@ -57,7 +57,6 @@ class Analyser:
         """
         Method to set the retention time target for the peak to pick.
         Can also specify a varience in retention time.
-        !THIS IS A BASIC METHOD TO HELP TEST PEAK ASSIGNMENT!
         """
         self.expected_time = peak_rt
         self.peak_match_rt_tolerance = rt_tolerance

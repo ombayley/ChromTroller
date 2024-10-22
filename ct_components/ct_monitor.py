@@ -69,11 +69,13 @@ class Monitor(FileSystemEventHandler):
         """Handle new file/directory creation events."""
         if event.is_directory:
             return
-        filename = os.path.basename(event.src_path)
-        logging.info(f"New File identified by ct_monitor: {filename}")
-        if self.data_file_tag.search(filename) and filename not in self.prior_filename_list:
-            logging.info(filename)
-            self.queue.put(filename)
+        file_path = event.src_path
+        file_name = os.path.basename(file_path)
+        logging.info(f"New File {file_name} identified by ct_monitor: {file_name}")
+        if (self.data_file_tag.search(file_name) and file_name not in self.prior_filename_list
+                and "snapshot" not in file_name.lower()):
+            logging.info(f"new file found at: {file_path}")
+            self.queue.put(file_path)
 
     def stop_monitoring(self):
         """Stops the monitoring process and waits for the thread to finish."""

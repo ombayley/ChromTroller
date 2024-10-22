@@ -42,11 +42,11 @@ class StandaloneController:
     @staticmethod
     def _setup_logging():
         """ Sets log format and file destination """
-        # Set path to the 'logs' directory.
+        # Set path to the 'log_files' directory.
         root_dir_path = os.path.dirname(os.path.abspath(__file__))
-        log_dir_path = os.path.join(root_dir_path, '../logs')
+        log_dir_path = os.path.join(root_dir_path, '../log_files')
 
-        # Ensure the logs directory exists
+        # Ensure the log_files directory exists
         os.makedirs(log_dir_path, exist_ok=True)
 
         # Set the log file name

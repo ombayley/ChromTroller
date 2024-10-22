@@ -1,6 +1,6 @@
 {
-    "results_master_directory": "D:\\CDSProjects\\Polymer_Degradation\\Results",
-    "results_subdir_tag": ".rslt",
+    "project_name": "D:\\CDSProjects\\Polymer_Degradation\\Results",
+    "run_result_dir_tag": ".rslt",
     "data_file_type": ".dx",
     "calibration_data_path": "D:\\CDSProjects\\RoboChem_FGT\\Results\\RoboChem_FGT\\FGT additive calibration -[completed].rslt"
 }
