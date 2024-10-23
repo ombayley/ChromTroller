@@ -8,9 +8,10 @@ import logging
 import os
 import json
 import pandas as pd
-from ct_components.mocca2.math import cosine_similarity
-from matplotlib import pyplot as plt
 from glob import glob
+from matplotlib import pyplot as plt
+
+from ct_components.mocca2.math import cosine_similarity
 from ct_components.mocca2 import ProcessingSettings, Chromatogram
 
 
@@ -279,7 +280,7 @@ class Analyser:
         save_path = os.path.join(os.path.dirname(path), 'correction_factor.csv')
         result_df.to_csv(save_path, index=False)
 
-# ^^ ------ ^^ !! Trail methods used while developing better batch processing !! ^^ ------ ^^
+# ^^ ------ ^^ !! Trial methods used while developing better batch processing !! ^^ ------ ^^
 
 
     def process_chrom(self, chrom):
