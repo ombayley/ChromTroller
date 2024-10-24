@@ -1,6 +1,6 @@
 # Program Specific
 settings_files/socket_settings.json
-logs
+log_files
 *.pkl
 
 # Byte-compiled / optimized / DLL files
@@ -36,7 +36,7 @@ share/python-wheels/
 *.manifest
 *.spec
 
-# Installer logs
+# Installer log_files
 pip-log.txt
 pip-delete-this-directory.txt
 
@@ -65,4 +65,4 @@ coverage.xml
 Thumbs.db
 *.pyc
 /utils/__pycache__
-/logs
+/log_files
