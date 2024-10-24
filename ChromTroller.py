@@ -226,8 +226,8 @@ class ChromTroller:
         """
         Set the target retention time and tolerance for the pdata analysis peak picking
         """
-        self.rt_target: float = target.get('target_rt', 0)
-        self.rt_tolerance: float = target.get('tolerance', 0.1)
+        self.rt_target: float = target.get('rt_target', 0)
+        self.rt_tolerance: float = target.get('rt_tolerance', 0.1)
 
     def start_hplc_run(self) -> str:
         """Start the HPLC analysis procedure controlled by the hardware controller.
@@ -292,7 +292,7 @@ class ChromTroller:
 
         return file_path
 
-    def run_data_analysis(self,) -> Dict[str, Any]:
+    def run_data_analysis(self) -> Dict[str, Any]:
         """Run the automated data analysis for a given run.
 
         Returns:
