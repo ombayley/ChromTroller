@@ -222,9 +222,9 @@ class ChromTroller:
 
         result_dict = analyser.run_analysis(sample_filepath)
         reagent_conc = None
-        if result_dict['Integral'].exists():
-            correction_factor = 6129421050/0.02  # integral/conc  # TODO 'dumb'hardcode for testing change when working!
-            reagent_conc = float(result_dict['Integral'])/correction_factor
+        # if result_dict['Integral'].exists():
+        #     correction_factor = 6129421050/0.02  # integral/conc  # TODO 'dumb'hardcode for testing change when working!
+        #     reagent_conc = float(result_dict['integral'])/correction_factor
 
         self.log_info(f"Identified Peak: {result_dict}")
         self.runlog_list[-1].analysis = result_dict
