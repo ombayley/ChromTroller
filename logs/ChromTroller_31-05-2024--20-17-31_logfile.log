@@ -1,0 +1,16 @@
+31-05-2024 20:17:32 - INFO - ct_controller.py - SensorMonitor Initialized Successfully
+31-05-2024 20:17:32 - INFO - ct_controller.py - Phase sensor monitoring started on separate thread.
+31-05-2024 20:17:32 - INFO - ct_controller.py - Controller Object Initialized Successfully
+31-05-2024 20:17:32 - INFO - ct_server.py - Server successfully connected to instrument controller
+31-05-2024 20:17:32 - INFO - ct_server.py - Server listening on port: 10989
+31-05-2024 20:17:35 - INFO - ct_server.py - Client: ('127.0.0.1', 56356) successfully connected
+31-05-2024 20:17:37 - INFO - ct_server.py - Command received from client: 4
+31-05-2024 20:17:37 - INFO - ct_server.py - Response sent back to client: A
+31-05-2024 20:17:41 - INFO - ct_server.py - Command received from client: 5-b
+31-05-2024 20:17:41 - INFO - ct_server.py - Response sent back to client: Good Acknowledge
+31-05-2024 20:17:49 - INFO - ct_server.py - Command received from client: 5-a
+31-05-2024 20:17:49 - INFO - ct_server.py - Response sent back to client: Good Acknowledge
+31-05-2024 20:17:58 - INFO - ct_server.py - Command received from client: 5-b
+31-05-2024 20:17:58 - INFO - ct_server.py - Response sent back to client: Good Acknowledge
+31-05-2024 20:18:28 - INFO - ct_server.py - Command received from client: 5-a
+31-05-2024 20:18:28 - INFO - ct_server.py - Response sent back to client: Good Acknowledge

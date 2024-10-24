@@ -1,0 +1,54 @@
+18-05-02_09-07-2024  - INFO - ct_server.py - Server loaded connection ids from .json file successfully
+18-05-02_09-07-2024  - INFO - ct_server.py - Server listening on port: 10989
+18-05-03_09-07-2024  - INFO - ct_controller.py - Phase sensor monitoring started on separate thread.
+18-05-03_09-07-2024  - INFO - ct_controller.py - Controller Object Initialized Successfully
+18-05-03_09-07-2024  - INFO - ChromTroller.py - Successfully connected to instrument controller
+18-05-03_09-07-2024  - INFO - ChromTroller.py - Successfully connected to monitor
+18-05-03_09-07-2024  - INFO - ct_analyser.py - loaded analysis settings from json
+18-05-03_09-07-2024  - INFO - ct_analyser.py - settings read from analysis json
+18-05-03_09-07-2024  - INFO - ct_analyser.py - settings object created
+18-05-03_09-07-2024  - INFO - ct_analyser.py - Analyser Object Initialized Successfully
+18-05-03_09-07-2024  - INFO - ChromTroller.py - Successfully connected to analyser
+18-06-26_09-07-2024  - INFO - ct_server.py - client attempted to connect 10.10.29.202
+18-06-26_09-07-2024  - INFO - ct_server.py - Client connected at 18:06:26_09-07-2024
+18-06-26_09-07-2024  - INFO - ct_server.py - Command from client: new_run_name with message: 4
+18-06-26_09-07-2024  - INFO - ChromTroller.py - Command received: new_run_name with data: 4
+18-06-26_09-07-2024  - INFO - ct_server.py - Command from client: set_run_conc with message: 0.0846
+18-06-26_09-07-2024  - INFO - ChromTroller.py - Command received: set_run_conc with data: 0.0846
+18-06-26_09-07-2024  - INFO - ct_server.py - Command from client: add_reagents with message: ['chloro', 'additive_11']
+18-06-26_09-07-2024  - INFO - ChromTroller.py - Command received: add_reagents with data: ['chloro', 'additive_11']
+18-06-26_09-07-2024  - INFO - ct_server.py - Command from client: add_reaction_conditions with message: {'light_intensity': 130, 'residence_time': 0}
+18-06-26_09-07-2024  - INFO - ChromTroller.py - Command received: add_reaction_conditions with data: {'light_intensity': 130, 'residence_time': 0}
+18-06-26_09-07-2024  - INFO - ct_server.py - Command from client: start_hplc_run with message: None
+18-06-26_09-07-2024  - INFO - ChromTroller.py - Command received: start_hplc_run with data: None
+18-06-26_09-07-2024  - INFO - ct_controller.py - {'analysis': 'INITIATED'}
+18-06-26_09-07-2024  - INFO - ct_controller.py - {'hardware_connection_check': 'SUCCESS'}
+18-06-26_09-07-2024  - INFO - ct_controller.py - {'ps_sample_detection': 'SUCCESS'}
+18-06-35_09-07-2024  - INFO - ct_controller.py - {'full_sample_loop_check': 'SUCCESS'}
+18-06-35_09-07-2024  - INFO - ct_controller.py - {'send_start_signal': 'SUCCESS'}
+18-06-35_09-07-2024  - INFO - ct_controller.py - {'start_signal_acknowledged': 'SUCCESS'}
+18-06-45_09-07-2024  - INFO - ct_controller.py - {'valve_switched_to_load': 'SUCCESS'}
+18-06-57_09-07-2024  - INFO - ct_controller.py - {'sample_loaded': 'SUCCESS'}
+18-06-57_09-07-2024  - INFO - ct_controller.py - {'valve_returned_to_bypass': 'SUCCESS'}
+18-06-57_09-07-2024  - INFO - ct_controller.py - {'analysis_cycle_started': 'SUCCESS'}
+18-06-57_09-07-2024  - INFO - ct_server.py - Response sent to client: HPLC: SUCCESS
+18-06-57_09-07-2024  - INFO - ct_server.py - Command from client: start_file_monitoring with message: None
+18-06-57_09-07-2024  - INFO - ChromTroller.py - Command received: start_file_monitoring with data: None
+18-12-39_09-07-2024  - INFO - ct_monitor.py - 004-RoboChem Sample-05.dx
+18-12-39_09-07-2024  - INFO - ct_server.py - Response sent to client: 004-RoboChem Sample-05.dx
+18-12-39_09-07-2024  - INFO - ct_server.py - Command from client: run_data_analysis with message: None
+18-12-39_09-07-2024  - INFO - ChromTroller.py - Command received: run_data_analysis with data: None
+18-12-39_09-07-2024  - ERROR - ct_server.py - Error accepting connections: [Errno 2] No such file or directory: 'calibration_campaign.pkl'
+Traceback (most recent call last):
+  File "C:\Users\nrg_lcms\Documents\GitHub\ChromTroller\ct_components\ct_server.py", line 176, in handle_client
+    response = self.ct_program.handle_command(client_comm_dict)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nrg_lcms\Documents\GitHub\ChromTroller\ChromTroller.py", line 148, in handle_command
+    return self.run_data_analysis()
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\nrg_lcms\Documents\GitHub\ChromTroller\ChromTroller.py", line 185, in run_data_analysis
+    self.analyser_obj.load_calibration()
+  File "C:\Users\nrg_lcms\Documents\GitHub\ChromTroller\ct_components\ct_analyser.py", line 384, in load_calibration
+    with open("calibration_campaign.pkl", "rb") as file:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'calibration_campaign.pkl'

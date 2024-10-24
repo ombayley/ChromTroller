@@ -1,0 +1,135 @@
+[
+    {
+        "run_name": "Test_01Oct2024",
+        "run_conc": 0.0,
+        "reagent_list": [
+            "Polystyrene",
+            0.1,
+            "tBuOOH",
+            8,
+            "NBS",
+            0.3
+        ],
+        "run_conditions": {
+            "residence_time": 120,
+            "light_intensity": 10
+        },
+        "hplc_start": "SUCCESS",
+        "file": "2024-10-01 15-28-44+02-00-03.dx",
+        "analysis": {}
+    },
+    {
+        "run_name": "Test_01Oct2024",
+        "run_conc": 0.0,
+        "reagent_list": [
+            "Polystyrene",
+            0.1,
+            "tBuOOH",
+            8,
+            "NBS",
+            0.3
+        ],
+        "run_conditions": {
+            "residence_time": 120,
+            "light_intensity": 10
+        },
+        "hplc_start": "SUCCESS",
+        "file": "2024-10-01 15-44-27+02-00-05.dx",
+        "analysis": {}
+    },
+    {
+        "run_name": "Test_01Oct2024",
+        "run_conc": 0.0,
+        "reagent_list": [
+            "Polystyrene",
+            0.1,
+            "tBuOOH",
+            8,
+            "NBS",
+            0.3
+        ],
+        "run_conditions": {
+            "residence_time": 120,
+            "light_intensity": 10
+        },
+        "hplc_start": "SUCCESS",
+        "file": "2024-10-01 16-13-46+02-00-07.dx",
+        "analysis": {}
+    },
+    {
+        "run_name": "Test_01Oct2024",
+        "run_conc": 0.0,
+        "reagent_list": [
+            "Polystyrene",
+            0.1,
+            "tBuOOH",
+            8,
+            "NBS",
+            0.3
+        ],
+        "run_conditions": {
+            "residence_time": 120,
+            "light_intensity": 10
+        },
+        "hplc_start": "SUCCESS",
+        "file": "2024-10-01 16-46-26+02-00-09.dx",
+        "analysis": {}
+    },
+    {
+        "run_name": "Test_01Oct2024",
+        "run_conc": 0.0,
+        "reagent_list": [
+            "Polystyrene",
+            0.1,
+            "tBuOOH",
+            8,
+            "NBS",
+            0.3
+        ],
+        "run_conditions": {
+            "residence_time": 120,
+            "light_intensity": 10
+        },
+        "hplc_start": "SUCCESS",
+        "file": "2024-10-01 17-05-16+02-00-11.dx",
+        "analysis": {}
+    },
+    {
+        "run_name": "Test_01Oct2024",
+        "run_conc": 0.0,
+        "reagent_list": [
+            "Polystyrene",
+            0.1,
+            "tBuOOH",
+            8,
+            "NBS",
+            0.3
+        ],
+        "run_conditions": {
+            "residence_time": 120,
+            "light_intensity": 10
+        },
+        "hplc_start": "FAIL - FAIL- HPLC not starting after 3 attempts",
+        "file": "",
+        "analysis": {}
+    },
+    {
+        "run_name": "Test_01Oct2024",
+        "run_conc": 0.0,
+        "reagent_list": [
+            "Polystyrene",
+            0.1,
+            "tBuOOH",
+            8,
+            "NBS",
+            0.3
+        ],
+        "run_conditions": {
+            "residence_time": 120,
+            "light_intensity": 10
+        },
+        "hplc_start": "SUCCESS",
+        "file": "2024-10-01 17-42-57+02-00-03.dx",
+        "analysis": {}
+    }
+]

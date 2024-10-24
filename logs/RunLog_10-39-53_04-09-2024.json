@@ -1,0 +1,46 @@
+[
+    {
+        "run_name": "TEST",
+        "run_conc": 0.0,
+        "reagent_list": [
+            "Polystyrene",
+            0.1,
+            "tBuOOH",
+            8,
+            "NBS",
+            0.3
+        ],
+        "run_conditions": {
+            "residence_time": 2700,
+            "light_intensity": 100
+        },
+        "hplc_start": "SUCCESS",
+        "file": "MV_45min_sample_02.dx",
+        "analysis": {
+            "Peak": 1.71,
+            "Integral": 326329863.03396213
+        }
+    },
+    {
+        "run_name": "TEST",
+        "run_conc": 0.0,
+        "reagent_list": [
+            "Polystyrene",
+            0.1,
+            "tBuOOH",
+            8,
+            "NBS",
+            0.3
+        ],
+        "run_conditions": {
+            "residence_time": 300,
+            "light_intensity": 100
+        },
+        "hplc_start": "SUCCESS",
+        "file": "MV_sample_03.dx",
+        "analysis": {
+            "Peak": 1.645,
+            "Integral": 103701351.271188
+        }
+    }
+]

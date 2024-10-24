@@ -1,0 +1,8 @@
+09-07-2024 18:56:24 - INFO - ct_analyser.py - loaded analysis settings from json
+09-07-2024 18:56:24 - INFO - ct_analyser.py - settings read from analysis json
+09-07-2024 18:56:24 - INFO - ct_analyser.py - settings object created
+09-07-2024 18:56:24 - INFO - ct_analyser.py - Analyser Object Initialized Successfully
+09-07-2024 18:56:24 - INFO - ct_analyser.py - no data found for reagent chromatogram
+09-07-2024 18:56:24 - INFO - ct_analyser.py - no data found for reagent chromatogram
+09-07-2024 18:56:24 - INFO - ct_analyser.py - no data found for reagent chromatogram
+09-07-2024 18:56:25 - INFO - ct_analyser.py - reagent chromatogram added to campaign - D:\CDSProjects\RoboChem_FGT\Results\Single_Test_9-7-24_post-CT-updates.rslt\004-RoboChem Sample-05.dx

@@ -1,0 +1,59 @@
+[
+    {
+        "run_name": "Test_01Oct2024",
+        "run_conc": 0.0,
+        "reagent_list": [
+            "Polystyrene",
+            0.1,
+            "tBuOOH",
+            8,
+            "NBS",
+            0.3
+        ],
+        "run_conditions": {
+            "residence_time": 120,
+            "light_intensity": 10
+        },
+        "hplc_start": "SUCCESS",
+        "file": "2024-10-02 11-02-53+02-00-07.dx",
+        "analysis": {}
+    },
+    {
+        "run_name": "Test_01Oct2024",
+        "run_conc": 0.0,
+        "reagent_list": [
+            "Polystyrene",
+            0.1,
+            "tBuOOH",
+            8,
+            "NBS",
+            0.3
+        ],
+        "run_conditions": {
+            "residence_time": 120,
+            "light_intensity": 10
+        },
+        "hplc_start": "SUCCESS",
+        "file": "2024-10-02 14-59-42+02-00-09.dx",
+        "analysis": {}
+    },
+    {
+        "run_name": "Test_01Oct2024",
+        "run_conc": 0.0,
+        "reagent_list": [
+            "Polystyrene",
+            0.1,
+            "tBuOOH",
+            8,
+            "NBS",
+            0.3
+        ],
+        "run_conditions": {
+            "residence_time": 120,
+            "light_intensity": 10
+        },
+        "hplc_start": "SUCCESS",
+        "file": "2024-10-02 15-21-01+02-00-11.dx",
+        "analysis": {}
+    }
+]

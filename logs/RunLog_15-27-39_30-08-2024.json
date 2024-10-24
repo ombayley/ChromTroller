@@ -1,0 +1,21 @@
+[
+    {
+        "run_name": "TEST",
+        "run_conc": 0.0,
+        "reagent_list": [
+            "Polystyrene",
+            0.11,
+            "tBuOOH",
+            8,
+            "NBS",
+            0.3
+        ],
+        "run_conditions": {
+            "residence_time": 300,
+            "light_intensity": 95
+        },
+        "hplc_start": "SUCCESS",
+        "file": "",
+        "analysis": {}
+    }
+]

@@ -1,0 +1,602 @@
+[
+    {
+        "run_name": 1,
+        "run_conc": 0.0,
+        "reagent_list": [
+            "Polystyrene",
+            0.03815961744169103,
+            "tBuOOH",
+            7.774006521786932,
+            "NBS",
+            0.1260258849715704
+        ],
+        "run_conditions": {
+            "residence_time": 2141.0724353797673,
+            "light_intensity": 35.64144566401038
+        },
+        "hplc_start": "SUCCESS",
+        "file": "Run1_sample04.dx",
+        "analysis": {
+            "peak_rt": 3.964,
+            "integral": 31985743.092256445
+        }
+    },
+    {
+        "run_name": 2,
+        "run_conc": 0.0,
+        "reagent_list": [
+            "Polystyrene",
+            0.04836809094721337,
+            "tBuOOH",
+            4.55994729496032,
+            "NBS",
+            0.22634393548631992
+        ],
+        "run_conditions": {
+            "residence_time": 2789.224841933161,
+            "light_intensity": 70.70314823692478
+        },
+        "hplc_start": "SUCCESS",
+        "file": "Run2_sample06.dx",
+        "analysis": {
+            "peak_rt": 3.954,
+            "integral": 254041810.73620093
+        }
+    },
+    {
+        "run_name": 3,
+        "run_conc": 0.0,
+        "reagent_list": [
+            "Polystyrene",
+            0.02436509835779209,
+            "tBuOOH",
+            9.662701160775384,
+            "NBS",
+            0.0657941258035496
+        ],
+        "run_conditions": {
+            "residence_time": 2453.209596148118,
+            "light_intensity": 52.07551237707367
+        },
+        "hplc_start": "SUCCESS",
+        "file": "Run3_sample08.dx",
+        "analysis": null
+    },
+    {
+        "run_name": 4,
+        "run_conc": 0.0,
+        "reagent_list": [
+            "Polystyrene",
+            0.09762413265430625,
+            "tBuOOH",
+            7.090053370395334,
+            "NBS",
+            0.18842982687197046
+        ],
+        "run_conditions": {
+            "residence_time": 3155.2766318280865,
+            "light_intensity": 55.50828055291398
+        },
+        "hplc_start": "SUCCESS",
+        "file": "Run4_sample10.dx",
+        "analysis": {
+            "peak_rt": 3.952,
+            "integral": 463323407.2649969
+        }
+    },
+    {
+        "run_name": 5,
+        "run_conc": 0.0,
+        "reagent_list": [
+            "Polystyrene",
+            0.08219703019623857,
+            "tBuOOH",
+            6.41153229461732,
+            "NBS",
+            0.27913963534508557
+        ],
+        "run_conditions": {
+            "residence_time": 3391.915373578385,
+            "light_intensity": 19.865160239267134
+        },
+        "hplc_start": "SUCCESS",
+        "file": "Run5_sample12.dx",
+        "analysis": {
+            "peak_rt": 3.95,
+            "integral": 246329702.93910062
+        }
+    },
+    {
+        "run_name": 6,
+        "run_conc": 0.0,
+        "reagent_list": [
+            "Polystyrene",
+            0.05570963423487629,
+            "tBuOOH",
+            3.5057329702670152,
+            "NBS",
+            0.17387067310678234
+        ],
+        "run_conditions": {
+            "residence_time": 1900.23972919236,
+            "light_intensity": 94.12894409238986
+        },
+        "hplc_start": "SUCCESS",
+        "file": "Run6_sample14.dx",
+        "analysis": {
+            "peak_rt": 3.957,
+            "integral": 212193932.1202035
+        }
+    },
+    {
+        "run_name": 7,
+        "run_conc": 0.0,
+        "reagent_list": [
+            "Polystyrene",
+            0.025780600770168263,
+            "tBuOOH",
+            9.765163298315072,
+            "NBS",
+            0.08564438723620427
+        ],
+        "run_conditions": {
+            "residence_time": 2043.7912942466291,
+            "light_intensity": 6.230507029855469
+        },
+        "hplc_start": "SUCCESS",
+        "file": "Run7_sample16.dx",
+        "analysis": null
+    },
+    {
+        "run_name": 1,
+        "run_conc": 0.0,
+        "reagent_list": [
+            "Polystyrene",
+            0.05500000000000001,
+            "tBuOOH",
+            6.5,
+            "NBS",
+            0.175
+        ],
+        "run_conditions": {
+            "residence_time": 180.0,
+            "light_intensity": 52.5
+        },
+        "hplc_start": "FAIL - FAIL- HPLC not starting after 3 attempts",
+        "file": "clean03.dx",
+        "analysis": {}
+    },
+    {
+        "run_name": 2,
+        "run_conc": 0.0,
+        "reagent_list": [
+            "Polystyrene",
+            0.05500000000000001,
+            "tBuOOH",
+            6.5,
+            "NBS",
+            0.175
+        ],
+        "run_conditions": {
+            "residence_time": 180.0,
+            "light_intensity": 52.5
+        },
+        "hplc_start": "SUCCESS",
+        "file": "Run1_sample04.dx",
+        "analysis": null
+    },
+    {
+        "run_name": 3,
+        "run_conc": 0.0,
+        "reagent_list": [
+            "Polystyrene",
+            0.043750000000000004,
+            "tBuOOH",
+            8.25,
+            "NBS",
+            0.2375
+        ],
+        "run_conditions": {
+            "residence_time": 240.0,
+            "light_intensity": 28.75
+        },
+        "hplc_start": "SUCCESS",
+        "file": "Run2_sample06.dx",
+        "analysis": {}
+    },
+    {
+        "run_name": 1,
+        "run_conc": 0.0,
+        "reagent_list": [
+            "Polystyrene",
+            0.01770390410178794,
+            "tBuOOH",
+            5.535864643511891,
+            "NBS",
+            0.1274322703998529
+        ],
+        "run_conditions": {
+            "residence_time": 2257.493580178582,
+            "light_intensity": 61.75626303005737
+        },
+        "hplc_start": "SUCCESS",
+        "file": "Run1_sample04.dx",
+        "analysis": null
+    },
+    {
+        "run_name": 2,
+        "run_conc": 0.0,
+        "reagent_list": [
+            "Polystyrene",
+            0.059557888348272976,
+            "tBuOOH",
+            6.858297048983586,
+            "NBS",
+            0.10792585400125931
+        ],
+        "run_conditions": {
+            "residence_time": 3479.17889550822,
+            "light_intensity": 93.22061205166068
+        },
+        "hplc_start": "SUCCESS",
+        "file": "Run2_sample06.dx",
+        "analysis": {
+            "peak_rt": 3.947,
+            "integral": 79296325.73349959
+        }
+    },
+    {
+        "run_name": 3,
+        "run_conc": 0.0,
+        "reagent_list": [
+            "Polystyrene",
+            0.08123947617816,
+            "tBuOOH",
+            4.156389466717636,
+            "NBS",
+            0.20090980031072392
+        ],
+        "run_conditions": {
+            "residence_time": 1916.3771360322348,
+            "light_intensity": 47.40280502863744
+        },
+        "hplc_start": "SUCCESS",
+        "file": "Run3_sample08.dx",
+        "analysis": {
+            "peak_rt": 3.958,
+            "integral": 167882653.93665296
+        }
+    },
+    {
+        "run_name": 4,
+        "run_conc": 0.0,
+        "reagent_list": [
+            "Polystyrene",
+            0.04854938311571314,
+            "tBuOOH",
+            9.59488411307254,
+            "NBS",
+            0.24920155705129365
+        ],
+        "run_conditions": {
+            "residence_time": 3116.195524939829,
+            "light_intensity": 17.49261927590348
+        },
+        "hplc_start": "SUCCESS",
+        "file": "Run4_sample10.dx",
+        "analysis": null
+    },
+    {
+        "run_name": 5,
+        "run_conc": 0.0,
+        "reagent_list": [
+            "Polystyrene",
+            0.034008408310793756,
+            "tBuOOH",
+            3.7110917356594357,
+            "NBS",
+            0.11720378588927423
+        ],
+        "run_conditions": {
+            "residence_time": 3161.681562899441,
+            "light_intensity": 22.59589482329685
+        },
+        "hplc_start": "SUCCESS",
+        "file": "Run5_sample12.dx",
+        "analysis": null
+    },
+    {
+        "run_name": 6,
+        "run_conc": 0.0,
+        "reagent_list": [
+            "Polystyrene",
+            0.08875000000000001,
+            "tBuOOH",
+            4.75,
+            "NBS",
+            0.2375
+        ],
+        "run_conditions": {
+            "residence_time": 2250.0,
+            "light_intensity": 28.75
+        },
+        "hplc_start": "SUCCESS",
+        "file": "Run6_sample14.dx",
+        "analysis": null
+    },
+    {
+        "run_name": 7,
+        "run_conc": 0.0,
+        "reagent_list": [
+            "Polystyrene",
+            0.0775,
+            "tBuOOH",
+            4.75,
+            "NBS",
+            0.175
+        ],
+        "run_conditions": {
+            "residence_time": 2700.0,
+            "light_intensity": 28.75
+        },
+        "hplc_start": "SUCCESS",
+        "file": "Run7_sample16.dx",
+        "analysis": null
+    },
+    {
+        "run_name": 8,
+        "run_conc": 0.0,
+        "reagent_list": [
+            "Polystyrene",
+            0.08875000000000001,
+            "tBuOOH",
+            8.25,
+            "NBS",
+            0.2375
+        ],
+        "run_conditions": {
+            "residence_time": 3150.0,
+            "light_intensity": 76.25
+        },
+        "hplc_start": "SUCCESS",
+        "file": "Run8_sample18.dx",
+        "analysis": null
+    },
+    {
+        "run_name": 9,
+        "run_conc": 0.0,
+        "reagent_list": [
+            "Polystyrene",
+            0.043750000000000004,
+            "tBuOOH",
+            9.125,
+            "NBS",
+            0.08125
+        ],
+        "run_conditions": {
+            "residence_time": 3375.0,
+            "light_intensity": 76.25
+        },
+        "hplc_start": "SUCCESS",
+        "file": "Run9_sample20.dx",
+        "analysis": {}
+    },
+    {
+        "run_name": 10,
+        "run_conc": 0.0,
+        "reagent_list": [
+            "Polystyrene",
+            0.026171875000000004,
+            "tBuOOH",
+            9.9453125,
+            "NBS",
+            0.298046875
+        ],
+        "run_conditions": {
+            "residence_time": 1828.125,
+            "light_intensity": 98.515625
+        },
+        "hplc_start": "SUCCESS",
+        "file": "Run10_sample22.dx",
+        "analysis": null
+    },
+    {
+        "run_name": 11,
+        "run_conc": 0.0,
+        "reagent_list": [
+            "Polystyrene",
+            0.043750000000000004,
+            "tBuOOH",
+            9.125,
+            "NBS",
+            0.20625
+        ],
+        "run_conditions": {
+            "residence_time": 2250.0,
+            "light_intensity": 28.75
+        },
+        "hplc_start": "SUCCESS",
+        "file": "Run11_sample24.dx",
+        "analysis": null
+    },
+    {
+        "run_name": 12,
+        "run_conc": 0.0,
+        "reagent_list": [
+            "Polystyrene",
+            0.08875000000000001,
+            "tBuOOH",
+            3.875,
+            "NBS",
+            0.2375
+        ],
+        "run_conditions": {
+            "residence_time": 3150.0,
+            "light_intensity": 76.25
+        },
+        "hplc_start": "SUCCESS",
+        "file": "Run12_sample26.dx",
+        "analysis": {
+            "peak_rt": 3.948,
+            "integral": 924912964.6818004
+        }
+    },
+    {
+        "run_name": 13,
+        "run_conc": 0.0,
+        "reagent_list": [
+            "Polystyrene",
+            0.09999998927116395,
+            "tBuOOH",
+            6.987729787826538,
+            "NBS",
+            0.05000005960464478
+        ],
+        "run_conditions": {
+            "residence_time": 3599.9995708465576,
+            "light_intensity": 5.000022649765015
+        },
+        "hplc_start": "SUCCESS",
+        "file": "Run13_sample28.dx",
+        "analysis": null
+    },
+    {
+        "run_name": 14,
+        "run_conc": 0.0,
+        "reagent_list": [
+            "Polystyrene",
+            0.09999991416931153,
+            "tBuOOH",
+            3.000006675720215,
+            "NBS",
+            0.2999997615814209
+        ],
+        "run_conditions": {
+            "residence_time": 3599.9982833862305,
+            "light_intensity": 97.95916557312012
+        },
+        "hplc_start": "SUCCESS",
+        "file": "Run14_sample30.dx",
+        "analysis": {
+            "peak_rt": 3.95,
+            "integral": 823340700.764122
+        }
+    },
+    {
+        "run_name": 15,
+        "run_conc": 0.0,
+        "reagent_list": [
+            "Polystyrene",
+            0.08875000000000001,
+            "tBuOOH",
+            3.875,
+            "NBS",
+            0.26875
+        ],
+        "run_conditions": {
+            "residence_time": 3375.0,
+            "light_intensity": 76.25
+        },
+        "hplc_start": "SUCCESS",
+        "file": "Run15_sample32.dx",
+        "analysis": {}
+    },
+    {
+        "run_name": 16,
+        "run_conc": 0.0,
+        "reagent_list": [
+            "Polystyrene",
+            0.0325,
+            "tBuOOH",
+            8.25,
+            "NBS",
+            0.2375
+        ],
+        "run_conditions": {
+            "residence_time": 2700.0,
+            "light_intensity": 76.25
+        },
+        "hplc_start": "SUCCESS",
+        "file": "Run16_sample34.dx",
+        "analysis": null
+    },
+    {
+        "run_name": 17,
+        "run_conc": 0.0,
+        "reagent_list": [
+            "Polystyrene",
+            0.08875000000000001,
+            "tBuOOH",
+            9.125,
+            "NBS",
+            0.2375
+        ],
+        "run_conditions": {
+            "residence_time": 2250.0,
+            "light_intensity": 28.75
+        },
+        "hplc_start": "SUCCESS",
+        "file": "Run17_sample36.dx",
+        "analysis": null
+    },
+    {
+        "run_name": 18,
+        "run_conc": 0.0,
+        "reagent_list": [
+            "Polystyrene",
+            0.06625,
+            "tBuOOH",
+            8.25,
+            "NBS",
+            0.1125
+        ],
+        "run_conditions": {
+            "residence_time": 3150.0,
+            "light_intensity": 76.25
+        },
+        "hplc_start": "SUCCESS",
+        "file": "Run18_sample38.dx",
+        "analysis": null
+    },
+    {
+        "run_name": 19,
+        "run_conc": 0.0,
+        "reagent_list": [
+            "Polystyrene",
+            0.043750000000000004,
+            "tBuOOH",
+            4.75,
+            "NBS",
+            0.2375
+        ],
+        "run_conditions": {
+            "residence_time": 3150.0,
+            "light_intensity": 76.25
+        },
+        "hplc_start": "SUCCESS",
+        "file": "Run19_sample40.dx",
+        "analysis": null
+    },
+    {
+        "run_name": 20,
+        "run_conc": 0.0,
+        "reagent_list": [
+            "Polystyrene",
+            0.0996484375,
+            "tBuOOH",
+            3.02734375,
+            "NBS",
+            0.2208984375
+        ],
+        "run_conditions": {
+            "residence_time": 2467.96875,
+            "light_intensity": 90.3515625
+        },
+        "hplc_start": "SUCCESS",
+        "file": "Run20_sample42.dx",
+        "analysis": {
+            "peak_rt": 3.952,
+            "integral": 65780938.288600035
+        }
+    }
+]

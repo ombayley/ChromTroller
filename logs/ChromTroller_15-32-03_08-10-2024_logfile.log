@@ -1,0 +1,74 @@
+15-32-03_08-10-2024  - INFO - ChromTroller.py - Loaded chromtroller settings successfully
+15-32-03_08-10-2024  - INFO - ChromTroller.py - Set RunLog path successfully
+15-32-03_08-10-2024  - INFO - ct_server.py - Server loaded connection ids from .json file successfully
+15-32-03_08-10-2024  - INFO - ct_server.py - Server listening on port: 10989
+15-32-03_08-10-2024  - INFO - ChromTroller.py - Server Initialization: SUCCESS 
+15-32-03_08-10-2024  - INFO - ct_controller.py - Loaded hardware settings successfully
+15-32-06_08-10-2024  - INFO - ct_controller.py - Phase sensor monitoring started on separate thread.
+15-32-06_08-10-2024  - INFO - ct_controller.py - Controller Object Initialized Successfully
+15-32-06_08-10-2024  - INFO - ChromTroller.py - Controller Connection: SUCCESS 
+15-41-39_08-10-2024  - INFO - ct_server.py - Client connected at 15:41:39_08-10-2024
+15-42-53_08-10-2024  - INFO - ct_server.py - Client disconnected at 15:42:53_08-10-2024
+15-43-08_08-10-2024  - INFO - ct_server.py - Client connected at 15:43:08_08-10-2024
+15-44-21_08-10-2024  - INFO - ct_server.py - Client disconnected at 15:44:21_08-10-2024
+15-44-36_08-10-2024  - INFO - ct_server.py - Client connected at 15:44:36_08-10-2024
+15-45-48_08-10-2024  - INFO - ct_server.py - Client disconnected at 15:45:48_08-10-2024
+15-46-03_08-10-2024  - INFO - ct_server.py - Client connected at 15:46:03_08-10-2024
+15-47-15_08-10-2024  - INFO - ct_server.py - Client disconnected at 15:47:15_08-10-2024
+15-53-24_08-10-2024  - INFO - ct_server.py - Client connected at 15:53:24_08-10-2024
+15-54-36_08-10-2024  - INFO - ct_server.py - Client disconnected at 15:54:36_08-10-2024
+15-54-51_08-10-2024  - INFO - ct_server.py - Client connected at 15:54:51_08-10-2024
+15-56-03_08-10-2024  - INFO - ct_server.py - Client disconnected at 15:56:03_08-10-2024
+15-56-18_08-10-2024  - INFO - ct_server.py - Client connected at 15:56:18_08-10-2024
+15-57-10_08-10-2024  - INFO - ct_server.py - Client disconnected at 15:57:10_08-10-2024
+18-00-21_08-10-2024  - INFO - ct_server.py - Client connected at 18:00:21_08-10-2024
+18-01-34_08-10-2024  - INFO - ct_server.py - Client disconnected at 18:01:34_08-10-2024
+18-01-49_08-10-2024  - INFO - ct_server.py - Client connected at 18:01:49_08-10-2024
+18-03-03_08-10-2024  - INFO - ct_server.py - Client disconnected at 18:03:03_08-10-2024
+18-03-17_08-10-2024  - INFO - ct_server.py - Client connected at 18:03:17_08-10-2024
+18-04-31_08-10-2024  - INFO - ct_server.py - Client disconnected at 18:04:31_08-10-2024
+18-04-46_08-10-2024  - INFO - ct_server.py - Client connected at 18:04:46_08-10-2024
+18-05-59_08-10-2024  - INFO - ct_server.py - Client disconnected at 18:05:59_08-10-2024
+18-23-30_08-10-2024  - INFO - ct_server.py - Client connected at 18:23:30_08-10-2024
+18-31-20_08-10-2024  - INFO - ct_server.py - Client disconnected at 18:31:20_08-10-2024
+18-31-46_08-10-2024  - INFO - ct_server.py - Client connected at 18:31:46_08-10-2024
+18-33-01_08-10-2024  - INFO - ct_server.py - Client disconnected at 18:33:01_08-10-2024
+18-33-21_08-10-2024  - INFO - ct_server.py - Client connected at 18:33:21_08-10-2024
+19-14-36_08-10-2024  - INFO - ChromTroller.py - Command received: new_run_name with data: 1
+19-14-36_08-10-2024  - INFO - ChromTroller.py - New RunLog created: 1
+19-14-36_08-10-2024  - INFO - ChromTroller.py - Command received: set_run_conc with data: 0.05500000000000001
+19-14-36_08-10-2024  - INFO - ChromTroller.py - Command received: add_reagents with data: ['Polystyrene', 0.05500000000000001, 'tBuOOH', 5.5, 'NBS', 0.175]
+19-14-36_08-10-2024  - INFO - ChromTroller.py - RunLog updated with reagents: ['Polystyrene', 0.05500000000000001, 'tBuOOH', 5.5, 'NBS', 0.175]
+19-14-36_08-10-2024  - INFO - ChromTroller.py - Command received: add_reaction_conditions with data: {'residence_time': 1500.0, 'light_intensity': 52.5}
+19-14-36_08-10-2024  - INFO - ChromTroller.py - RunLog updated with conditions: {'residence_time': 1500.0, 'light_intensity': 52.5}
+19-14-36_08-10-2024  - INFO - ChromTroller.py - Command received: start_hplc_run with data: None
+19-14-36_08-10-2024  - INFO - ChromTroller.py - HPLC analysis initiated
+19-14-36_08-10-2024  - INFO - ct_controller.py - {'HPLC_analysis': 'INITIATED'}
+19-14-36_08-10-2024  - INFO - ct_controller.py - {'hardware_connection_check': {'Arduino': 'SUCCESS', 'Valve': 'SUCCESS', 'Phase_Sensor': 'SUCCESS', 'LCMS': 'SUCCESS'}}
+19-14-36_08-10-2024  - INFO - ct_controller.py - {'filling_pos_check': 'SUCCESS'}
+19-14-36_08-10-2024  - INFO - ct_controller.py - {'ps_sample_detection': 'BYPASSED'}
+19-14-36_08-10-2024  - INFO - ct_controller.py - {'send_start_signal': 'SUCCESS'}
+19-14-36_08-10-2024  - INFO - ct_controller.py - {'start_request_acknowledged': 'INITIATED'}
+19-14-36_08-10-2024  - INFO - ct_controller.py - {'start_request_acknowledged': 'SUCCESS'}
+19-14-36_08-10-2024  - INFO - ct_controller.py - {'start_signal': 'WAITING'}
+19-14-57_08-10-2024  - INFO - ct_controller.py - {'start_signal': 'SUCCESS'}
+19-14-57_08-10-2024  - INFO - ct_controller.py - {'valve_switched_to_load': 'INITIATED'}
+19-14-57_08-10-2024  - INFO - ct_controller.py - {'valve_switched_to_load': 'SUCCESS'}
+19-14-57_08-10-2024  - INFO - ct_controller.py - {'sample_loading': 'WAITING'}
+19-15-22_08-10-2024  - INFO - ct_controller.py - {'sample_loading': 'SUCCESS'}
+19-15-23_08-10-2024  - INFO - ct_controller.py - {'valve_returned_to_bypass': 'SUCCESS'}
+19-15-23_08-10-2024  - INFO - ct_controller.py - {'analysis_cycle_started': 'SUCCESS'}
+19-15-23_08-10-2024  - INFO - ChromTroller.py - HPLC analysis initiation: SUCCESS
+19-15-23_08-10-2024  - INFO - ct_server.py - Response sent to client: SUCCESS
+19-15-23_08-10-2024  - INFO - ChromTroller.py - Command received: start_file_monitoring with data: None
+19-15-23_08-10-2024  - INFO - ChromTroller.py - Current results directory set to: D:\CDSProjects\Polymer_Degradation\Results\Optimisation_campaign_test_08102024.rslt
+19-15-23_08-10-2024  - INFO - ChromTroller.py - File Monitoring Started.
+19-19-01_08-10-2024  - INFO - ct_monitor.py - New File identified by ct_monitor: test_1_campaign_sample03.dx
+19-19-01_08-10-2024  - INFO - ct_monitor.py - test_1_campaign_sample03.dx
+19-19-01_08-10-2024  - INFO - ChromTroller.py - New File Found: test_1_campaign_sample03.dx
+19-19-01_08-10-2024  - INFO - ct_server.py - Response sent to client: test_1_campaign_sample03.dx
+19-19-01_08-10-2024  - INFO - ChromTroller.py - Command received: run_data_analysis with data: None
+19-19-01_08-10-2024  - INFO - ChromTroller.py - Current results directory set to: D:\CDSProjects\Polymer_Degradation\Results\Optimisation_campaign_test_08102024.rslt
+19-19-01_08-10-2024  - INFO - ct_analyser.py - loaded analysis settings from json
+19-19-01_08-10-2024  - INFO - ct_analyser.py - settings object created from analysis json
+19-19-01_08-10-2024  - INFO - ct_analyser.py - Analyser Object Initialized Successfully

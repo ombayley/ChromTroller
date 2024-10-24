@@ -1,0 +1,96 @@
+16-47-30_24-07-2024  - INFO - ChromTroller.py - Loaded chromtroller settings successfully
+16-47-30_24-07-2024  - INFO - ChromTroller.py - Set RunLog path successfully
+16-47-30_24-07-2024  - INFO - ChromTroller.py - Current results directory set to: D:\CDSProjects\Development\Results\Dummy_run_24_7_24_v1.rslt
+16-47-30_24-07-2024  - INFO - ct_server.py - Server loaded connection ids from .json file successfully
+16-47-30_24-07-2024  - INFO - ct_server.py - Server listening on port: 10989
+16-47-30_24-07-2024  - INFO - ChromTroller.py - Server Initialization: SUCCESS 
+16-47-30_24-07-2024  - INFO - ct_controller.py - Loaded hardware settings successfully
+16-47-32_24-07-2024  - INFO - ct_controller.py - Phase sensor monitoring started on separate thread.
+16-47-32_24-07-2024  - INFO - ct_controller.py - Controller Object Initialized Successfully
+16-47-32_24-07-2024  - INFO - ChromTroller.py - Controller Connection: SUCCESS 
+16-47-32_24-07-2024  - INFO - ChromTroller.py - File Monitor Initialization: SUCCESS 
+16-47-32_24-07-2024  - INFO - ct_analyser.py - loaded analysis settings from json
+16-47-32_24-07-2024  - INFO - ct_analyser.py - settings read from analysis json
+16-47-32_24-07-2024  - INFO - ct_analyser.py - settings object created
+16-47-32_24-07-2024  - INFO - ct_analyser.py - Analyser Object Initialized Successfully
+16-47-32_24-07-2024  - INFO - ChromTroller.py - Analyser Initialization: SUCCESS 
+16-50-23_24-07-2024  - INFO - ct_server.py - Client connected at 16:50:23_24-07-2024
+16-50-23_24-07-2024  - INFO - ChromTroller.py - Command received: new_run_name with data: 1
+16-50-23_24-07-2024  - INFO - ChromTroller.py - New RunLog created: 1
+16-50-23_24-07-2024  - INFO - ChromTroller.py - Command received: set_run_conc with data: 0.999
+16-50-23_24-07-2024  - INFO - ChromTroller.py - Command received: add_reagents with data: ['EtPh', 'BP', 'One']
+16-50-23_24-07-2024  - INFO - ChromTroller.py - RunLog updated with reagents: ['EtPh', 'BP', 'One']
+16-50-23_24-07-2024  - INFO - ChromTroller.py - Command received: add_reaction_conditions with data: {'light_intensity': 35, 'residence_time': 15}
+16-50-23_24-07-2024  - INFO - ChromTroller.py - RunLog updated with conditions: {'light_intensity': 35, 'residence_time': 15}
+16-50-23_24-07-2024  - INFO - ChromTroller.py - Command received: start_hplc_run with data: None
+16-50-23_24-07-2024  - INFO - ChromTroller.py - Current results directory set to: D:\CDSProjects\Development\Results\Dummy_run_24_7_24_v1.rslt
+16-50-23_24-07-2024  - INFO - ChromTroller.py - HPLC analysis initiated
+16-50-23_24-07-2024  - INFO - ct_controller.py - {'HPLC_analysis': 'INITIATED'}
+16-50-23_24-07-2024  - INFO - ct_controller.py - {'hardware_connection_check': {'Arduino': 'SUCCESS', 'Valve': 'SUCCESS', 'Phase_Sensor': 'SUCCESS', 'LCMS': 'SUCCESS'}}
+16-50-23_24-07-2024  - INFO - ct_controller.py - {'filling_pos_check': 'SUCCESS'}
+16-50-23_24-07-2024  - INFO - ct_controller.py - {'ps_sample_detection': 'WAITING'}
+16-52-27_24-07-2024  - INFO - ct_controller.py - {'ps_sample_detection': 'SUCCESS'}
+16-52-27_24-07-2024  - INFO - ct_controller.py - {'send_start_signal': 'SUCCESS'}
+16-52-27_24-07-2024  - INFO - ct_controller.py - {'start_request_acknowledged': 'WAITING'}
+16-52-27_24-07-2024  - INFO - ct_controller.py - {'start_request_acknowledged': 'SUCCESS'}
+16-52-32_24-07-2024  - INFO - ct_controller.py - {'start_signal': 'WAITING'}
+16-52-47_24-07-2024  - INFO - ct_controller.py - {'start_signal': 'SUCCESS'}
+16-52-47_24-07-2024  - INFO - ct_controller.py - {'valve_switched_to_load': 'INITIATED'}
+16-52-48_24-07-2024  - INFO - ct_controller.py - {'valve_switched_to_load': 'SUCCESS'}
+16-52-48_24-07-2024  - INFO - ct_controller.py - {'sample_loading': 'WAITING'}
+16-53-13_24-07-2024  - INFO - ct_controller.py - {'sample_loading': 'SUCCESS'}
+16-53-13_24-07-2024  - INFO - ct_controller.py - {'valve_returned_to_bypass': 'SUCCESS'}
+16-53-13_24-07-2024  - INFO - ct_controller.py - {'analysis_cycle_started': 'SUCCESS'}
+16-53-13_24-07-2024  - INFO - ChromTroller.py - HPLC analysis initiation: SUCCESS
+16-53-13_24-07-2024  - INFO - ct_server.py - Response sent to client: SUCCESS
+16-53-13_24-07-2024  - INFO - ChromTroller.py - Command received: start_file_monitoring with data: None
+16-53-13_24-07-2024  - INFO - ChromTroller.py - Current results directory set to: D:\CDSProjects\Development\Results\Dummy_run_24_7_24_v1.rslt
+16-53-13_24-07-2024  - INFO - ChromTroller.py - Monitoring started.
+16-53-35_24-07-2024  - INFO - ct_monitor.py - New File identified by ct_monitor: default_sample_01.dx
+16-53-35_24-07-2024  - INFO - ct_monitor.py - default_sample_01.dx
+16-53-35_24-07-2024  - INFO - ChromTroller.py - New File Found: default_sample_01.dx
+16-53-35_24-07-2024  - INFO - ct_server.py - Response sent to client: default_sample_01.dx
+16-53-35_24-07-2024  - INFO - ChromTroller.py - Command received: run_data_analysis with data: None
+16-53-35_24-07-2024  - INFO - ChromTroller.py - Current results directory set to: D:\CDSProjects\Development\Results\Dummy_run_24_7_24_v1.rslt
+16-53-35_24-07-2024  - INFO - ct_server.py - Response sent to client: SUCCESS
+16-53-35_24-07-2024  - INFO - ct_server.py - Client disconnected at 16:53:35_24-07-2024
+18-04-54_24-07-2024  - INFO - ct_server.py - Client connected at 18:04:54_24-07-2024
+18-04-54_24-07-2024  - INFO - ChromTroller.py - Command received: new_run_name with data: 2
+18-04-54_24-07-2024  - INFO - ChromTroller.py - New RunLog created: 2
+18-04-54_24-07-2024  - INFO - ChromTroller.py - Command received: set_run_conc with data: 0.999
+18-04-54_24-07-2024  - INFO - ChromTroller.py - Command received: add_reagents with data: ['EtPh', 'BP', 'One']
+18-04-54_24-07-2024  - INFO - ChromTroller.py - RunLog updated with reagents: ['EtPh', 'BP', 'One']
+18-04-54_24-07-2024  - INFO - ChromTroller.py - Command received: add_reaction_conditions with data: {'light_intensity': 35, 'residence_time': 15}
+18-04-54_24-07-2024  - INFO - ChromTroller.py - RunLog updated with conditions: {'light_intensity': 35, 'residence_time': 15}
+18-04-54_24-07-2024  - INFO - ChromTroller.py - Command received: start_hplc_run with data: None
+18-04-54_24-07-2024  - INFO - ChromTroller.py - Current results directory set to: D:\CDSProjects\Development\Results\Dummy_run_24_7_24_v2.rslt
+18-04-54_24-07-2024  - INFO - ChromTroller.py - HPLC analysis initiated
+18-04-54_24-07-2024  - INFO - ct_controller.py - {'HPLC_analysis': 'INITIATED'}
+18-04-54_24-07-2024  - INFO - ct_controller.py - {'hardware_connection_check': {'Arduino': 'SUCCESS', 'Valve': 'SUCCESS', 'Phase_Sensor': 'SUCCESS', 'LCMS': 'SUCCESS'}}
+18-04-54_24-07-2024  - INFO - ct_controller.py - {'filling_pos_check': 'SUCCESS'}
+18-04-54_24-07-2024  - INFO - ct_controller.py - {'ps_sample_detection': 'WAITING'}
+18-04-54_24-07-2024  - INFO - ct_controller.py - {'ps_sample_detection': 'SUCCESS'}
+18-04-54_24-07-2024  - INFO - ct_controller.py - {'send_start_signal': 'SUCCESS'}
+18-04-54_24-07-2024  - INFO - ct_controller.py - {'start_request_acknowledged': 'WAITING'}
+18-04-54_24-07-2024  - INFO - ct_controller.py - {'start_request_acknowledged': 'SUCCESS'}
+18-04-59_24-07-2024  - INFO - ct_controller.py - {'start_signal': 'WAITING'}
+18-05-15_24-07-2024  - INFO - ct_controller.py - {'start_signal': 'SUCCESS'}
+18-05-15_24-07-2024  - INFO - ct_controller.py - {'valve_switched_to_load': 'INITIATED'}
+18-05-15_24-07-2024  - INFO - ct_controller.py - {'valve_switched_to_load': 'SUCCESS'}
+18-05-15_24-07-2024  - INFO - ct_controller.py - {'sample_loading': 'WAITING'}
+18-05-40_24-07-2024  - INFO - ct_controller.py - {'sample_loading': 'SUCCESS'}
+18-05-40_24-07-2024  - INFO - ct_controller.py - {'valve_returned_to_bypass': 'SUCCESS'}
+18-05-40_24-07-2024  - INFO - ct_controller.py - {'analysis_cycle_started': 'SUCCESS'}
+18-05-40_24-07-2024  - INFO - ChromTroller.py - HPLC analysis initiation: SUCCESS
+18-05-40_24-07-2024  - INFO - ct_server.py - Response sent to client: SUCCESS
+18-05-40_24-07-2024  - INFO - ChromTroller.py - Command received: start_file_monitoring with data: None
+18-05-40_24-07-2024  - INFO - ChromTroller.py - Current results directory set to: D:\CDSProjects\Development\Results\Dummy_run_24_7_24_v2.rslt
+18-05-40_24-07-2024  - INFO - ChromTroller.py - Monitoring started.
+18-06-03_24-07-2024  - INFO - ct_monitor.py - New File identified by ct_monitor: default_sample_01.dx
+18-06-03_24-07-2024  - INFO - ct_monitor.py - default_sample_01.dx
+18-06-03_24-07-2024  - INFO - ChromTroller.py - New File Found: default_sample_01.dx
+18-06-03_24-07-2024  - INFO - ct_server.py - Response sent to client: default_sample_01.dx
+18-06-03_24-07-2024  - INFO - ChromTroller.py - Command received: run_data_analysis with data: None
+18-06-03_24-07-2024  - INFO - ChromTroller.py - Current results directory set to: D:\CDSProjects\Development\Results\Dummy_run_24_7_24_v2.rslt
+18-06-03_24-07-2024  - INFO - ct_server.py - Response sent to client: SUCCESS
+18-06-03_24-07-2024  - INFO - ct_server.py - Client disconnected at 18:06:03_24-07-2024

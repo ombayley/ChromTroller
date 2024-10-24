@@ -1,0 +1,17 @@
+29-05-2024 10:33:22 - INFO - ct_controller.py - SensorMonitor Initialized Successfully
+29-05-2024 10:33:22 - INFO - ct_controller.py - Phase sensor monitoring started on separate thread.
+29-05-2024 10:33:22 - INFO - ct_controller.py - Controller Object Initialized Successfully
+29-05-2024 10:33:22 - INFO - ct_server.py - Server successfully connected to instrument controller
+29-05-2024 10:33:22 - INFO - ct_server.py - Server listening on port: 10989
+29-05-2024 11:06:57 - INFO - ct_server.py - Client: ('10.10.29.202', 49761) successfully connected
+29-05-2024 11:06:57 - INFO - ct_server.py - Command received from client: Analyse
+29-05-2024 11:06:57 - INFO - ct_controller.py - Analysis Process Initiated...
+29-05-2024 11:06:57 - ERROR - ct_controller.py - Error Communicating with the Switch Valve
+29-05-2024 11:06:57 - ERROR - ct_controller.py - exceptions must derive from BaseException
+29-05-2024 11:06:57 - INFO - ct_server.py - Response sent back to client: FAILED - Analysis Cycle Failed due to: exceptions must derive from BaseException
+29-05-2024 11:52:39 - INFO - ct_server.py - Client: ('10.10.29.202', 49890) successfully connected
+29-05-2024 11:52:39 - INFO - ct_server.py - Command received from client: Analyse
+29-05-2024 11:52:39 - INFO - ct_controller.py - Analysis Process Initiated...
+29-05-2024 11:52:39 - ERROR - ct_controller.py - Error Communicating with the Switch Valve
+29-05-2024 11:52:39 - ERROR - ct_controller.py - exceptions must derive from BaseException
+29-05-2024 11:52:39 - INFO - ct_server.py - Response sent back to client: FAILED - Analysis Cycle Failed due to: exceptions must derive from BaseException

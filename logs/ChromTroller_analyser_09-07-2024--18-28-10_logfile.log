@@ -1,0 +1,30 @@
+09-07-2024 18:28:10 - INFO - ct_analyser.py - loaded analysis settings from json
+09-07-2024 18:28:10 - INFO - ct_analyser.py - settings read from analysis json
+09-07-2024 18:28:10 - INFO - ct_analyser.py - settings object created
+09-07-2024 18:28:10 - INFO - ct_analyser.py - Analyser Object Initialized Successfully
+09-07-2024 18:28:10 - INFO - ct_analyser.py - istd file found D:\CDSProjects\RoboChem_FGT\Results\post_updates_test_calibration_data\Internal Standard-04.dx
+09-07-2024 18:28:10 - INFO - ct_analyser.py - background file found D:\CDSProjects\RoboChem_FGT\Results\post_updates_test_calibration_data\Gradient-03.dx
+09-07-2024 18:28:12 - INFO - ct_analyser.py - Chromatogram generated
+09-07-2024 18:28:12 - INFO - ct_analyser.py - istd chromatogram added to campaign - D:\CDSProjects\RoboChem_FGT\Results\post_updates_test_calibration_data\Internal Standard-04.dx
+09-07-2024 18:28:12 - INFO - ct_analyser.py - istd added to campaign
+09-07-2024 18:28:13 - INFO - ct_analyser.py - sm chromatogram added to campaign - D:\CDSProjects\RoboChem_FGT\Results\post_updates_test_calibration_data\0.1 M - SM-85.dx
+09-07-2024 18:28:15 - INFO - ct_analyser.py - sm chromatogram added to campaign - D:\CDSProjects\RoboChem_FGT\Results\post_updates_test_calibration_data\0.05 M - SM-86.dx
+09-07-2024 18:28:16 - INFO - ct_analyser.py - sm chromatogram added to campaign - D:\CDSProjects\RoboChem_FGT\Results\post_updates_test_calibration_data\0.02 M - SM-87.dx
+09-07-2024 18:28:16 - INFO - ct_analyser.py - sm added to campaign
+09-07-2024 18:28:18 - INFO - ct_analyser.py - Prod chromatogram added to campaign - D:\CDSProjects\RoboChem_FGT\Results\post_updates_test_calibration_data\0.1 M - Prod-89.dx
+09-07-2024 18:28:20 - INFO - ct_analyser.py - Prod chromatogram added to campaign - D:\CDSProjects\RoboChem_FGT\Results\post_updates_test_calibration_data\0.05 M - Prod-90.dx
+09-07-2024 18:28:21 - INFO - ct_analyser.py - Prod chromatogram added to campaign - D:\CDSProjects\RoboChem_FGT\Results\post_updates_test_calibration_data\0.02 M - Prod-91.dx
+09-07-2024 18:28:21 - INFO - ct_analyser.py - prod added to campaign
+09-07-2024 18:28:23 - INFO - ct_analyser.py - reagent chromatogram added to campaign - D:\CDSProjects\RoboChem_FGT\Results\post_updates_test_calibration_data\0.1 M - Additive 01-05.dx
+09-07-2024 18:28:24 - INFO - ct_analyser.py - reagent chromatogram added to campaign - D:\CDSProjects\RoboChem_FGT\Results\post_updates_test_calibration_data\0.05 M - Additive 01-06.dx
+09-07-2024 18:28:26 - INFO - ct_analyser.py - reagent chromatogram added to campaign - D:\CDSProjects\RoboChem_FGT\Results\post_updates_test_calibration_data\0.02 M - Additive 01-07.dx
+09-07-2024 18:28:27 - INFO - ct_analyser.py - reagent chromatogram added to campaign - D:\CDSProjects\RoboChem_FGT\Results\post_updates_test_calibration_data\0.1 M - Additive 04-17.dx
+09-07-2024 18:28:29 - INFO - ct_analyser.py - reagent chromatogram added to campaign - D:\CDSProjects\RoboChem_FGT\Results\post_updates_test_calibration_data\0.05 M - Additive 04-18.dx
+09-07-2024 18:28:30 - INFO - ct_analyser.py - reagent chromatogram added to campaign - D:\CDSProjects\RoboChem_FGT\Results\post_updates_test_calibration_data\0.02 M - Additive 04-19.dx
+09-07-2024 18:28:32 - INFO - ct_analyser.py - reagent chromatogram added to campaign - D:\CDSProjects\RoboChem_FGT\Results\post_updates_test_calibration_data\0.1 M - Additive 09-25.dx
+09-07-2024 18:28:34 - INFO - ct_analyser.py - reagent chromatogram added to campaign - D:\CDSProjects\RoboChem_FGT\Results\post_updates_test_calibration_data\0.05 M - Additive 09-26.dx
+09-07-2024 18:28:35 - INFO - ct_analyser.py - reagent chromatogram added to campaign - D:\CDSProjects\RoboChem_FGT\Results\post_updates_test_calibration_data\0.02 M - Additive 09-27.dx
+09-07-2024 18:28:37 - INFO - ct_analyser.py - reagent chromatogram added to campaign - D:\CDSProjects\RoboChem_FGT\Results\post_updates_test_calibration_data\0.1 M - Additive 11-33.dx
+09-07-2024 18:28:38 - INFO - ct_analyser.py - reagent chromatogram added to campaign - D:\CDSProjects\RoboChem_FGT\Results\post_updates_test_calibration_data\0.05 M - Additive 11-34.dx
+09-07-2024 18:28:40 - INFO - ct_analyser.py - reagent chromatogram added to campaign - D:\CDSProjects\RoboChem_FGT\Results\post_updates_test_calibration_data\0.02 M - Additive 11-35.dx
+09-07-2024 18:28:40 - INFO - ct_analyser.py - calibration info saved

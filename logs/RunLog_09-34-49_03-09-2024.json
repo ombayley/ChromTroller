@@ -1,0 +1,21 @@
+[
+    {
+        "run_name": "TEST",
+        "run_conc": 0.0,
+        "reagent_list": [
+            "Polystyrene",
+            0.1,
+            "tBuOOH",
+            8,
+            "NBS",
+            0.3
+        ],
+        "run_conditions": {
+            "residence_time": 900,
+            "light_intensity": 100
+        },
+        "hplc_start": "FAIL - {'Arduino': 'SUCCESS', 'Valve': 'FAIL', 'Phase_Sensor': 'SUCCESS', 'LCMS': 'SUCCESS'}",
+        "file": "MV_15min_sample_02.dx",
+        "analysis": {}
+    }
+]

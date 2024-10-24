@@ -1,0 +1,7 @@
+15-27-35_30-08-2024  - INFO - ChromTroller.py - Loaded chromtroller settings successfully
+15-27-35_30-08-2024  - INFO - ChromTroller.py - Set RunLog path successfully
+15-27-35_30-08-2024  - INFO - ct_server.py - Server loaded connection ids from .json file successfully
+15-27-35_30-08-2024  - INFO - ct_server.py - Server listening on port: 10989
+15-27-35_30-08-2024  - INFO - ChromTroller.py - Server Initialization: SUCCESS 
+15-27-35_30-08-2024  - INFO - ct_controller.py - Loaded hardware settings successfully
+15-27-36_30-08-2024  - INFO - ChromTroller.py - Shutting down the server.

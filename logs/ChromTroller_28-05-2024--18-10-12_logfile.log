@@ -1,0 +1,8 @@
+28-05-2024 18:10:13 - INFO - ct_controller.py - SensorMonitor Initialized Successfully
+28-05-2024 18:10:13 - INFO - ct_controller.py - Phase sensor monitoring started on separate thread.
+28-05-2024 18:10:13 - INFO - ct_controller.py - Controller Object Initialized Successfully
+28-05-2024 18:10:13 - INFO - ct_server.py - Server successfully connected to instrument controller
+28-05-2024 18:10:13 - INFO - ct_server.py - Server listening on port: 10989
+28-05-2024 18:10:37 - INFO - ct_server.py - Client: ('127.0.0.1', 55329) successfully connected
+28-05-2024 18:10:49 - INFO - ct_server.py - Command received from client: 1
+28-05-2024 18:10:49 - INFO - ct_server.py - Response sent back to client: LCMS_Controller

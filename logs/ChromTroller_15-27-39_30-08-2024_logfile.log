@@ -1,0 +1,41 @@
+15-27-39_30-08-2024  - INFO - ChromTroller.py - Loaded chromtroller settings successfully
+15-27-39_30-08-2024  - INFO - ChromTroller.py - Set RunLog path successfully
+15-27-39_30-08-2024  - INFO - ct_server.py - Server loaded connection ids from .json file successfully
+15-27-39_30-08-2024  - INFO - ct_server.py - Server listening on port: 10989
+15-27-39_30-08-2024  - INFO - ChromTroller.py - Server Initialization: SUCCESS 
+15-27-39_30-08-2024  - INFO - ct_controller.py - Loaded hardware settings successfully
+15-27-41_30-08-2024  - INFO - ct_controller.py - Phase sensor monitoring started on separate thread.
+15-27-41_30-08-2024  - INFO - ct_controller.py - Controller Object Initialized Successfully
+15-27-41_30-08-2024  - INFO - ChromTroller.py - Controller Connection: SUCCESS 
+15-29-43_30-08-2024  - INFO - ct_server.py - Client connected at 15:29:43_30-08-2024
+15-34-28_30-08-2024  - INFO - ct_server.py - Client disconnected at 15:34:28_30-08-2024
+15-41-26_30-08-2024  - INFO - ct_server.py - Client connected at 15:41:26_30-08-2024
+15-53-51_30-08-2024  - INFO - ChromTroller.py - Command received: new_run_name with data: TEST
+15-53-51_30-08-2024  - INFO - ChromTroller.py - New RunLog created: TEST
+15-53-52_30-08-2024  - INFO - ChromTroller.py - Command received: set_run_conc with data: 0.11
+15-53-52_30-08-2024  - INFO - ChromTroller.py - Command received: add_reagents with data: ['Polystyrene', 0.11, 'tBuOOH', 8, 'NBS', 0.3]
+15-53-52_30-08-2024  - INFO - ChromTroller.py - RunLog updated with reagents: ['Polystyrene', 0.11, 'tBuOOH', 8, 'NBS', 0.3]
+15-53-52_30-08-2024  - INFO - ChromTroller.py - Command received: add_reaction_conditions with data: {'residence_time': 300, 'light_intensity': 95}
+15-53-52_30-08-2024  - INFO - ChromTroller.py - RunLog updated with conditions: {'residence_time': 300, 'light_intensity': 95}
+15-53-52_30-08-2024  - INFO - ChromTroller.py - Command received: start_hplc_run with data: None
+15-53-52_30-08-2024  - INFO - ChromTroller.py - HPLC analysis initiated
+15-53-52_30-08-2024  - INFO - ct_controller.py - {'HPLC_analysis': 'INITIATED'}
+15-53-52_30-08-2024  - INFO - ct_controller.py - {'hardware_connection_check': {'Arduino': 'SUCCESS', 'Valve': 'SUCCESS', 'Phase_Sensor': 'SUCCESS', 'LCMS': 'SUCCESS'}}
+15-53-52_30-08-2024  - INFO - ct_controller.py - {'filling_pos_check': 'SUCCESS'}
+15-53-52_30-08-2024  - INFO - ct_controller.py - {'ps_sample_detection': 'BYPASSED'}
+15-53-52_30-08-2024  - INFO - ct_controller.py - {'send_start_signal': 'SUCCESS'}
+15-53-52_30-08-2024  - INFO - ct_controller.py - {'start_request_acknowledged': 'WAITING'}
+15-53-52_30-08-2024  - INFO - ct_controller.py - {'start_request_acknowledged': 'SUCCESS'}
+15-53-57_30-08-2024  - INFO - ct_controller.py - {'start_signal': 'WAITING'}
+15-54-12_30-08-2024  - INFO - ct_controller.py - {'start_signal': 'SUCCESS'}
+15-54-12_30-08-2024  - INFO - ct_controller.py - {'valve_switched_to_load': 'INITIATED'}
+15-54-12_30-08-2024  - INFO - ct_controller.py - {'valve_switched_to_load': 'SUCCESS'}
+15-54-12_30-08-2024  - INFO - ct_controller.py - {'sample_loading': 'WAITING'}
+15-54-37_30-08-2024  - INFO - ct_controller.py - {'sample_loading': 'SUCCESS'}
+15-54-38_30-08-2024  - INFO - ct_controller.py - {'valve_returned_to_bypass': 'SUCCESS'}
+15-54-38_30-08-2024  - INFO - ct_controller.py - {'analysis_cycle_started': 'SUCCESS'}
+15-54-38_30-08-2024  - INFO - ChromTroller.py - HPLC analysis initiation: SUCCESS
+15-54-38_30-08-2024  - INFO - ct_server.py - Response sent to client: SUCCESS
+15-54-38_30-08-2024  - INFO - ChromTroller.py - Command received: start_file_monitoring with data: None
+15-54-38_30-08-2024  - INFO - ChromTroller.py - Current results directory set to: D:\CDSProjects\RoboChem_FGT\Results\FGT_Sequence_1-8-24_repeat.rslt
+15-54-38_30-08-2024  - INFO - ChromTroller.py - File Monitoring Started.

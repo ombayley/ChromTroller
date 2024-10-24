@@ -1,0 +1,42 @@
+14-41-32_09-07-2024  - INFO - ct_server.py - Server loaded connection ids from .json file successfully
+14-41-32_09-07-2024  - INFO - ct_server.py - Server listening on port: 10989
+14-41-32_09-07-2024  - INFO - ct_controller.py - Phase sensor monitoring started on separate thread.
+14-41-32_09-07-2024  - INFO - ct_controller.py - Controller Object Initialized Successfully
+14-41-32_09-07-2024  - INFO - ChromTroller.py - Successfully connected to instrument controller
+14-41-32_09-07-2024  - INFO - ChromTroller.py - Successfully connected to monitor
+14-41-32_09-07-2024  - INFO - ct_analyser.py - loaded analysis settings from json
+14-41-32_09-07-2024  - INFO - ct_analyser.py - No .dx file type found in: D:\CDSProjects\RoboChem_FGT\Results\Single_Test_9-7-24_post-CT-updates.rslt
+14-41-32_09-07-2024  - INFO - ct_analyser.py - settings read from analysis json
+14-41-32_09-07-2024  - INFO - ct_analyser.py - settings object created
+14-41-32_09-07-2024  - INFO - ct_analyser.py - Analyser Object Initialized Successfully
+14-41-32_09-07-2024  - INFO - ChromTroller.py - Successfully connected to analyser
+14-46-15_09-07-2024  - INFO - ct_server.py - Client connected at 14:46:15_09-07-2024
+14-46-15_09-07-2024  - INFO - ct_server.py - Command from client: new_run_name with message: 1
+14-46-15_09-07-2024  - INFO - ChromTroller.py - Command received: new_run_name with data: 1
+14-46-15_09-07-2024  - INFO - ct_server.py - Command from client: set_run_conc with message: 0.999
+14-46-15_09-07-2024  - INFO - ChromTroller.py - Command received: set_run_conc with data: 0.999
+14-46-15_09-07-2024  - INFO - ct_server.py - Command from client: add_reagents with message: ['EtPh', 'BP', 'One']
+14-46-15_09-07-2024  - INFO - ChromTroller.py - Command received: add_reagents with data: ['EtPh', 'BP', 'One']
+14-46-15_09-07-2024  - INFO - ct_server.py - Command from client: add_reaction_conditions with message: {'light_intensity': 35, 'residence_time': 15}
+14-46-15_09-07-2024  - INFO - ChromTroller.py - Command received: add_reaction_conditions with data: {'light_intensity': 35, 'residence_time': 15}
+14-46-15_09-07-2024  - INFO - ct_server.py - Command from client: start_hplc_run with message: None
+14-46-15_09-07-2024  - INFO - ChromTroller.py - Command received: start_hplc_run with data: None
+14-46-15_09-07-2024  - INFO - ct_controller.py - {'analysis': 'INITIATED'}
+14-46-15_09-07-2024  - INFO - ct_controller.py - {'hardware_connection_check': 'SUCCESS'}
+14-46-15_09-07-2024  - INFO - ct_controller.py - {'ps_sample_detection': 'SUCCESS'}
+14-46-24_09-07-2024  - INFO - ct_controller.py - {'full_sample_loop_check': 'SUCCESS'}
+14-46-24_09-07-2024  - INFO - ct_controller.py - {'send_start_signal': 'SUCCESS'}
+14-46-24_09-07-2024  - INFO - ct_controller.py - {'start_signal_acknowledged': 'SUCCESS'}
+14-46-34_09-07-2024  - INFO - ct_controller.py - {'valve_switched_to_load': 'SUCCESS'}
+14-46-46_09-07-2024  - INFO - ct_controller.py - {'sample_loaded': 'SUCCESS'}
+14-46-46_09-07-2024  - INFO - ct_controller.py - {'valve_returned_to_bypass': 'SUCCESS'}
+14-46-46_09-07-2024  - INFO - ct_controller.py - {'analysis_cycle_started': 'SUCCESS'}
+14-46-46_09-07-2024  - INFO - ct_server.py - Response sent to client: HPLC: SUCCESS
+14-46-46_09-07-2024  - INFO - ct_server.py - Command from client: start_file_monitoring with message: None
+14-46-46_09-07-2024  - INFO - ChromTroller.py - Command received: start_file_monitoring with data: None
+14-47-13_09-07-2024  - INFO - ct_monitor.py - RoboChem Sample022024-05-27 16-43-44+02-00.dx
+14-47-13_09-07-2024  - INFO - ct_server.py - Response sent to client: RoboChem Sample022024-05-27 16-43-44+02-00.dx
+14-47-13_09-07-2024  - INFO - ct_server.py - Command from client: run_data_analysis with message: None
+14-47-13_09-07-2024  - INFO - ChromTroller.py - Command received: run_data_analysis with data: None
+14-47-13_09-07-2024  - INFO - ct_server.py - Response sent to client: skip
+14-47-13_09-07-2024  - INFO - ct_server.py - Client disconnected at 14_47_13-09_07_2024

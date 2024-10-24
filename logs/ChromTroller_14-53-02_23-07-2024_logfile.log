@@ -1,0 +1,34 @@
+14-53-02_23-07-2024  - INFO - ct_server.py - Server loaded connection ids from .json file successfully
+14-53-02_23-07-2024  - INFO - ct_server.py - Server listening on port: 10989
+14-53-02_23-07-2024  - INFO - ct_controller.py - Loaded hardware settings successfully
+14-53-04_23-07-2024  - INFO - ct_controller.py - Phase sensor monitoring started on separate thread.
+14-53-04_23-07-2024  - INFO - ct_controller.py - Controller Object Initialized Successfully
+14-53-04_23-07-2024  - INFO - ChromTroller.py - Successfully connected to instrument controller
+14-53-04_23-07-2024  - INFO - ChromTroller.py - Successfully connected to monitor
+14-53-05_23-07-2024  - INFO - ct_analyser.py - loaded analysis settings from json
+14-53-05_23-07-2024  - INFO - ct_analyser.py - settings read from analysis json
+14-53-05_23-07-2024  - INFO - ct_analyser.py - settings object created
+14-53-05_23-07-2024  - INFO - ct_analyser.py - Analyser Object Initialized Successfully
+14-53-05_23-07-2024  - INFO - ChromTroller.py - Successfully connected to analyser
+14-58-14_23-07-2024  - INFO - ct_server.py - Client connected at 14:58:14_23-07-2024
+15-02-54_23-07-2024  - INFO - ct_server.py - Client disconnected at 15_02_54-23_07_2024
+15-19-52_23-07-2024  - INFO - ct_server.py - Client connected at 15:19:52_23-07-2024
+15-21-29_23-07-2024  - INFO - ct_server.py - Client disconnected at 15_21_29-23_07_2024
+15-24-23_23-07-2024  - INFO - ct_server.py - Client connected at 15:24:23_23-07-2024
+15-34-31_23-07-2024  - INFO - ct_server.py - Command from client: new_run_name with message: system_flush
+15-34-31_23-07-2024  - INFO - ChromTroller.py - Command received: new_run_name with data: system_flush
+15-34-31_23-07-2024  - INFO - ChromTroller.py - new run info object made with name: system_flush
+15-34-31_23-07-2024  - INFO - ct_server.py - Command from client: set_run_conc with message: 0.1
+15-34-31_23-07-2024  - INFO - ChromTroller.py - Command received: set_run_conc with data: 0.1
+15-34-31_23-07-2024  - INFO - ct_server.py - Command from client: add_reagents with message: ['tBuOOH', 'NBS']
+15-34-31_23-07-2024  - INFO - ChromTroller.py - Command received: add_reagents with data: ['tBuOOH', 'NBS']
+15-34-31_23-07-2024  - INFO - ChromTroller.py - reagents: ['tBuOOH', 'NBS'] added to to run info
+15-34-31_23-07-2024  - INFO - ct_server.py - Command from client: add_reaction_conditions with message: {'light_intensity': 20, 'residence_time': 50}
+15-34-31_23-07-2024  - INFO - ChromTroller.py - Command received: add_reaction_conditions with data: {'light_intensity': 20, 'residence_time': 50}
+15-34-31_23-07-2024  - INFO - ChromTroller.py - conditions: {'light_intensity': 20, 'residence_time': 50} added to to run info
+15-34-31_23-07-2024  - INFO - ct_server.py - Command from client: start_hplc_run with message: None
+15-34-31_23-07-2024  - INFO - ChromTroller.py - Command received: start_hplc_run with data: None
+15-34-31_23-07-2024  - INFO - ct_controller.py - {'HPLC_analysis': 'INITIATED'}
+15-34-31_23-07-2024  - INFO - ct_controller.py - {'hardware_connection_check': {'Arduino': 'SUCCESS', 'Valve': 'SUCCESS', 'Phase_Sensor': 'SUCCESS', 'LCMS': 'SUCCESS'}}
+15-34-31_23-07-2024  - INFO - ct_controller.py - {'filling_pos_check': 'SUCCESS'}
+15-34-31_23-07-2024  - INFO - ct_controller.py - {'ps_sample_detection': 'WAITING'}

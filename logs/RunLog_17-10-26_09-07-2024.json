@@ -1,0 +1,20 @@
+[
+    {
+        "run_name": "1",
+        "run_conc": 0.0846,
+        "reagent_list": [
+            "chloro",
+            "additive_01"
+        ],
+        "run_conditions": {
+            "light_intensity": 130,
+            "residence_time": 0
+        },
+        "controller": {
+            "analysis": "INITIATED",
+            "hardware_connection_check": "SUCCESS",
+            "ps_sample_detection": "SUCCESS",
+            "full_sample_loop_check": "SUCCESS",
+            "send_start_signal": "SUCCESS",
+            "start_signal_acknowledged": "FAIL",
+            "cause": 

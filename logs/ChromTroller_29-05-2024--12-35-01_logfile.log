@@ -1,0 +1,178 @@
+29-05-2024 12:35:02 - INFO - ct_controller.py - SensorMonitor Initialized Successfully
+29-05-2024 12:35:02 - INFO - ct_controller.py - Phase sensor monitoring started on separate thread.
+29-05-2024 12:35:02 - INFO - ct_controller.py - Controller Object Initialized Successfully
+29-05-2024 12:35:02 - INFO - ct_server.py - Server successfully connected to instrument controller
+29-05-2024 12:35:02 - INFO - ct_server.py - Server listening on port: 10989
+29-05-2024 12:35:09 - INFO - ct_server.py - Client: ('127.0.0.1', 59122) successfully connected
+29-05-2024 12:35:11 - INFO - ct_server.py - Command received from client: 4
+29-05-2024 12:35:11 - INFO - ct_server.py - Response sent back to client: A
+29-05-2024 12:44:03 - INFO - ct_server.py - Client: ('10.10.29.202', 50095) successfully connected
+29-05-2024 12:44:03 - INFO - ct_server.py - Command received from client: Analyse
+29-05-2024 12:44:03 - INFO - ct_controller.py - Analysis Process Initiated...
+29-05-2024 12:44:03 - INFO - ct_controller.py - SUCCESS - Hardware Connections Verified
+29-05-2024 12:44:03 - INFO - ct_controller.py - SUCCESS - Phase Sensor - Sample Detected
+29-05-2024 12:44:03 - INFO - ct_controller.py - SUCCESS - Switch Valve - Filling Loop Filled
+29-05-2024 12:44:03 - INFO - ct_controller.py - SUCCESS - LCMS - Start Signal Sent By Arduino
+29-05-2024 12:44:47 - INFO - ct_controller.py - SUCCESS - LCMS - Start Acknowledged By Spectrometer
+29-05-2024 12:44:57 - INFO - ct_controller.py - SUCCESS - Switch Valve - Sample Loaded From Sample Loop
+29-05-2024 12:45:09 - INFO - ct_controller.py - SUCCESS - Switch Valve - Returned To Filling Position
+29-05-2024 12:45:09 - INFO - ct_controller.py - SUCCESS - Analysis Cycle: 1 Complete
+29-05-2024 12:45:09 - INFO - ct_server.py - Response sent back to client: SUCCESS - Analysis Cycle: 1 Complete
+29-05-2024 13:30:52 - INFO - ct_server.py - Client: ('10.10.29.202', 50223) successfully connected
+29-05-2024 13:30:52 - INFO - ct_server.py - Command received from client: Analyse
+29-05-2024 13:30:52 - INFO - ct_controller.py - Analysis Process Initiated...
+29-05-2024 13:30:52 - INFO - ct_controller.py - SUCCESS - Hardware Connections Verified
+29-05-2024 13:30:52 - INFO - ct_controller.py - SUCCESS - Phase Sensor - Sample Detected
+29-05-2024 13:30:52 - INFO - ct_controller.py - SUCCESS - Switch Valve - Filling Loop Filled
+29-05-2024 13:30:52 - INFO - ct_controller.py - SUCCESS - LCMS - Start Signal Sent By Arduino
+29-05-2024 13:34:52 - ERROR - ct_controller.py - ERROR - LCMS - No Acknowledgement From Spectrometer Within Timeout
+29-05-2024 13:34:52 - INFO - ct_server.py - Response sent back to client: FAILED - Analysis Cycle Failed due to: ERROR - LCMS - No Acknowledgement From Spectrometer Within Timeout
+29-05-2024 14:20:36 - INFO - ct_server.py - Client: ('10.10.29.202', 50364) successfully connected
+29-05-2024 14:20:36 - INFO - ct_server.py - Command received from client: Analyse
+29-05-2024 14:20:36 - INFO - ct_controller.py - Analysis Process Initiated...
+29-05-2024 14:20:36 - INFO - ct_controller.py - SUCCESS - Hardware Connections Verified
+29-05-2024 14:20:36 - INFO - ct_controller.py - SUCCESS - Phase Sensor - Sample Detected
+29-05-2024 14:20:36 - INFO - ct_controller.py - SUCCESS - Switch Valve - Filling Loop Filled
+29-05-2024 14:20:36 - INFO - ct_controller.py - SUCCESS - LCMS - Start Signal Sent By Arduino
+29-05-2024 14:24:36 - ERROR - ct_controller.py - ERROR - LCMS - No Acknowledgement From Spectrometer Within Timeout
+29-05-2024 14:24:36 - INFO - ct_server.py - Response sent back to client: FAILED - Analysis Cycle Failed due to: ERROR - LCMS - No Acknowledgement From Spectrometer Within Timeout
+29-05-2024 15:10:19 - INFO - ct_server.py - Client: ('10.10.29.202', 50487) successfully connected
+29-05-2024 15:10:19 - INFO - ct_server.py - Command received from client: Analyse
+29-05-2024 15:10:19 - INFO - ct_controller.py - Analysis Process Initiated...
+29-05-2024 15:10:19 - INFO - ct_controller.py - SUCCESS - Hardware Connections Verified
+29-05-2024 15:10:19 - INFO - ct_controller.py - SUCCESS - Phase Sensor - Sample Detected
+29-05-2024 15:10:19 - INFO - ct_controller.py - SUCCESS - Switch Valve - Filling Loop Filled
+29-05-2024 15:10:19 - INFO - ct_controller.py - SUCCESS - LCMS - Start Signal Sent By Arduino
+29-05-2024 15:14:19 - ERROR - ct_controller.py - ERROR - LCMS - No Acknowledgement From Spectrometer Within Timeout
+29-05-2024 15:14:19 - INFO - ct_server.py - Response sent back to client: FAILED - Analysis Cycle Failed due to: ERROR - LCMS - No Acknowledgement From Spectrometer Within Timeout
+29-05-2024 16:00:02 - INFO - ct_server.py - Client: ('10.10.29.202', 50620) successfully connected
+29-05-2024 16:00:02 - INFO - ct_server.py - Command received from client: Analyse
+29-05-2024 16:00:02 - INFO - ct_controller.py - Analysis Process Initiated...
+29-05-2024 16:00:02 - INFO - ct_controller.py - SUCCESS - Hardware Connections Verified
+29-05-2024 16:00:02 - INFO - ct_controller.py - SUCCESS - Phase Sensor - Sample Detected
+29-05-2024 16:00:02 - INFO - ct_controller.py - SUCCESS - Switch Valve - Filling Loop Filled
+29-05-2024 16:00:02 - INFO - ct_controller.py - SUCCESS - LCMS - Start Signal Sent By Arduino
+29-05-2024 16:04:02 - ERROR - ct_controller.py - ERROR - LCMS - No Acknowledgement From Spectrometer Within Timeout
+29-05-2024 16:04:02 - INFO - ct_server.py - Response sent back to client: FAILED - Analysis Cycle Failed due to: ERROR - LCMS - No Acknowledgement From Spectrometer Within Timeout
+29-05-2024 16:49:46 - INFO - ct_server.py - Client: ('10.10.29.202', 50742) successfully connected
+29-05-2024 16:49:46 - INFO - ct_server.py - Command received from client: Analyse
+29-05-2024 16:49:46 - INFO - ct_controller.py - Analysis Process Initiated...
+29-05-2024 16:49:46 - INFO - ct_controller.py - SUCCESS - Hardware Connections Verified
+29-05-2024 16:49:46 - INFO - ct_controller.py - SUCCESS - Phase Sensor - Sample Detected
+29-05-2024 16:49:46 - INFO - ct_controller.py - SUCCESS - Switch Valve - Filling Loop Filled
+29-05-2024 16:49:46 - INFO - ct_controller.py - SUCCESS - LCMS - Start Signal Sent By Arduino
+29-05-2024 16:53:46 - ERROR - ct_controller.py - ERROR - LCMS - No Acknowledgement From Spectrometer Within Timeout
+29-05-2024 16:53:46 - INFO - ct_server.py - Response sent back to client: FAILED - Analysis Cycle Failed due to: ERROR - LCMS - No Acknowledgement From Spectrometer Within Timeout
+29-05-2024 17:39:30 - INFO - ct_server.py - Client: ('10.10.29.202', 50906) successfully connected
+29-05-2024 17:39:30 - INFO - ct_server.py - Command received from client: Analyse
+29-05-2024 17:39:30 - INFO - ct_controller.py - Analysis Process Initiated...
+29-05-2024 17:39:30 - INFO - ct_controller.py - SUCCESS - Hardware Connections Verified
+29-05-2024 17:39:30 - INFO - ct_controller.py - SUCCESS - Phase Sensor - Sample Detected
+29-05-2024 17:39:30 - INFO - ct_controller.py - SUCCESS - Switch Valve - Filling Loop Filled
+29-05-2024 17:39:30 - INFO - ct_controller.py - SUCCESS - LCMS - Start Signal Sent By Arduino
+29-05-2024 17:43:30 - ERROR - ct_controller.py - ERROR - LCMS - No Acknowledgement From Spectrometer Within Timeout
+29-05-2024 17:43:30 - INFO - ct_server.py - Response sent back to client: FAILED - Analysis Cycle Failed due to: ERROR - LCMS - No Acknowledgement From Spectrometer Within Timeout
+29-05-2024 18:29:13 - INFO - ct_server.py - Client: ('10.10.29.202', 51076) successfully connected
+29-05-2024 18:29:13 - INFO - ct_server.py - Command received from client: Analyse
+29-05-2024 18:29:13 - INFO - ct_controller.py - Analysis Process Initiated...
+29-05-2024 18:29:13 - INFO - ct_controller.py - SUCCESS - Hardware Connections Verified
+29-05-2024 18:29:13 - INFO - ct_controller.py - SUCCESS - Phase Sensor - Sample Detected
+29-05-2024 18:29:13 - INFO - ct_controller.py - SUCCESS - Switch Valve - Filling Loop Filled
+29-05-2024 18:29:13 - INFO - ct_controller.py - SUCCESS - LCMS - Start Signal Sent By Arduino
+29-05-2024 18:33:13 - ERROR - ct_controller.py - ERROR - LCMS - No Acknowledgement From Spectrometer Within Timeout
+29-05-2024 18:33:13 - INFO - ct_server.py - Response sent back to client: FAILED - Analysis Cycle Failed due to: ERROR - LCMS - No Acknowledgement From Spectrometer Within Timeout
+29-05-2024 19:18:56 - INFO - ct_server.py - Client: ('10.10.29.202', 51213) successfully connected
+29-05-2024 19:18:56 - INFO - ct_server.py - Command received from client: Analyse
+29-05-2024 19:18:56 - INFO - ct_controller.py - Analysis Process Initiated...
+29-05-2024 19:18:56 - INFO - ct_controller.py - SUCCESS - Hardware Connections Verified
+29-05-2024 19:18:56 - INFO - ct_controller.py - SUCCESS - Phase Sensor - Sample Detected
+29-05-2024 19:18:56 - INFO - ct_controller.py - SUCCESS - Switch Valve - Filling Loop Filled
+29-05-2024 19:18:56 - INFO - ct_controller.py - SUCCESS - LCMS - Start Signal Sent By Arduino
+29-05-2024 19:22:56 - ERROR - ct_controller.py - ERROR - LCMS - No Acknowledgement From Spectrometer Within Timeout
+29-05-2024 19:22:56 - INFO - ct_server.py - Response sent back to client: FAILED - Analysis Cycle Failed due to: ERROR - LCMS - No Acknowledgement From Spectrometer Within Timeout
+29-05-2024 20:08:39 - INFO - ct_server.py - Client: ('10.10.29.202', 51357) successfully connected
+29-05-2024 20:08:39 - INFO - ct_server.py - Command received from client: Analyse
+29-05-2024 20:08:39 - INFO - ct_controller.py - Analysis Process Initiated...
+29-05-2024 20:08:39 - INFO - ct_controller.py - SUCCESS - Hardware Connections Verified
+29-05-2024 20:08:39 - INFO - ct_controller.py - SUCCESS - Phase Sensor - Sample Detected
+29-05-2024 20:08:39 - INFO - ct_controller.py - SUCCESS - Switch Valve - Filling Loop Filled
+29-05-2024 20:08:39 - INFO - ct_controller.py - SUCCESS - LCMS - Start Signal Sent By Arduino
+29-05-2024 20:12:39 - ERROR - ct_controller.py - ERROR - LCMS - No Acknowledgement From Spectrometer Within Timeout
+29-05-2024 20:12:39 - INFO - ct_server.py - Response sent back to client: FAILED - Analysis Cycle Failed due to: ERROR - LCMS - No Acknowledgement From Spectrometer Within Timeout
+29-05-2024 20:58:22 - INFO - ct_server.py - Client: ('10.10.29.202', 51484) successfully connected
+29-05-2024 20:58:22 - INFO - ct_server.py - Command received from client: Analyse
+29-05-2024 20:58:22 - INFO - ct_controller.py - Analysis Process Initiated...
+29-05-2024 20:58:22 - INFO - ct_controller.py - SUCCESS - Hardware Connections Verified
+29-05-2024 20:58:22 - INFO - ct_controller.py - SUCCESS - Phase Sensor - Sample Detected
+29-05-2024 20:58:22 - INFO - ct_controller.py - SUCCESS - Switch Valve - Filling Loop Filled
+29-05-2024 20:58:22 - INFO - ct_controller.py - SUCCESS - LCMS - Start Signal Sent By Arduino
+29-05-2024 21:02:22 - ERROR - ct_controller.py - ERROR - LCMS - No Acknowledgement From Spectrometer Within Timeout
+29-05-2024 21:02:22 - INFO - ct_server.py - Response sent back to client: FAILED - Analysis Cycle Failed due to: ERROR - LCMS - No Acknowledgement From Spectrometer Within Timeout
+29-05-2024 21:48:52 - INFO - ct_server.py - Client: ('10.10.29.202', 51631) successfully connected
+29-05-2024 21:48:52 - INFO - ct_server.py - Command received from client: Analyse
+29-05-2024 21:48:52 - INFO - ct_controller.py - Analysis Process Initiated...
+29-05-2024 21:48:52 - INFO - ct_controller.py - SUCCESS - Hardware Connections Verified
+29-05-2024 21:48:52 - INFO - ct_controller.py - SUCCESS - Phase Sensor - Sample Detected
+29-05-2024 21:48:52 - INFO - ct_controller.py - SUCCESS - Switch Valve - Filling Loop Filled
+29-05-2024 21:48:52 - INFO - ct_controller.py - SUCCESS - LCMS - Start Signal Sent By Arduino
+29-05-2024 21:52:53 - ERROR - ct_controller.py - ERROR - LCMS - No Acknowledgement From Spectrometer Within Timeout
+29-05-2024 21:52:53 - INFO - ct_server.py - Response sent back to client: FAILED - Analysis Cycle Failed due to: ERROR - LCMS - No Acknowledgement From Spectrometer Within Timeout
+29-05-2024 22:38:36 - INFO - ct_server.py - Client: ('10.10.29.202', 51793) successfully connected
+29-05-2024 22:38:36 - INFO - ct_server.py - Command received from client: Analyse
+29-05-2024 22:38:36 - INFO - ct_controller.py - Analysis Process Initiated...
+29-05-2024 22:38:36 - INFO - ct_controller.py - SUCCESS - Hardware Connections Verified
+29-05-2024 22:38:36 - INFO - ct_controller.py - SUCCESS - Phase Sensor - Sample Detected
+29-05-2024 22:38:36 - INFO - ct_controller.py - SUCCESS - Switch Valve - Filling Loop Filled
+29-05-2024 22:38:36 - INFO - ct_controller.py - SUCCESS - LCMS - Start Signal Sent By Arduino
+29-05-2024 22:42:36 - ERROR - ct_controller.py - ERROR - LCMS - No Acknowledgement From Spectrometer Within Timeout
+29-05-2024 22:42:36 - INFO - ct_server.py - Response sent back to client: FAILED - Analysis Cycle Failed due to: ERROR - LCMS - No Acknowledgement From Spectrometer Within Timeout
+29-05-2024 23:28:19 - INFO - ct_server.py - Client: ('10.10.29.202', 51929) successfully connected
+29-05-2024 23:28:19 - INFO - ct_server.py - Command received from client: Analyse
+29-05-2024 23:28:19 - INFO - ct_controller.py - Analysis Process Initiated...
+29-05-2024 23:28:19 - INFO - ct_controller.py - SUCCESS - Hardware Connections Verified
+29-05-2024 23:28:19 - INFO - ct_controller.py - SUCCESS - Phase Sensor - Sample Detected
+29-05-2024 23:28:19 - INFO - ct_controller.py - SUCCESS - Switch Valve - Filling Loop Filled
+29-05-2024 23:28:19 - INFO - ct_controller.py - SUCCESS - LCMS - Start Signal Sent By Arduino
+29-05-2024 23:32:19 - ERROR - ct_controller.py - ERROR - LCMS - No Acknowledgement From Spectrometer Within Timeout
+29-05-2024 23:32:19 - INFO - ct_server.py - Response sent back to client: FAILED - Analysis Cycle Failed due to: ERROR - LCMS - No Acknowledgement From Spectrometer Within Timeout
+30-05-2024 12:23:47 - INFO - ct_server.py - Client: ('127.0.0.1', 57091) successfully connected
+30-05-2024 12:23:50 - INFO - ct_server.py - Command received from client: 4
+30-05-2024 12:23:50 - INFO - ct_server.py - Response sent back to client: A
+30-05-2024 12:24:03 - INFO - ct_server.py - Command received from client: 5-b
+30-05-2024 12:24:03 - INFO - ct_server.py - Response sent back to client: Good Acknowledge
+30-05-2024 12:25:00 - INFO - ct_server.py - Command received from client: 4
+30-05-2024 12:25:00 - INFO - ct_server.py - Response sent back to client: B
+30-05-2024 12:25:05 - INFO - ct_server.py - Command received from client: 5-a
+30-05-2024 12:25:05 - INFO - ct_server.py - Response sent back to client: Good Acknowledge
+30-05-2024 12:25:18 - INFO - ct_server.py - Command received from client: 5-b
+30-05-2024 12:25:18 - INFO - ct_server.py - Response sent back to client: Good Acknowledge
+30-05-2024 12:26:25 - INFO - ct_server.py - Command received from client: 4
+30-05-2024 12:26:25 - INFO - ct_server.py - Response sent back to client: B
+30-05-2024 12:26:37 - INFO - ct_server.py - Command received from client: 5-a
+30-05-2024 12:26:37 - INFO - ct_server.py - Response sent back to client: Good Acknowledge
+30-05-2024 12:27:03 - INFO - ct_server.py - Command received from client: 5-b
+30-05-2024 12:27:03 - INFO - ct_server.py - Response sent back to client: Good Acknowledge
+30-05-2024 12:27:11 - INFO - ct_server.py - Command received from client: 4
+30-05-2024 12:27:11 - INFO - ct_server.py - Response sent back to client: B
+30-05-2024 12:27:27 - INFO - ct_server.py - Command received from client: 5-a
+30-05-2024 12:27:27 - INFO - ct_server.py - Response sent back to client: Good Acknowledge
+30-05-2024 12:27:41 - INFO - ct_server.py - Command received from client: 5-b
+30-05-2024 12:27:41 - INFO - ct_server.py - Response sent back to client: Good Acknowledge
+30-05-2024 12:27:56 - INFO - ct_server.py - Command received from client: 5-a
+30-05-2024 12:27:56 - INFO - ct_server.py - Response sent back to client: Good Acknowledge
+30-05-2024 12:28:09 - INFO - ct_server.py - Command received from client: 5-b
+30-05-2024 12:28:09 - INFO - ct_server.py - Response sent back to client: Good Acknowledge
+30-05-2024 12:28:33 - INFO - ct_server.py - Command received from client: 5-a
+30-05-2024 12:28:33 - INFO - ct_server.py - Response sent back to client: Good Acknowledge
+30-05-2024 12:28:45 - INFO - ct_server.py - Command received from client: 5-b
+30-05-2024 12:28:45 - INFO - ct_server.py - Response sent back to client: Good Acknowledge
+30-05-2024 12:28:59 - INFO - ct_server.py - Command received from client: 5-a
+30-05-2024 12:28:59 - INFO - ct_server.py - Response sent back to client: Good Acknowledge
+30-05-2024 12:29:21 - INFO - ct_server.py - Command received from client: 5-b
+30-05-2024 12:29:21 - INFO - ct_server.py - Response sent back to client: Good Acknowledge
+30-05-2024 12:29:31 - INFO - ct_server.py - Command received from client: 5-a
+30-05-2024 12:29:31 - INFO - ct_server.py - Response sent back to client: Good Acknowledge
+30-05-2024 12:29:39 - INFO - ct_server.py - Command received from client: 5-b
+30-05-2024 12:29:39 - INFO - ct_server.py - Response sent back to client: Good Acknowledge
+30-05-2024 12:29:51 - INFO - ct_server.py - Command received from client: 4
+30-05-2024 12:29:51 - INFO - ct_server.py - Response sent back to client: B

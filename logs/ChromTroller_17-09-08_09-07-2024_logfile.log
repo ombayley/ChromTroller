@@ -1,0 +1,10 @@
+17-09-08_09-07-2024  - INFO - ct_server.py - Server loaded connection ids from .json file successfully
+17-09-08_09-07-2024  - INFO - ct_server.py - Server listening on port: 10989
+17-09-08_09-07-2024  - ERROR - ChromTroller.py - Failed to connect to controller: Failed to open serial connection: could not open port 'COM3': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
+17-09-08_09-07-2024  - INFO - ChromTroller.py - Successfully connected to monitor
+17-09-08_09-07-2024  - INFO - ct_analyser.py - loaded analysis settings from json
+17-09-08_09-07-2024  - INFO - ct_analyser.py - No .dx file type found in: D:\CDSProjects\RoboChem_FGT\Results\post_updates_test
+17-09-08_09-07-2024  - INFO - ct_analyser.py - settings read from analysis json
+17-09-08_09-07-2024  - INFO - ct_analyser.py - settings object created
+17-09-08_09-07-2024  - INFO - ct_analyser.py - Analyser Object Initialized Successfully
+17-09-08_09-07-2024  - INFO - ChromTroller.py - Successfully connected to analyser

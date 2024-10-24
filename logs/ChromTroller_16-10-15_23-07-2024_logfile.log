@@ -1,0 +1,54 @@
+16-10-15_23-07-2024  - INFO - ct_server.py - Server loaded connection ids from .json file successfully
+16-10-15_23-07-2024  - INFO - ct_server.py - Server listening on port: 10989
+16-10-15_23-07-2024  - INFO - ct_controller.py - Loaded hardware settings successfully
+16-10-17_23-07-2024  - INFO - ct_controller.py - Phase sensor monitoring started on separate thread.
+16-10-17_23-07-2024  - INFO - ct_controller.py - Controller Object Initialized Successfully
+16-10-17_23-07-2024  - INFO - ChromTroller.py - Successfully connected to instrument controller
+16-10-17_23-07-2024  - INFO - ChromTroller.py - Successfully connected to monitor
+16-10-17_23-07-2024  - INFO - ct_analyser.py - loaded analysis settings from json
+16-10-17_23-07-2024  - INFO - ct_analyser.py - settings read from analysis json
+16-10-17_23-07-2024  - INFO - ct_analyser.py - settings object created
+16-10-17_23-07-2024  - INFO - ct_analyser.py - Analyser Object Initialized Successfully
+16-10-17_23-07-2024  - INFO - ChromTroller.py - Successfully connected to analyser
+16-14-35_23-07-2024  - INFO - ct_server.py - Client connected at 16:14:35_23-07-2024
+16-21-32_23-07-2024  - INFO - ct_server.py - Command from client: new_run_name with message: system_flush
+16-21-32_23-07-2024  - INFO - ChromTroller.py - Command received: new_run_name with data: system_flush
+16-21-32_23-07-2024  - INFO - ChromTroller.py - new run info object made with name: system_flush
+16-21-32_23-07-2024  - INFO - ct_server.py - Command from client: set_run_conc with message: 0.1
+16-21-32_23-07-2024  - INFO - ChromTroller.py - Command received: set_run_conc with data: 0.1
+16-21-32_23-07-2024  - INFO - ct_server.py - Command from client: add_reagents with message: ['tBuOOH', 'NBS']
+16-21-32_23-07-2024  - INFO - ChromTroller.py - Command received: add_reagents with data: ['tBuOOH', 'NBS']
+16-21-32_23-07-2024  - INFO - ChromTroller.py - reagents: ['tBuOOH', 'NBS'] added to to run info
+16-21-32_23-07-2024  - INFO - ct_server.py - Command from client: add_reaction_conditions with message: {'light_intensity': 20, 'residence_time': 50}
+16-21-32_23-07-2024  - INFO - ChromTroller.py - Command received: add_reaction_conditions with data: {'light_intensity': 20, 'residence_time': 50}
+16-21-32_23-07-2024  - INFO - ChromTroller.py - conditions: {'light_intensity': 20, 'residence_time': 50} added to to run info
+16-21-32_23-07-2024  - INFO - ct_server.py - Command from client: start_hplc_run with message: None
+16-21-32_23-07-2024  - INFO - ChromTroller.py - Command received: start_hplc_run with data: None
+16-21-32_23-07-2024  - INFO - ct_controller.py - {'HPLC_analysis': 'INITIATED'}
+16-21-32_23-07-2024  - INFO - ct_controller.py - {'hardware_connection_check': {'Arduino': 'SUCCESS', 'Valve': 'SUCCESS', 'Phase_Sensor': 'SUCCESS', 'LCMS': 'SUCCESS'}}
+16-21-32_23-07-2024  - INFO - ct_controller.py - {'filling_pos_check': 'SUCCESS'}
+16-21-32_23-07-2024  - INFO - ct_controller.py - {'ps_sample_detection': 'WAITING'}
+16-27-58_23-07-2024  - INFO - ct_controller.py - {'ps_sample_detection': 'SUCCESS'}
+16-27-58_23-07-2024  - INFO - ct_controller.py - {'send_start_signal': 'SUCCESS'}
+16-27-58_23-07-2024  - INFO - ct_controller.py - {'start_request_acknowledged': 'WAITING'}
+16-27-58_23-07-2024  - INFO - ct_controller.py - {'start_request_acknowledged': 'SUCCESS'}
+16-28-03_23-07-2024  - INFO - ct_controller.py - {'start_signal': 'WAITING'}
+16-28-18_23-07-2024  - INFO - ct_controller.py - {'start_signal': 'SUCCESS'}
+16-28-18_23-07-2024  - INFO - ct_controller.py - {'valve_switched_to_load': 'INITIATED'}
+16-28-19_23-07-2024  - INFO - ct_controller.py - {'valve_switched_to_load': 'SUCCESS'}
+16-28-19_23-07-2024  - INFO - ct_controller.py - {'sample_loading': 'WAITING'}
+16-28-44_23-07-2024  - INFO - ct_controller.py - {'sample_loading': 'SUCCESS'}
+16-28-44_23-07-2024  - INFO - ct_controller.py - {'valve_returned_to_bypass': 'SUCCESS'}
+16-28-44_23-07-2024  - INFO - ct_controller.py - {'analysis_cycle_started': 'SUCCESS'}
+16-28-44_23-07-2024  - INFO - ChromTroller.py - HPLC initiation: SUCCESS
+16-28-44_23-07-2024  - INFO - ct_server.py - Response sent to client: SUCCESS
+16-28-44_23-07-2024  - INFO - ct_server.py - Command from client: start_file_monitoring with message: None
+16-28-44_23-07-2024  - INFO - ChromTroller.py - Command received: start_file_monitoring with data: None
+16-32-22_23-07-2024  - INFO - ct_monitor.py - RoboChem_sample_02.dx
+16-32-22_23-07-2024  - INFO - ChromTroller.py - file found: RoboChem_sample_02.dx
+16-32-22_23-07-2024  - INFO - ChromTroller.py - new file found: RoboChem_sample_02.dx
+16-32-22_23-07-2024  - INFO - ct_server.py - Response sent to client: RoboChem_sample_02.dx
+16-32-22_23-07-2024  - INFO - ct_server.py - Command from client: run_data_analysis with message: None
+16-32-22_23-07-2024  - INFO - ChromTroller.py - Command received: run_data_analysis with data: None
+16-32-22_23-07-2024  - INFO - ct_server.py - Response sent to client: SUCCESS
+16-32-22_23-07-2024  - INFO - ct_server.py - Client disconnected at 16_32_22-23_07_2024

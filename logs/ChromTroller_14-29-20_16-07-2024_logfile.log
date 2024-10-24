@@ -1,0 +1,12 @@
+14-29-20_16-07-2024  - INFO - ct_server.py - Server loaded connection ids from .json file successfully
+14-29-20_16-07-2024  - INFO - ct_server.py - Server listening on port: 10989
+14-29-20_16-07-2024  - INFO - ct_controller.py - Loaded hardware settings successfully
+14-29-22_16-07-2024  - INFO - ct_controller.py - Phase sensor monitoring started on separate thread.
+14-29-22_16-07-2024  - INFO - ct_controller.py - Controller Object Initialized Successfully
+14-29-22_16-07-2024  - INFO - ChromTroller.py - Successfully connected to instrument controller
+14-29-22_16-07-2024  - INFO - ChromTroller.py - Successfully connected to monitor
+14-29-22_16-07-2024  - INFO - ct_analyser.py - loaded analysis settings from json
+14-29-22_16-07-2024  - INFO - ct_analyser.py - settings read from analysis json
+14-29-22_16-07-2024  - INFO - ct_analyser.py - settings object created
+14-29-22_16-07-2024  - INFO - ct_analyser.py - Analyser Object Initialized Successfully
+14-29-22_16-07-2024  - INFO - ChromTroller.py - Successfully connected to analyser

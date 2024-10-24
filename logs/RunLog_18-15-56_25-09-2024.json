@@ -1,0 +1,62 @@
+[
+    {
+        "run_name": "Test",
+        "run_conc": 0.0,
+        "reagent_list": [
+            "Tracer",
+            0.5,
+            "blank",
+            1,
+            "secondary_reagent",
+            1
+        ],
+        "run_conditions": {
+            "residence_time": 60,
+            "light_intensity": 10
+        },
+        "hplc_start": "SUCCESS",
+        "file": "RoboChem_run_204.dx",
+        "analysis": null
+    },
+    {
+        "run_name": "1",
+        "run_conc": 0.0,
+        "reagent_list": [
+            "EtPh",
+            "BP",
+            "One"
+        ],
+        "run_conditions": {
+            "light_intensity": 35,
+            "residence_time": 15
+        },
+        "hplc_start": "SUCCESS",
+        "file": "RoboChem_run_306.dx",
+        "analysis": {
+            "Peak": 2.348,
+            "Integral": 8179594827.011759
+        }
+    },
+    {
+        "run_name": "Test",
+        "run_conc": 0.0,
+        "reagent_list": [
+            "Tracer",
+            0.5,
+            "blank",
+            1,
+            "secondary_reagent",
+            1
+        ],
+        "run_conditions": {
+            "residence_time": 60,
+            "light_intensity": 10
+        },
+        "hplc_start": "SUCCESS",
+        "file": "RoboChem_run_408.dx",
+        "analysis": {
+            "Peak": 2.348,
+            "Integral": 8217531534.0173645
+        }
+    }
+]

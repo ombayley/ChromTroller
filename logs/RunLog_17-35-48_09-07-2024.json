@@ -1,0 +1,28 @@
+[
+    {
+        "run_name": "2",
+        "run_conc": 0.0846,
+        "reagent_list": [
+            "chloro",
+            "additive_04"
+        ],
+        "run_conditions": {
+            "light_intensity": 130,
+            "residence_time": 0
+        },
+        "controller": {
+            "analysis": "INITIATED",
+            "hardware_connection_check": "SUCCESS",
+            "ps_sample_detection": "SUCCESS",
+            "full_sample_loop_check": "SUCCESS",
+            "send_start_signal": "SUCCESS",
+            "start_signal_acknowledged": "SUCCESS",
+            "valve_switched_to_load": "SUCCESS",
+            "sample_loaded": "SUCCESS",
+            "valve_returned_to_bypass": "SUCCESS",
+            "analysis_cycle_started": "SUCCESS"
+        },
+        "file": "",
+        "analysis": {}
+    }
+]

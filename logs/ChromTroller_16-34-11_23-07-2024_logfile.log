@@ -1,0 +1,4 @@
+16-34-11_23-07-2024  - INFO - ct_server.py - Server loaded connection ids from .json file successfully
+16-34-11_23-07-2024  - INFO - ct_server.py - Server listening on port: 10989
+16-34-11_23-07-2024  - INFO - ct_controller.py - Loaded hardware settings successfully
+16-34-11_23-07-2024  - ERROR - ChromTroller.py - Failed to connect to controller: Failed to open serial connection: could not open port 'COM5': PermissionError(13, 'Access is denied.', None, 5)

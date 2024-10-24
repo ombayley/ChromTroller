@@ -1,0 +1,49 @@
+13-48-53_16-07-2024  - INFO - ct_server.py - Server loaded connection ids from .json file successfully
+13-48-53_16-07-2024  - INFO - ct_server.py - Server listening on port: 10989
+13-48-53_16-07-2024  - INFO - ct_controller.py - Loaded hardware settings successfully
+13-48-55_16-07-2024  - INFO - ct_controller.py - Phase sensor monitoring started on separate thread.
+13-48-55_16-07-2024  - INFO - ct_controller.py - Controller Object Initialized Successfully
+13-48-55_16-07-2024  - INFO - ChromTroller.py - Successfully connected to instrument controller
+13-48-55_16-07-2024  - INFO - ChromTroller.py - Successfully connected to monitor
+13-48-55_16-07-2024  - INFO - ct_analyser.py - loaded analysis settings from json
+13-48-55_16-07-2024  - INFO - ct_analyser.py - settings read from analysis json
+13-48-55_16-07-2024  - INFO - ct_analyser.py - settings object created
+13-48-55_16-07-2024  - INFO - ct_analyser.py - Analyser Object Initialized Successfully
+13-48-55_16-07-2024  - INFO - ChromTroller.py - Successfully connected to analyser
+13-49-14_16-07-2024  - INFO - ct_server.py - Client connected at 13:49:14_16-07-2024
+13-49-14_16-07-2024  - INFO - ct_server.py - Command from client: new_run_name with message: 1
+13-49-14_16-07-2024  - INFO - ChromTroller.py - Command received: new_run_name with data: 1
+13-49-14_16-07-2024  - INFO - ChromTroller.py - new run info object made with name: 1
+13-49-14_16-07-2024  - INFO - ct_server.py - Command from client: set_run_conc with message: 0.999
+13-49-14_16-07-2024  - INFO - ChromTroller.py - Command received: set_run_conc with data: 0.999
+13-49-14_16-07-2024  - INFO - ct_server.py - Command from client: add_reagents with message: ['EtPh', 'BP', 'One']
+13-49-14_16-07-2024  - INFO - ChromTroller.py - Command received: add_reagents with data: ['EtPh', 'BP', 'One']
+13-49-14_16-07-2024  - INFO - ChromTroller.py - reagents: ['EtPh', 'BP', 'One'] added to to run info
+13-49-14_16-07-2024  - INFO - ct_server.py - Command from client: add_reaction_conditions with message: {'light_intensity': 35, 'residence_time': 15}
+13-49-14_16-07-2024  - INFO - ChromTroller.py - Command received: add_reaction_conditions with data: {'light_intensity': 35, 'residence_time': 15}
+13-49-14_16-07-2024  - INFO - ChromTroller.py - conditions: {'light_intensity': 35, 'residence_time': 15} added to to run info
+13-49-14_16-07-2024  - INFO - ct_server.py - Command from client: start_hplc_run with message: None
+13-49-14_16-07-2024  - INFO - ChromTroller.py - Command received: start_hplc_run with data: None
+13-49-14_16-07-2024  - INFO - ct_controller.py - {'HPLC_analysis': 'INITIATED'}
+13-49-14_16-07-2024  - INFO - ct_controller.py - {'hardware_connection_check': {'Arduino': 'SUCCESS', 'Valve': 'SUCCESS', 'Phase_Sensor': 'SUCCESS', 'LCMS': 'SUCCESS'}}
+13-49-14_16-07-2024  - INFO - ct_controller.py - {'filling_pos_check': 'SUCCESS'}
+13-49-14_16-07-2024  - INFO - ct_controller.py - {'ps_sample_detection': 'WAITING'}
+13-49-47_16-07-2024  - INFO - ct_controller.py - {'ps_sample_detection': 'SUCCESS'}
+13-49-48_16-07-2024  - INFO - ct_controller.py - {'send_start_signal': 'SUCCESS'}
+13-49-48_16-07-2024  - INFO - ct_controller.py - {'start_request_acknowledged': 'WAITING'}
+13-49-48_16-07-2024  - INFO - ct_controller.py - {'start_request_acknowledged': 'SUCCESS'}
+13-49-48_16-07-2024  - INFO - ct_controller.py - {'start_signal': 'WAITING'}
+13-49-48_16-07-2024  - INFO - ct_controller.py - {'start_signal': 'SUCCESS'}
+13-49-48_16-07-2024  - INFO - ct_controller.py - {'valve_switched_to_load': 'INITIATED'}
+13-49-54_16-07-2024  - INFO - ct_controller.py - {'valve_switched_to_load': 'FAIL - Valve failed to switch to desired position'}
+13-49-54_16-07-2024  - INFO - ct_controller.py - {'analysis_cycle_started': 'FAIL', 'cause': Exception('FAIL - Valve failed to switch to desired position')}
+13-49-54_16-07-2024  - INFO - ChromTroller.py - HPLC initiation: FAIL - FAIL - Valve failed to switch to desired position
+13-49-54_16-07-2024  - INFO - ct_server.py - Response sent to client: FAIL - FAIL - Valve failed to switch to desired position
+13-49-54_16-07-2024  - INFO - ct_server.py - Command from client: start_file_monitoring with message: None
+13-49-54_16-07-2024  - INFO - ChromTroller.py - Command received: start_file_monitoring with data: None
+13-54-12_16-07-2024  - INFO - ct_monitor.py - dummy_run_wistd_02.dx
+13-54-12_16-07-2024  - INFO - ChromTroller.py - file found: dummy_run_wistd_02.dx
+13-54-13_16-07-2024  - INFO - ChromTroller.py - new file found: dummy_run_wistd_02.dx
+13-54-13_16-07-2024  - INFO - ct_server.py - Response sent to client: dummy_run_wistd_02.dx
+13-54-13_16-07-2024  - INFO - ct_server.py - Command from client: run_data_analysis with message: None
+13-54-13_16-07-2024  - INFO - ChromTroller.py - Command received: run_data_analysis with data: None

@@ -1,0 +1,23 @@
+12-02-13_30-08-2024  - INFO - ChromTroller.py - Loaded chromtroller settings successfully
+12-02-13_30-08-2024  - INFO - ChromTroller.py - Set RunLog path successfully
+12-02-13_30-08-2024  - INFO - ct_server.py - Server loaded connection ids from .json file successfully
+12-02-13_30-08-2024  - INFO - ct_server.py - Server listening on port: 10989
+12-02-13_30-08-2024  - INFO - ChromTroller.py - Server Initialization: SUCCESS 
+12-02-13_30-08-2024  - INFO - ct_controller.py - Loaded hardware settings successfully
+12-02-15_30-08-2024  - INFO - ct_controller.py - Phase sensor monitoring started on separate thread.
+12-02-15_30-08-2024  - INFO - ct_controller.py - Controller Object Initialized Successfully
+12-02-15_30-08-2024  - INFO - ChromTroller.py - Controller Connection: SUCCESS 
+15-08-34_30-08-2024  - INFO - ct_server.py - Client connected at 15:08:34_30-08-2024
+15-18-43_30-08-2024  - INFO - ChromTroller.py - Command received: new_run_name with data: TEST
+15-18-43_30-08-2024  - INFO - ChromTroller.py - New RunLog created: TEST
+15-18-43_30-08-2024  - INFO - ChromTroller.py - Command received: set_run_conc with data: 0.11
+15-18-43_30-08-2024  - INFO - ChromTroller.py - Command received: add_reagents with data: ['Polystyrene', 0.11, 'tBuOOH', 5, 'NBS', 0.3]
+15-18-43_30-08-2024  - INFO - ChromTroller.py - RunLog updated with reagents: ['Polystyrene', 0.11, 'tBuOOH', 5, 'NBS', 0.3]
+15-18-43_30-08-2024  - INFO - ChromTroller.py - Command received: add_reaction_conditions with data: {'residence_time': 300, 'light_intensity': 95}
+15-18-43_30-08-2024  - INFO - ChromTroller.py - RunLog updated with conditions: {'residence_time': 300, 'light_intensity': 95}
+15-18-43_30-08-2024  - INFO - ChromTroller.py - Command received: start_hplc_run with data: None
+15-18-43_30-08-2024  - INFO - ChromTroller.py - HPLC analysis initiated
+15-18-43_30-08-2024  - INFO - ct_controller.py - {'HPLC_analysis': 'INITIATED'}
+15-18-43_30-08-2024  - INFO - ct_controller.py - {'hardware_connection_check': {'Arduino': 'SUCCESS', 'Valve': 'SUCCESS', 'Phase_Sensor': 'SUCCESS', 'LCMS': 'SUCCESS'}}
+15-18-43_30-08-2024  - INFO - ct_controller.py - {'filling_pos_check': 'SUCCESS'}
+15-18-43_30-08-2024  - INFO - ct_controller.py - {'ps_sample_detection': 'WAITING'}
