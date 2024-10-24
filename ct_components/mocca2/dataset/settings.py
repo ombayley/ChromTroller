@@ -24,9 +24,7 @@ class ProcessingSettings:
     """Maximum relative height of minima between peaks to split them"""
     explained_threshold: float = 0.995
     """Minimal R2 to consider peak resolved"""
-    peak_model: Literal["BiGaussian", "BiGaussianTailing", "FraserSuzuki", "Bemg"] = (
-        "Bemg"
-    )
+    peak_model: Literal["BiGaussian", "BiGaussianTailing", "FraserSuzuki", "Bemg"] = "Bemg"
     """Model that describes the peak shape"""
     max_peak_comps: int = 4
     """Maximum number of deconvolved components in single peak"""

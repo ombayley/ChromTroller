@@ -21,6 +21,11 @@ class ValveSwitchError(ControllerError):
     pass
 
 
+class ValvePositionError(ControllerError):
+    """Exception raised when the valve fails to switch."""
+    pass
+
+
 class LCMSCommunicationError(ControllerError):
     """Exception raised for LCMS communication failures."""
     pass

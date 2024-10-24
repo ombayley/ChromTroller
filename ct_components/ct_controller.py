@@ -9,12 +9,12 @@ and automation of the analysis cycle.
 
 import os
 import logging
-import threading
 import time
 import json
 import serial.tools.list_ports
 from typing import Any, Dict, Optional
 
+from utils.get_project_directory import get_project_dir
 from ct_components.devices.lcms_device import LCMSDevice
 from utils.custom_error_classes import *
 
@@ -24,21 +24,17 @@ class Controller:
     The Controller class manages the LCMS device and associated hardware components.
     It initializes hardware connections, monitors sensors, and orchestrates the analysis cycle.
     """
-    def __init__(self) -> None:
+    def __init__(self, hardware_settings) -> None:
         # Get hardware and timing settings
-        self.hardware_settings: Dict[str, Any] = self._get_hardware_settings()
+        self.hardware_settings: Dict[str, Any] = hardware_settings
         # Create LCMSDevice object
         self.lcms_device: LCMSDevice = self._init_device()
-        # Start phase sensor monitoring (separate thread)
-        self.sensor_monitor_instance: Optional[SensorMonitor] = None
-        self.sensor_monitor_thread: Optional[threading.Thread] = None
-        self._start_ps_monitor()
         # Report initialization success
-        logging.info("Controller Object Initialized Successfully")
+        self.log_info("Controller Object Initialized Successfully")
 
     # ----- Initialization Methods -----
     @staticmethod
-    def _get_hardware_settings() -> Dict[str, Any]:
+    def _get_sensitive_settings() -> Dict[str, Any]:
         """
         Read the hardware settings JSON file and return all hardware settings.
 
@@ -51,12 +47,11 @@ class Controller:
             PermissionError: If there is a permission error accessing the file.
         """
         try:
-            project_path = os.path.dirname(os.path.dirname(__file__))
-            settings_path = os.path.join(project_path, 'settings_files', 'hardware_settings.json')
+            settings_path = os.path.join(get_project_dir(), 'settings_files', 'sensitive_settings.json')
             with open(settings_path, 'r', encoding='utf-8') as settings_file:
-                hardware_settings = json.load(settings_file)
+                sensitive_settings = json.load(settings_file)
                 logging.info("Loaded hardware settings successfully")
-            return hardware_settings
+            return sensitive_settings
         except (FileNotFoundError, json.JSONDecodeError, PermissionError) as err:
             logging.error(f"Error occurred when loading hardware settings: {err}")
             raise
@@ -71,44 +66,28 @@ class Controller:
         Raises:
             ValueError: If no serial port is found for the device.
         """
-        serial_num: str = self.hardware_settings.get("serial_number")
-        device_port: Optional[str] = None
-        ports = serial.tools.list_ports.comports()
-        for port in ports:
-            if port.serial_number == serial_num:
-                device_port = port.device
-                break
+        try:
+            sensitive_settings = self._get_sensitive_settings()
+            serial_num: str = sensitive_settings["arduino_serial_number"]
+            device_port: Optional[str] = None
+            ports = serial.tools.list_ports.comports()
+            for port in ports:
+                if port.serial_number == serial_num:
+                    device_port = port.device
+                    break
 
-        if device_port is None:
-            error_msg = f"No serial port found for the device: {serial_num}"
-            logging.error(error_msg)
-            raise ValueError(error_msg)
+            if device_port is None:
+                error_msg = f"No serial port found for the device: {serial_num}"
+                logging.error(error_msg)
+                raise ValueError(error_msg)
 
-        baud_rate: int = self.hardware_settings.get("serial_baud_rate")
-        timeout: float = self.hardware_settings.get("serial_timeout")
-        logging.info(f"Initializing LCMSDevice on port {device_port} with baud rate {baud_rate}")
-        return LCMSDevice(device_port, baud_rate, timeout)
-
-    def _start_ps_monitor(self) -> None:
-        """
-        Start a new thread to monitor the data from the phase sensor using the SensorMonitor object.
-        """
-        self.sensor_monitor_instance = SensorMonitor(self.lcms_device, self.hardware_settings)
-        self.sensor_monitor_thread = threading.Thread(target=self.sensor_monitor_instance.monitor_loop)
-        self.sensor_monitor_thread.daemon = True  # Allows the thread to exit when the main program exits
-        self.sensor_monitor_thread.start()
-        logging.info("Phase sensor monitoring started on a separate thread.")
-
-    def stop_ps_monitor(self) -> None:
-        """
-        Stop the phase sensor monitoring thread.
-        """
-        if self.sensor_monitor_instance:
-            self.sensor_monitor_instance.stop()
-            logging.info("Stopping phase sensor monitoring.")
-        if self.sensor_monitor_thread:
-            self.sensor_monitor_thread.join()
-            logging.info("Phase sensor monitoring stopped.")
+            baud_rate: int = self.hardware_settings.get("serial_baud_rate")
+            timeout: float = self.hardware_settings.get("serial_timeout")
+            logging.info(f"Initializing LCMSDevice on port {device_port} with baud rate {baud_rate}")
+            return LCMSDevice(device_port, baud_rate, timeout)
+        except Exception as err:
+            logging.error(f"Failed to create LCMS Device due error: {err}")
+            raise
 
     # ----- Analysis Method -----
 
@@ -130,52 +109,50 @@ class Controller:
             self._check_filling_state()
             self.log_info("Filling pos_check: SUCCESS")
 
-            # Ensure phase sensor sees sample. Wait if not there
-            self.log_info("ps_sample_detection: BYPASSED")
-            # self.wait_for_sample()
-
             # Attempt to send start request and wait for LCMS response
             attempt = 0
             max_attempts = 3
             while attempt < max_attempts:
+                attempt += 1  # Increment attempt counter
+
                 # Send start analysis and check acknowledgement
                 self._send_start_request()
-                logging.info("Send start signal: SUCCESS")
+                self.log_info(f"Send start signal: ATTEMPT {attempt}")
 
                 # Check request acknowledgement from spectrometer
-                logging.info("Start request acknowledged: INITIATED")
-                self._wait_on_lcms_response()
-                logging.info("Start request acknowledged: SUCCESS")
+                self.log_info("Start request acknowledged: INITIATED")
+                try:
+                    self._wait_on_lcms_response()
+                except LCMSCommunicationError:
+                    self.log_info(f"Attempt {attempt} failed. LCMS did not acknowledge start request.")
+                    continue  # Try again
 
+                self.log_info("Start request acknowledged: SUCCESS")
                 break  # Exit loop if successful
             else:
                 error_msg = f"HPLC not starting after {max_attempts} attempts"
                 logging.error(error_msg)
                 raise LCMSCommunicationError(error_msg)
 
-            time.sleep(0.5)
+            time.sleep(0.3)
 
             # Wait for start signal/sample prep completion response from spectrometer
-            logging.info("Start signal: WAITING")
+            self.log_info("Start signal: WAITING")
             self._wait_on_lcms_start()
-            logging.info("Start signal: SUCCESS")
+            self.log_info("Start signal: SUCCESS")
 
             # Load from the switch valve
-            logging.info("Valve set to load position: WAITING")
-            self._set_valve_to_pos(self.hardware_settings["sample_loading_position"])
-            logging.info("Valve set to load position: SUCCESS")
+            self.log_info("Valve set to load position: WAITING")
+            self.set_valve_to_pos(self.hardware_settings["sample_loading_position"])
+            self.log_info("Valve set to load position: SUCCESS")
 
-            # Wait for the sample loop to be flushed through
-            logging.info("Sample loading: WAITING")
-            time.sleep(self.hardware_settings["sample_loop_fill_time"] * 5)
-            logging.info("Sample loading: SUCCESS")
-
-            # Return to initial filling position
-            self._set_valve_to_pos(self.hardware_settings["sample_filling_position"])
-            logging.info("Valve returned to filling position: SUCCESS")
+            # Sleep while emptying sample loop to prevent any accidental switching (Safety precaution)
+            self.log_info("Sample loading: WAITING")
+            time.sleep(self.hardware_settings["sample_loop_fill_time"])
+            self.log_info("Sample loading: SUCCESS")
 
             # Report triggering success
-            logging.info("Analysis cycle started successfully")
+            self.log_info("Analysis cycle started successfully")
 
             return 'SUCCESS'
 
@@ -206,14 +183,7 @@ class Controller:
             logging.error(error_msg)
             raise DeviceConnectionError(error_msg)
 
-        # Check the phase sensor reads a valid value
-        ps_ack = self.lcms_device.read_phase_sensor()
-        if ps_ack not in ['0', '1', '2']:
-            error_msg = "Phase sensor connection failed."
-            logging.error(error_msg)
-            raise DeviceConnectionError(error_msg)
-
-        # Check LCMS Power state - Default POWER state '1' when device is on
+        # Check LCMS Power state - Default POWER state '1' when the device is on
         lc_ack = self.lcms_device.get_lcms_power()
         if lc_ack != '1':
             error_msg = "LCMS device not detected or powered off."
@@ -225,42 +195,15 @@ class Controller:
         Ensure the switch valve is in the filling state.
 
         Raises:
-            ValveSwitchError: If the valve cannot be switched to the filling position.
+            ValvePositionError: If the valve was not in the correct filling position.
         """
         desired_position = self.hardware_settings.get("sample_filling_position")
         current_position = self.lcms_device.get_valve_pos()
         if current_position != desired_position:
-            self._set_valve_to_pos(desired_position)
-            logging.info(f"Valve switched called to set to filling position: {desired_position}")
-            time.sleep(0.1)
-
-        current_position = self.lcms_device.get_valve_pos()
-        if current_position != desired_position:
-            error_msg = "Valve not setting to desired position"
+            error_msg = "WARNING: sample loop was not in filling position when run start was called"
             logging.error(error_msg)
-            raise ValveSwitchError(error_msg)
-
-    def _wait_for_sample(self) -> None:
-        """
-        Wait for the sample to be detected by the phase sensor within a timeout period.
-
-        Raises:
-            SampleDetectionError: If the sample is not detected within the timeout.
-        """
-        start_time = time.time()
-        timeout = self.hardware_settings.get("sample_detection_timeout")
-        polling_time = self.hardware_settings.get("phase_sensor_polling_time")
-        full_vals = self.hardware_settings.get("full_phase_sensor_values")
-
-        while time.time() - start_time <= timeout:
-            ps_value = self.lcms_device.read_phase_sensor()
-            if ps_value in full_vals:
-                return
-            time.sleep(polling_time)
-
-        error_msg = "No sample detected at phase sensor before timeout."
-        logging.error(error_msg)
-        raise SampleDetectionError(error_msg)
+            print(error_msg)
+            raise ValvePositionError(error_msg)
 
     def _send_start_request(self) -> None:
         """
@@ -317,9 +260,9 @@ class Controller:
         logging.error(error_msg)
         raise LCMSCommunicationError(error_msg)
 
-    def _set_valve_to_pos(self, desired_position: str) -> None:
+    def set_valve_to_pos(self, desired_position: str) -> None:
         """
-        Set valve position and verify it switched.
+        Set the valve position and verify it switched.
 
         Args:
             desired_position (str): The desired valve position ('A' or 'B').
@@ -347,114 +290,12 @@ class Controller:
 
     @staticmethod
     def log_info(message) -> None:
+        """
+        Helper method to print and log messages
+        """
         logging.info(message)
-        print(f"    {message}")
+        print(message)
 
-
-# ----- SensorMonitor Class -----
-
-class SensorMonitor:
-    """
-    Monitors phase sensor data in a separate thread.
-    Detects stable changes in the phase sensor readings and acts upon them.
-    """
-
-    def __init__(self, lcms_device: LCMSDevice, param_config: Dict[str, Any]) -> None:
-        self.lcms_device: LCMSDevice = lcms_device
-        self.param_config: Dict[str, Any] = param_config
-        self.previous_stable_value: str = self.lcms_device.read_phase_sensor()
-        self.previous_ps_value: str = self.previous_stable_value
-        self.change_detected_flag: bool = False
-        self.change_stable_flag: bool = False
-        self.time_of_ps_change: float = time.time()
-        self.is_running: bool = True
-
-    def monitor_loop(self) -> None:
-        """
-        Central monitoring loop.
-        Reads data, checks for stable changes, updates previous readings, and acts accordingly.
-        """
-        logging.info("Phase sensor monitor loop started.")
-        while self.is_running:
-            # Get current sensor value
-            current_ps_value = self.lcms_device.read_phase_sensor()
-
-            # If the change is stable, then perform the action
-            if self.change_stable_flag:
-                self._act_on_stable_read(current_ps_value)
-                self.change_detected_flag = False
-                # Reset detection variables
-                self.change_stable_flag = False
-                self.previous_stable_value = current_ps_value
-
-            # If a change is detected, check the stability of the change
-            if self.change_detected_flag:
-                self._check_change_stability(current_ps_value)
-
-            # Check for a change in the phase sensor output
-            self._check_ps_change(current_ps_value)
-
-            # Update the previous_ps_value for the next loop
-            self.previous_ps_value = current_ps_value
-            time.sleep(self.param_config["phase_sensor_polling_time"])
-
-        logging.info("Phase sensor monitor loop stopped.")
-
-    def stop(self) -> None:
-        """Stop the monitoring loop."""
-        self.is_running = False
-
-    def _check_ps_change(self, curr_ps_val: str) -> None:
-        """
-        Check whether the new reading differs from the previous reading and the previous stable reading.
-
-        Args:
-            curr_ps_val (str): The current phase sensor value.
-        """
-        if curr_ps_val != self.previous_ps_value and curr_ps_val != self.previous_stable_value:
-            self.time_of_ps_change = time.time()
-            self.change_detected_flag = True
-            logging.debug(f"Phase sensor change detected: {curr_ps_val}")
-
-    def _check_change_stability(self, curr_ps_val: str) -> None:
-        """
-        Check that the new value is consistent over a stability time.
-
-        Args:
-            curr_ps_val (str): The current phase sensor value.
-        """
-        stabl_time_req = self.param_config["phase_sensor_stability_time"]
-
-        # Check if the value remains the same for the required stability time
-        if curr_ps_val == self.previous_ps_value:
-            if (time.time() - self.time_of_ps_change) >= stabl_time_req:
-                self.change_stable_flag = True
-                logging.debug(f"Phase sensor change is stable: {curr_ps_val}")
-        else:
-            self.change_detected_flag = False
-            logging.debug("Phase sensor change is not stable.")
-
-    def _act_on_stable_read(self, new_stable_value: str) -> None:
-        """
-        Perform actions when a stable change in the phase sensor is detected.
-
-        Args:
-            new_stable_value (str): The new stable phase sensor value.
-        """
-        empty_val = self.param_config["empty_phase_sensor_value"]
-        full_vals = self.param_config["full_phase_sensor_values"]
-
-        if new_stable_value == empty_val:
-            self.lcms_device.set_phase_sensor_value(False)
-            logging.info("Phase sensor indicates empty state.")
-        elif new_stable_value in full_vals:
-            self.lcms_device.set_phase_sensor_value(True)
-            logging.info("Phase sensor indicates full state.")
-        else:
-            logging.warning(f"Unknown phase sensor value: {new_stable_value}")
-
-
-# ----- Main Execution Block -----
 
 if __name__ == "__main__":
     try:

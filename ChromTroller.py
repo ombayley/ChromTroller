@@ -23,6 +23,7 @@ import os
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
+from utils.get_project_directory import get_project_dir
 from ct_components.ct_analyser import Analyser
 from ct_components.ct_controller import Controller
 from ct_components.ct_monitor import Monitor
@@ -41,17 +42,17 @@ class ChromTroller:
         self.setup_logging()
         # Load settings
         self.settings: Dict[str, Any] = self.load_settings()
-        # Set path for saving the RunLog data
-        self.runlog_path: str = self.get_runlog_path()
-        # Set path to the directory with the calibration data.
-        self.calib_data_dirpath: str = self.settings.get("calibration_data_path")
-        # Connect to the server
+        # Start the server
         self.server: Server = self.init_server()
         # Connect to the Arduino Controller
-        self.lcms_controller_obj: Controller = self.init_controller()
+        self.lcms_controller: Controller = self.init_controller()
+        # Set path for saving the RunLog data
+        self.runlog_path: str = self.get_runlog_path()
         # List of 'RunLog' objects.
         self.runlog_list: List[RunLog] = []
         self.new_file_path: str = ""
+        self.rt_target = 0
+        self.rt_tolerance = 0.1
 
         print("\nChromTroller Ready For Analysis")
         print("REMINDER - Ensure OpenLab CDS is running and has the correct sequence queued\n")
@@ -71,12 +72,28 @@ class ChromTroller:
             PermissionError: If there is a permission error accessing the file.
         """
         try:
-            proj_path = os.path.dirname(__file__)
-            settings_path = os.path.join(proj_path, 'settings_files', 'chromtroller_settings.json')
+            settings_path = os.path.join(get_project_dir(), 'settings_files', 'settings.json')
             with open(settings_path, 'r', encoding='utf-8') as settings_file:
-                hardware_settings = json.load(settings_file)
+                settings = json.load(settings_file)
                 logging.info("Loaded ChromTroller settings successfully")
-            return hardware_settings
+            return settings
+        except (FileNotFoundError, json.JSONDecodeError, PermissionError) as err:
+            logging.error(f"Error occurred when loading settings {err}")
+            raise err
+
+    def save_settings(self) -> None:
+        """Save the current settings to the settings.json.
+
+        Raises:
+            FileNotFoundError: If the settings file is not found.
+            json.JSONDecodeError: If there is an error decoding the JSON.
+            PermissionError: If there is a permission error accessing the file.
+        """
+        try:
+            settings_path = os.path.join(get_project_dir(), 'settings_files', 'settings.json')
+            with open(settings_path, 'w', encoding='utf-8') as json_file:
+                json.dump(self.settings, json_file, indent=4)
+                logging.info(f"ChromTroller settings saved to {settings_path}")
         except (FileNotFoundError, json.JSONDecodeError, PermissionError) as err:
             logging.error(f"Error occurred when loading settings {err}")
             raise err
@@ -89,8 +106,7 @@ class ChromTroller:
          str: Path to the RunLog file.
         """
         # Set path to the 'log_files' directory.
-        root_dir_path = os.path.dirname(os.path.abspath(__file__))
-        log_dir_path = os.path.join(root_dir_path, 'run_logs')
+        log_dir_path = os.path.join(get_project_dir(), 'run_logs')
 
         # Set the runlog file name
         date_str = datetime.now().strftime("%H-%M-%S_%d-%m-%Y")
@@ -111,16 +127,15 @@ class ChromTroller:
         message = "Server Initialization:"
         try:
             server = Server(self)
+            print(f"{message} SUCCESS")
+            logging.info(f"{message} SUCCESS")
+            return server
         except Exception as err:
             logging.error(f"{message} FAILURE - {err}")
             print(f"{message} FAILURE")
             raise
-        print(f"{message} SUCCESS")
-        logging.info(f"{message} SUCCESS")
-        return server
 
-    @staticmethod
-    def init_controller() -> Controller:
+    def init_controller(self) -> Controller:
         """Initialize the hardware controller object.
 
         Returns:
@@ -131,14 +146,14 @@ class ChromTroller:
         """
         message = "Controller Connection:"
         try:
-            controller = Controller()
+            controller = Controller(hardware_settings=self.settings['hardware_settings'])
+            print(f"{message} SUCCESS")
+            logging.info(f"{message} SUCCESS")
+            return controller
         except Exception as err:
             logging.error(f"{message} FAILURE - {err}")
             print(f"{message} FAILURE")
             raise
-        print(f"{message} SUCCESS")
-        logging.info(f"{message} SUCCESS")
-        return controller
 
     # ----- Management Methods -----
 
@@ -159,98 +174,60 @@ class ChromTroller:
 
         # Process command to trigger the correct method
         match command:
-            case "new_run_name":
-                self.add_new_run_log(name=data)
-            case "add_run_conc":
-                self.add_run_conc(conc=data)
-            case "add_reagents":
-                self.add_reagents(reagent_list=data)
-            case "add_reaction_conditions":
-                self.add_reaction_conditions(conditions_dict=data)
+            case "add_run_info":
+                self.add_run_info(run_info=data)
+            case "set_valve_to_fill":
+                self.set_valve_to_fill()
             case 'start_hplc_run':
-                result = self.start_hplc_run()
-                logging.info(f"HPLC run initiation result returned to client: {result}")
-                return result
-            case 'start_file_monitoring':
-                result = self.start_file_monitoring()
-                logging.info(f"Identified file returned to the client: {result}")
-                return result
+                return self.start_hplc_run()
+            case 'set_analysis_parameters':
+                self.set_analysis_parameters(parameters=data)
+            case 'set_analysis_target':
+                self.set_analysis_target(target=data)
             case 'run_data_analysis':
-                target_rt: float = 0
-                tolerance: float = 0
-                if 'target_rt' in data:
-                    target_rt: float = data.get('target_rt')
-                if 'tolerance' in data:
-                    tolerance: float = data.get('tolerance')
-                result = self.run_data_analysis(target_rt=target_rt, rt_tolerance=tolerance)
-                logging.info(f"Data analysis returned {result} back to client")
-                return result
+                return self.run_data_analysis()
             case _:
                 logging.warning(f"Unknown command received: {command}")
 
     # ----- Action Methods -----
 
-    def add_new_run_log(self, name: str) -> None:
+    def add_run_info(self, run_info: Any) -> None:
         """Add a new RunLog with the given name to the runlog list.
 
         Args:
-            name (str): The name of the new run.
+            run_info (Any): Information given by RoboChem about the run it has performed
         """
-        new_log = RunLog(run_name=name)
+        new_log = RunLog(run_conditions=run_info)
         self.runlog_list.append(new_log)
         self.save_run_logs()
 
-        message = f"New RunLog created: {name}"
+        message = f"New RunLog created"
         logging.info(message)
         print(message)
 
-    def add_run_conc(self, conc: float) -> None:
-        """Add the given concentration to the current RunLog.
-
-        Args:
-            conc (float): The concentration to add.
+    def set_valve_to_fill(self) -> None:
         """
-        if not self.runlog_list:
-            logging.error("'add_run_conc' called but no RunLog available to add concentration.")
-            return
-        self.runlog_list[-1].run_conc = conc
-        self.save_run_logs()
-
-        message = f"RunLog updated with conc: {conc}"
-        logging.info(message)
-        print(message)
-
-    def add_reagents(self, reagent_list: List[str]) -> None:
-        """Add the given reagents to the current RunLog.
-
-        Args:
-            reagent_list (List[str]): The list of reagents to add.
+        Sets the switch valve to the sample loading position
         """
-        if not self.runlog_list:
-            logging.error("'add_reagents' called but no RunLog available to add reagents.")
-            return
-        self.runlog_list[-1].reagent_list = reagent_list
-        self.save_run_logs()
+        position: str = self.settings["hardware_settings"]["valve_filling_position"]
+        self.lcms_controller.set_valve_to_pos(desired_position=position)
 
-        message = f"RunLog updated with reagents: {reagent_list}"
-        logging.info(message)
-        print(message)
-
-    def add_reaction_conditions(self, conditions_dict):
-        """Add the given reaction conditions to the current RunLog.
-
-        Args:
-            conditions_dict (Dict[str, Any]): The reaction conditions to add.
+    def set_analysis_parameters(self, parameters: Dict[str, Any]) -> None:
         """
-        if not self.runlog_list:
-            logging.error("No RunLog available to add reaction conditions.")
-            return
-        self.runlog_list[-1].run_conditions = conditions_dict
-        self.save_run_logs()
+        Sets the parameters for the analysis
+        """
+        for setting_key, setting_value in self.settings:
+            if setting_key in parameters:
+                self.settings[setting_key] = parameters[setting_key]
+                logging.info(f"Updated setting: {setting_key} to {parameters[setting_key]}")
+        self.save_settings()
 
-        message = f"RunLog updated with conditions: {conditions_dict}"
-        logging.info(message)
-        print(message)
+    def set_analysis_target(self, target: Dict[str, Any]) -> None:
+        """
+        Set the target retention time and tolerance for the pdata analysis peak picking
+        """
+        self.rt_target: float = target.get('target_rt', 0)
+        self.rt_tolerance: float = target.get('tolerance', 0.1)
 
     def start_hplc_run(self) -> str:
         """Start the HPLC analysis procedure controlled by the hardware controller.
@@ -261,7 +238,7 @@ class ChromTroller:
         message = "HPLC analysis initiated"
         logging.info(message)
         print(message)
-        result = self.lcms_controller_obj.run_analysis_cycle()
+        result = self.lcms_controller.run_analysis_cycle()
 
         if self.runlog_list:
             self.runlog_list[-1].hplc_start = result
@@ -271,7 +248,12 @@ class ChromTroller:
         logging.info(message)
         print(message)
 
-        return result
+        # Start file monitoring to ensure the run completes, and the desired output file can be found
+        new_file_path = self.start_file_monitoring()
+
+        message = f"HPLC analysis initiation {result} with results saved at {new_file_path}"
+        logging.info(message)
+        return message
 
     def start_file_monitoring(self) -> Optional[str]:
         """Start the file monitoring process to track the newly generated file.
@@ -310,12 +292,8 @@ class ChromTroller:
 
         return file_path
 
-    def run_data_analysis(self, target_rt: float, rt_tolerance: float = 0.1) -> Dict[str, Any]:
+    def run_data_analysis(self,) -> Dict[str, Any]:
         """Run the automated data analysis for a given run.
-
-        Args:
-            target_rt (float): The target retention time (RT) for peak search.
-            rt_tolerance (float): The maximum tolerance for identifying the peak
 
         Returns:
             Dict[str, Any]: The result dictionary from the analysis.
@@ -323,7 +301,9 @@ class ChromTroller:
 
         # Check the self.new_file_path and the latest file by ct time match
         if self.new_file_path != self.find_latest_sample_name_by_ct():
-            logging.warning("mismatch between the identified file and the most recent file based on creation time")
+            logging.warning("Mismatch between the identified file and the most recent file based on creation time")
+            logging.info(f"File found by monitor:{self.new_file_path}")
+            logging.info(f"File identified based on creation time :{self.find_latest_sample_name_by_ct()}")
 
         # Create the necessary analyser object
         analyser = Analyser()
@@ -331,14 +311,14 @@ class ChromTroller:
         logging.info(message)
         print(message)
 
-        # Set the parameters for the peak search
-        analyser.set_peak_search(peak_rt=target_rt, rt_tolerance=rt_tolerance)
-        message = f"Target peak set to {target_rt} min with a tolerance of {rt_tolerance}"
+        # Run the analysis
+        message = (f"Searching for target peak at {self.rt_target} min with a tolerance of {self.rt_tolerance} "
+                   f"in {self.new_file_path}")
         logging.info(message)
         print(message)
-
-        # Run the analysis
-        result_dict: Dict[str, Any] = analyser.run_analysis(self.new_file_path)
+        result_dict: Dict[str, Any] = analyser.run_analysis(sample_filepath=self.new_file_path,
+                                                            peak_rt=self.rt_target,
+                                                            rt_tolerance=self.rt_tolerance)
         message = f"Identified Peak: {result_dict}"
         logging.info(message)
         print(message)
