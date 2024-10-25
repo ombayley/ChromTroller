@@ -24,6 +24,7 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 from utils.get_project_directory import get_project_dir
+from utils.custom_error_classes import *
 from ct_components.ct_analyser import Analyser
 from ct_components.ct_controller import Controller
 from ct_components.ct_monitor import Monitor
@@ -39,20 +40,20 @@ class ChromTroller:
 
     def __init__(self) -> None:
         # Setup Log
-        self.setup_logging()
-        # Load settings
-        self.settings: Dict[str, Any] = self.load_settings()
-        # Start the server
-        self.server: Server = self.init_server()
-        # Connect to the Arduino Controller
-        self.lcms_controller: Controller = self.init_controller()
-        # Set path for saving the RunLog data
-        self.runlog_path: str = self.get_runlog_path()
-        # List of 'RunLog' objects.
+        self._setup_logging()
+
+        # Initialise Class Vars
+        self.settings: Dict[str, Any] = self._load_settings()
+        self.runlog_path: str = self._get_runlog_path()
         self.runlog_list: List[RunLog] = []
         self.new_file_path: str = ""
         self.rt_target = 0
         self.rt_tolerance = 0.1
+
+        # Start the server
+        self.server: Server = self._init_server()
+        # Connect to the Arduino Controller
+        self.lcms_controller: Controller = self._init_controller()
 
         print("\nChromTroller Ready For Analysis")
         print("REMINDER - Ensure OpenLab CDS is running and has the correct sequence queued\n")
@@ -60,7 +61,7 @@ class ChromTroller:
     # ----- Initialization Methods -----
 
     @staticmethod
-    def load_settings() -> Dict[str, Any]:
+    def _load_settings() -> Dict[str, Any]:
         """Read the hardware settings JSON found in the settings_files ir and return all hardware settings.
 
         Returns:
@@ -81,7 +82,7 @@ class ChromTroller:
             logging.error(f"Error occurred when loading settings {err}")
             raise err
 
-    def save_settings(self) -> None:
+    def _save_settings(self) -> None:
         """Save the current settings to the settings.json.
 
         Raises:
@@ -99,7 +100,7 @@ class ChromTroller:
             raise err
 
     @staticmethod
-    def get_runlog_path() -> str:
+    def _get_runlog_path() -> str:
         """Set the file saving destination for RunLog data.
 
         Returns:
@@ -115,7 +116,7 @@ class ChromTroller:
         logging.info("Set RunLog path successfully")
         return log_file_path
 
-    def init_server(self) -> Server:
+    def _init_server(self) -> Server:
         """Initialize the server.
 
         Returns:
@@ -135,7 +136,7 @@ class ChromTroller:
             print(f"{message} FAILURE")
             raise
 
-    def init_controller(self) -> Controller:
+    def _init_controller(self) -> Controller:
         """Initialize the hardware controller object.
 
         Returns:
@@ -175,59 +176,105 @@ class ChromTroller:
         # Process command to trigger the correct method
         match command:
             case "add_run_info":
-                self.add_run_info(run_info=data)
+                return self.add_run_info(run_info=data)
+            case 'set_analysis_parameters':
+                return self.set_analysis_parameters(parameters=data)
+            case 'set_analysis_target':
+                return self.set_analysis_target(target=data)
             case "set_valve_to_fill":
-                self.set_valve_to_fill()
+                return self.set_valve_to_fill()
+            case "set_valve_to_inject":
+                return self.set_valve_to_inject()
             case 'start_hplc_run':
                 return self.start_hplc_run()
-            case 'set_analysis_parameters':
-                self.set_analysis_parameters(parameters=data)
-            case 'set_analysis_target':
-                self.set_analysis_target(target=data)
             case 'run_data_analysis':
                 return self.run_data_analysis()
             case _:
-                logging.warning(f"Unknown command received: {command}")
+                message = f"Unknown command received: {command}"
+                logging.warning(message)
+                return f"ERROR: {message}"
 
     # ----- Action Methods -----
 
-    def add_run_info(self, run_info: Any) -> None:
+    def add_run_info(self, run_info: Any) -> str:
         """Add a new RunLog with the given name to the runlog list.
 
         Args:
             run_info (Any): Information given by RoboChem about the run it has performed
+
+        Returns:
+            str: Either 'ACK' upon success or 'ERROR' upon failure
         """
-        new_log = RunLog(run_conditions=run_info)
-        self.runlog_list.append(new_log)
-        self.save_run_logs()
+        try:
+            new_log = RunLog(run_conditions=run_info)
+            self.runlog_list.append(new_log)
+            self._save_run_logs()
+            self.print_info("New RunLog created")
+            return "ACK"
+        except Exception as err:
+            return f"ERROR: {err}"
 
-        message = f"New RunLog created"
-        logging.info(message)
-        print(message)
-
-    def set_valve_to_fill(self) -> None:
+    def set_valve_to_fill(self) -> str:
         """
         Sets the switch valve to the sample loading position
-        """
-        position: str = self.settings["hardware_settings"]["valve_filling_position"]
-        self.lcms_controller.set_valve_to_pos(desired_position=position)
 
-    def set_analysis_parameters(self, parameters: Dict[str, Any]) -> None:
+        Returns:
+            str: Either 'ACK' upon success or 'ERROR' upon failure
+        """
+        try:
+            position: str = self.settings["hardware_settings"]["valve_filling_position"]
+            self.lcms_controller.set_valve_to_pos(desired_position=position)
+            self.print_info(f"Set valve to position: {position}")
+            return "ACK"
+        except ValveSwitchError as err:
+            return f"ERROR: {err}"
+
+    def set_valve_to_inject(self) -> str:
+        """
+        Sets the switch valve to the sample loading position
+
+        Returns:
+            str: Either 'ACK' upon success or 'ERROR' upon failure
+        """
+        try:
+            position: str = self.settings["hardware_settings"]["valve_injection_position"]
+            self.lcms_controller.set_valve_to_pos(desired_position=position)
+            self.print_info(f"Set valve to position: {position}")
+            return "ACK"
+        except ValveSwitchError as err:
+            return f"ERROR: {err}"
+
+    def set_analysis_parameters(self, parameters: Dict[str, Any]) -> str:
         """
         Sets the parameters for the analysis
-        """
-        for setting_key, setting_value in self.settings:
-            if setting_key in parameters:
-                self.settings[setting_key] = parameters[setting_key]
-                logging.info(f"Updated setting: {setting_key} to {parameters[setting_key]}")
-        self.save_settings()
 
-    def set_analysis_target(self, target: Dict[str, Any]) -> None:
+        Returns:
+            str: Either 'ACK' upon success or 'ERROR' upon failure
         """
-        Set the target retention time and tolerance for the pdata analysis peak picking
+        try:
+            for setting_key, setting_value in self.settings:
+                if setting_key in parameters:
+                    self.settings[setting_key] = parameters[setting_key]
+                    logging.info(f"Updated setting: {setting_key} to {parameters[setting_key]}")
+            self._save_settings()
+            self.print_info("Analysis parameters updated")
+            return "ACK"
+        except Exception as err:
+            return f"ERROR: {err}"
+
+    def set_analysis_target(self, target: Dict[str, Any]) -> str:
         """
-        self.rt_target: float = target.get('rt_target', 0)
-        self.rt_tolerance: float = target.get('rt_tolerance', 0.1)
+        Set the target retention time and tolerance for the data analysis peak picking
+         Returns:
+            str: Either 'ACK' upon success or 'ERROR' upon failure
+        """
+        try:
+            self.rt_target: float = target['rt_target']  # target rt mandatory
+            self.rt_tolerance: float = target.get('rt_tolerance', 0.1)  # tolerance optional with 0.1min default
+            self.print_info(f"Updated the rt_target to {self.rt_target} with a tolerance of {self.rt_tolerance}")
+            return "ACK"
+        except Exception as err:
+            return f"ERROR: {err}"
 
     def start_hplc_run(self) -> str:
         """Start the HPLC analysis procedure controlled by the hardware controller.
@@ -242,7 +289,7 @@ class ChromTroller:
 
         if self.runlog_list:
             self.runlog_list[-1].hplc_start = result
-            self.save_run_logs()
+            self._save_run_logs()
 
         message = f"HPLC analysis initiation: {result}"
         logging.info(message)
@@ -262,7 +309,7 @@ class ChromTroller:
             Optional[str]: The filename of the new file detected, or None if not found.
         """
         # Get the directory to monitor
-        results_dirpath: str = self.get_latest_result_dirpath()
+        results_dirpath: str = self._get_latest_result_dirpath()
         if not results_dirpath:
             logging.error("Results directory path is invalid.")
             return None
@@ -285,7 +332,7 @@ class ChromTroller:
         print(message)
         if self.runlog_list:
             self.runlog_list[-1].file = file_path
-            self.save_run_logs()
+            self._save_run_logs()
 
         # Save path to class variable
         self.new_file_path: str = file_path
@@ -300,10 +347,10 @@ class ChromTroller:
         """
 
         # Check the self.new_file_path and the latest file by ct time match
-        if self.new_file_path != self.find_latest_sample_name_by_ct():
+        if self.new_file_path != self._find_latest_sample_name_by_ct():
             logging.warning("Mismatch between the identified file and the most recent file based on creation time")
             logging.info(f"File found by monitor:{self.new_file_path}")
-            logging.info(f"File identified based on creation time :{self.find_latest_sample_name_by_ct()}")
+            logging.info(f"File identified based on creation time :{self._find_latest_sample_name_by_ct()}")
 
         # Create the necessary analyser object
         analyser = Analyser()
@@ -325,14 +372,14 @@ class ChromTroller:
 
         if self.runlog_list:
             self.runlog_list[-1].analysis = result_dict
-            self.save_run_logs()
+            self._save_run_logs()
 
         return result_dict if result_dict is not None else {"peak_rt": None, "integral": None}
 
     # ----- Utility Methods -----
 
     @staticmethod
-    def setup_logging() -> None:
+    def _setup_logging() -> None:
         """
         Sets log format and file destination
         """
@@ -357,7 +404,7 @@ class ChromTroller:
             filemode='w'  # w=write, a=append
         )
 
-    def save_run_logs(self) -> None:
+    def _save_run_logs(self) -> None:
         """Save the RunLog information to the runlog file."""
         # Convert all RunLog objects to dictionaries
         run_logs_dict = [run_log.to_dict() for run_log in self.runlog_list]
@@ -366,7 +413,7 @@ class ChromTroller:
         with open(self.runlog_path, 'w', encoding='utf-8') as file:
             json.dump(run_logs_dict, file, indent=4)
 
-    def get_latest_result_dirpath(self) -> Optional[str]:
+    def _get_latest_result_dirpath(self) -> Optional[str]:
         """Find the most recently created results directory inside the master result directory.
 
         Returns:
@@ -396,14 +443,14 @@ class ChromTroller:
         logging.info(f"Current results directory set to: {most_recent_dirpath}")
         return most_recent_dirpath
 
-    def find_latest_sample_name_by_ct(self) -> Optional[str]:
+    def _find_latest_sample_name_by_ct(self) -> Optional[str]:
         """
         Find the most recently created result file.
 
         Returns:
             Optional[str]: Path to the most recent result file, or None if not found.
         """
-        result_dir_path = self.get_latest_result_dirpath()
+        result_dir_path = self._get_latest_result_dirpath()
         data_file_type = self.settings.get("data_file_type")
 
         # Check if the directory exists
@@ -426,6 +473,15 @@ class ChromTroller:
 
         logging.info(f"Most recent file found: {most_recent_filename}")
         return most_recent_filename
+
+    @staticmethod
+    def print_info(message: str) -> None:
+        """
+        Shortened method to both log info and print to console.
+        Allows logging.info to be used without always printing to console
+        """
+        logging.info(message)
+        print(message)
 
 
 if __name__ == "__main__":
