@@ -437,12 +437,14 @@ void setup()
   // Initialize Switch Pins
   // Read Pins
   pinMode(VALVE_A_IN_PIN, INPUT);
+  int valve_a_current=digitalRead(VALVE_A_IN_PIN);
   pinMode(VALVE_B_IN_PIN, INPUT);
+  int valve_b_current=digitalRead(VALVE_B_IN_PIN);
   // Write Pins
   pinMode(VALVE_A_OUT_PIN, OUTPUT);
-  digitalWrite(VALVE_A_OUT_PIN, LOW);  // Set valve to Position A upon startup
+  digitalWrite(VALVE_A_OUT_PIN, valve_a_current);  // Set valve to current position upon startup
   pinMode(VALVE_B_OUT_PIN, OUTPUT);
-  digitalWrite(VALVE_B_OUT_PIN, HIGH); // Set valve to Position A upon startup
+  digitalWrite(VALVE_B_OUT_PIN, valve_b_current); // Set valve to current position upon startup
 
 
   // Initialize Phase Sensor Pins

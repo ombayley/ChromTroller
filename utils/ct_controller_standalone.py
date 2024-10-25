@@ -121,4 +121,4 @@ class StandaloneController:
 if __name__ == "__main__":
     controller = StandaloneController()
     print(controller.get_device_id())
-    controller.set_valve_pos("A")
+    controller.set_valve_pos("B")
