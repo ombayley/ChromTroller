@@ -1,5 +1,6 @@
 # Program Specific
 settings_files/socket_settings.json
+settings_files/sensitive_settings.json
 log_files
 *.pkl
 
