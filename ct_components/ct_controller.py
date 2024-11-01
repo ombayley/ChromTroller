@@ -16,6 +16,7 @@ from typing import Any, Dict, Optional
 
 from utils.get_project_directory import get_project_dir
 from ct_components.devices.lcms_device import LCMSDevice
+from ct_components.devices.mock_lcms_device import MockLCMSDevice
 from utils.custom_error_classes import *
 
 
@@ -28,7 +29,7 @@ class Controller:
         # Get hardware and timing settings
         self.hardware_settings: Dict[str, Any] = hardware_settings
         # Create LCMSDevice object
-        self.lcms_device: LCMSDevice = self._init_device()
+        self.lcms_device: LCMSDevice = MockLCMSDevice()  # self._init_device()
         # Report initialization success
         self.log_info("Controller Object Initialized Successfully")
 
@@ -47,7 +48,7 @@ class Controller:
             PermissionError: If there is a permission error accessing the file.
         """
         try:
-            settings_path = os.path.join(get_project_dir(), 'settings_files', 'sensitive_settings.json')
+            settings_path = os.path.join(get_project_dir(), 'settings_files', 'protected_settings.json')
             with open(settings_path, 'r', encoding='utf-8') as settings_file:
                 sensitive_settings = json.load(settings_file)
                 logging.info("Loaded hardware settings successfully")
@@ -105,7 +106,7 @@ class Controller:
             self._check_device_connectivity()
             self.log_info("Hardware connection check: SUCCESS")
 
-            # Ensure that the switch is in the filling position and if not, switch and fill.
+            # Ensure that the switch is in the filling position.
             self._check_filling_state()
             self.log_info("Filling pos_check: SUCCESS")
 
@@ -143,7 +144,7 @@ class Controller:
 
             # Load from the switch valve
             self.log_info("Valve set to load position: WAITING")
-            self.set_valve_to_pos(self.hardware_settings["sample_loading_position"])
+            self.set_valve_to_pos(self.hardware_settings["valve_filling_position"])
             self.log_info("Valve set to load position: SUCCESS")
 
             # Sleep while emptying sample loop to prevent any accidental switching (Safety precaution)
@@ -197,10 +198,11 @@ class Controller:
         Raises:
             ValvePositionError: If the valve was not in the correct filling position.
         """
-        desired_position = self.hardware_settings.get("sample_filling_position")
+        desired_position = self.hardware_settings.get("valve_filling_position")
         current_position = self.lcms_device.get_valve_pos()
         if current_position != desired_position:
-            error_msg = "WARNING: sample loop was not in filling position when run start was called"
+            error_msg = ("WARNING: sample loop was not in filling position when run start was called."
+                         f"current state:{current_position}, desired state: {desired_position}")
             logging.error(error_msg)
             print(error_msg)
             raise ValvePositionError(error_msg)
@@ -276,13 +278,14 @@ class Controller:
         self.lcms_device.set_valve_pos(desired_position)
 
         start_time = time.time()
+        pos = self.lcms_device.get_valve_pos()
         while time.time() - start_time < timeout:
             pos = self.lcms_device.get_valve_pos()
             if pos == desired_position:
                 return
             time.sleep(polling_time)
 
-        error_msg = f"Valve failed to switch to desired position: {desired_position} after timeout:{timeout}"
+        error_msg = f"Valve failed to switch to desired position: {desired_position} and remained in position: {pos} after timeout:{timeout}"
         logging.error(error_msg)
         raise ValveSwitchError(error_msg)
 
@@ -299,8 +302,17 @@ class Controller:
 
 if __name__ == "__main__":
     try:
-
-        controller = Controller()
+        logging.basicConfig(
+            filename="ct_controller_tests.log",
+            level=logging.INFO,
+            format='%(asctime)s - %(levelname)s - %(filename)s - %(message)s',
+            datefmt='%d-%m-%Y %H:%M:%S',
+            filemode='w'  # w=write, a=append
+        )
+        settings_path = os.path.join(get_project_dir(), 'settings_files', 'settings.json')
+        with open(settings_path, 'r', encoding='utf-8') as settings_file:
+            settings = json.load(settings_file)
+        controller = Controller(settings['hardware_settings'])
         controller.run_analysis_cycle()
 
     except ControllerError as e:

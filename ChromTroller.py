@@ -391,7 +391,7 @@ class ChromTroller:
         os.makedirs(log_dir_path, exist_ok=True)
 
         # Set the log file name
-        date_str = datetime.now().strftime("%d-%m-%Y--%H-%M-%S")
+        date_str = datetime.now().strftime("%Y-%m-%d--%H-%M-%S")
         log_file_name = f"ChromTroller_{date_str}.log"
         log_file_path = os.path.join(log_dir_path, log_file_name)
 
@@ -421,12 +421,12 @@ class ChromTroller:
         """
         # OpenLab CDS stores all new results within the projects 'Results' directoy:
         # "D:\\CDSProjects\\Project\\Results",
-        project: str = self.settings.get("project_name")
+        project: str = self.settings["paths"]["project_name"]
         project_all_results_dir: str = os.path.join("D:", "CDSProjects", project, "Results")
         subdir_names: List[str] = next(os.walk(project_all_results_dir))[1]
 
         # Create the searchable run result tag
-        dir_suffix: str = self.settings.get("run_result_dir_tag")
+        dir_suffix: str = self.settings["tags"]["result_dir_tag"]
         escaped_dir_suffix = re.escape(dir_suffix)  # fix regex operators (i.e deals with '.')
         run_result_subdir_tag = re.compile(rf'{escaped_dir_suffix}$')
 
@@ -451,7 +451,7 @@ class ChromTroller:
             Optional[str]: Path to the most recent result file, or None if not found.
         """
         result_dir_path = self._get_latest_result_dirpath()
-        data_file_type = self.settings.get("data_file_type")
+        data_file_type = self.settings["tags"]["data_file_tag"]
 
         # Check if the directory exists
         if not os.path.exists(result_dir_path):

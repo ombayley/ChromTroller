@@ -12,7 +12,7 @@ Description:
     operating system (avoid). Ports use an unsigned 16-bit integer, so max port is 65,535 (limit)]
 
     The ports and IP addresses are sensitive info and are therefore stored and loaded from the
-    'sensitive_settings.json' file in the 'settings_files' directory, which is not tracked by version control.
+    'protected_settings.json' file in the 'settings_files' directory, which is not tracked by version control.
 """
 
 import socket
@@ -65,7 +65,7 @@ class Server:
     @staticmethod
     def _load_socket_info() -> Dict[str, Any]:
         """
-        Loads sensitive connection data from 'sensitive_settings.json'.
+        Loads sensitive connection data from 'protected_settings.json'.
 
         Returns:
             Dict[str, Any]: Configuration dictionary with connection settings.
@@ -76,7 +76,7 @@ class Server:
             PermissionError: If there's a permission error accessing the file.
         """
         try:
-            settings_path = os.path.join(get_project_dir(), 'settings_files', 'sensitive_settings.json')
+            settings_path = os.path.join(get_project_dir(), 'settings_files', 'protected_settings.json')
             with open(settings_path, 'r', encoding='utf-8') as ids_file:
                 config = json.load(ids_file)
                 logging.info("Server loaded connection IDs from JSON file successfully")

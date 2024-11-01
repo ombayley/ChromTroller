@@ -1,9 +1,0 @@
-17-23-09_22-10-2024  - INFO - ChromTroller.py - Loaded chromtroller settings successfully
-17-23-09_22-10-2024  - INFO - ChromTroller.py - Set RunLog path successfully
-17-23-09_22-10-2024  - INFO - ct_server.py - Server loaded connection ids from .json file successfully
-17-23-09_22-10-2024  - INFO - ct_server.py - Server listening on port: 10989
-17-23-09_22-10-2024  - INFO - ChromTroller.py - Server Initialization: SUCCESS 
-17-23-09_22-10-2024  - INFO - ct_controller.py - Loaded hardware settings successfully
-17-23-11_22-10-2024  - INFO - ct_controller.py - Phase sensor monitoring started on separate thread.
-17-23-11_22-10-2024  - INFO - ct_controller.py - Controller Object Initialized Successfully
-17-23-11_22-10-2024  - INFO - ChromTroller.py - Controller Connection: SUCCESS 
