@@ -420,10 +420,11 @@ class ChromTroller:
             Optional[str]: Path to the most recent directory, or None if not found.
         """
         # OpenLab CDS stores all new results within the projects 'Results' directoy:
-        # "D:\\CDSProjects\\Project\\Results",
-        project: str = self.settings["paths"]["project_name"]
-        project_all_results_dir: str = os.path.join("D:", "CDSProjects", project, "Results")
-        subdir_names: List[str] = next(os.walk(project_all_results_dir))[1]
+        # "D:\\CDSProjects\\Project\\Results"
+        # project_all_results_dir: str = os.path.join("D:", "CDSProjects", project, "Results")
+
+        project_results_path: str = self.settings["paths"]["project_results_path"]
+        subdir_names: List[str] = next(os.walk(project_results_path))[1]
 
         # Create the searchable run result tag
         dir_suffix: str = self.settings["tags"]["result_dir_tag"]
@@ -435,7 +436,7 @@ class ChromTroller:
         most_recent_ctime = 0
         for subdir in subdir_names:
             if run_result_subdir_tag.search(subdir):
-                subdir_path = os.path.join(project_all_results_dir, subdir)
+                subdir_path = os.path.join(project_results_path, subdir)
                 if os.path.getctime(subdir_path) > most_recent_ctime:
                     most_recent_ctime = os.path.getctime(subdir_path)
                     most_recent_dirpath = subdir_path
