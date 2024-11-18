@@ -144,19 +144,19 @@ class Analyser:
                 print(message)
                 self.log_file.warning(message)
 
-            # Set min and max times based on the given target and tolerance
-            min_time = peak_rt - rt_tolerance
-            max_time = peak_rt + rt_tolerance
-
             # Process Chrom
-            logging.info(f"Processing chrom with min time: {min_time} and max time : {max_time}")
-            smpl_chromatogram = self.process_chrom(chrom=smpl_chromatogram, min_time=min_time, max_time=max_time)
-            logging.info(f"Processed Spectrum: {smpl_chromatogram}")
+            smpl_chromatogram = self.process_chrom(chrom=smpl_chromatogram)
+            self.log_file.info(f"Processed Spectrum: {smpl_chromatogram.__str__()}")
 
             # From the smpl_chromatogram find the most applicable component
             best_fit_component: Component = self.filter_best_fit(smpl_chromatogram=smpl_chromatogram,
-                                                                 filter_conditions=peak_rt)
-            logging.info(f"Best fit component: {best_fit_component}")
+                                                                 target_rt=peak_rt,
+                                                                 rt_tolerance=rt_tolerance)
+            self.log_file.info(f"Best fit component: {best_fit_component}")
+
+            # Return if not found
+            if not best_fit_component:
+                return {"peak_rt": None, "integral": None}
 
             # Return dictionary of elution_time and integral of the best fitting component
             elut_time = smpl_chromatogram.time[best_fit_component.elution_time]
@@ -166,8 +166,7 @@ class Analyser:
             self.log_file.error(f"Error during analysis of file {sample_filepath}: {e}")
             return None
 
-    @staticmethod
-    def filter_best_fit(smpl_chromatogram: Chromatogram, filter_conditions: float) -> Component:
+    def filter_best_fit(self, smpl_chromatogram: Chromatogram, target_rt: float, rt_tolerance: float = 0.1) -> Optional[Component]:
         """
         Filters the list of suitable peaks and identifies the most applicable based on retention time.
 
@@ -177,28 +176,45 @@ class Analyser:
 
         Args:
             smpl_chromatogram (Chromatogram): Chromatogram object
-            filter_conditions (float): The expected retention time for the target peak.
+            target_rt (float): The expected retention time for the target peak.
+            rt_tolerance (float): The tolerance for retention time matching (0.1 by Default).
 
         Returns:
             Component: The component object correlating to the best match with the target peak
         """
         # Get processed data
         components: List[Component] = smpl_chromatogram.all_components()
-        logging.info(f"Filtering components for best match to target {components}")
+        self.log_file.info(f"Filtering {len(components)} components to identify best match to target rt")
 
-        # Set search variables
+        # Exit if no components identified
+        if not components:
+            return None
+
+        # Get a list of peaks within the target window
+        peaks_list = []
+        for component in components:
+            elut_time = smpl_chromatogram.time[component.elution_time]
+            if target_rt - rt_tolerance <= elut_time <= target_rt + rt_tolerance:
+                peaks_list.append(component)
+        self.log_file.info(f"{len(peaks_list)} peaks identified within target window")
+
+        # Exit if no components identified
+        if not peaks_list:
+            return None
+
+        # Set search variables - Search for closet peak based on rt with at least 10% of the max integral in the window
         closest_component: Optional[Component] = None
         smallest_diff = float('inf')
-        max_integral = max(component.integral for component in components)
-        peak_size_min_cutoff = 0.1  # ignore any peaks that are less than 10% of the max peak
+        max_integral = max(peak.integral for peak in peaks_list)
+        peak_size_min_cutoff = 0.1  # ignore any peaks that are less than 10% of the max peak in the window
         min_integral = peak_size_min_cutoff * max_integral
 
-        for component in components:
-            elut_time_index = component.elution_time
-            elut_time = smpl_chromatogram.time[elut_time_index]
-            if component.integral >= min_integral and abs(elut_time - filter_conditions) > smallest_diff:
-                smallest_diff = abs(elut_time - filter_conditions)
-                closest_component = component
+        for peak in peaks_list:
+            elut_time = smpl_chromatogram.time[peak.elution_time]
+            if peak.integral >= min_integral and abs(elut_time - target_rt) < smallest_diff:
+                smallest_diff = abs(elut_time - target_rt)
+                closest_component = peak
+        self.log_file.info(f"Identified component at: {closest_component.elution_time}")
 
         return closest_component
 
@@ -318,5 +334,5 @@ class Analyser:
 if __name__ == "__main__":
     dirpath = r"\\fnwi-s0.science.uva.nl\hims-nrg-robochem\lcms_data\FGT\FGT_12_11_2024.rslt\Sample_003_06.dx"
     analyser = Analyser()
-    run_result = analyser.run_analysis(sample_filepath=dirpath, peak_rt=2.0, rt_tolerance=0.1)
+    run_result = analyser.run_analysis(sample_filepath=dirpath, peak_rt=2.76, rt_tolerance=0.1)
     print(run_result)
