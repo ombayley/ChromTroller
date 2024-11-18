@@ -1,0 +1,128 @@
+[
+    {
+        "run_conditions": {
+            "name": 1,
+            "conc": 0.04424433747127857,
+            "reag_list": [
+                "Polystyrene",
+                0.04424433747127857,
+                "tBuOOH",
+                8.896988023501876,
+                "NBS",
+                0.07775892800640316
+            ],
+            "condit_dict": {
+                "residence_time": 1267.7361160674388,
+                "light_intensity": 12.919007927692258
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Polymer_Degradation\\Results\\Polystyrene\\PS_Campaign_15Nov2024.rslt\\Sample_001.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 2,
+            "conc": 0.09227049442766272,
+            "reag_list": [
+                "Polystyrene",
+                0.09227049442766272,
+                "tBuOOH",
+                4.475294769911689,
+                "NBS",
+                0.28495007540585443
+            ],
+            "condit_dict": {
+                "residence_time": 926.4983477520263,
+                "light_intensity": 5.422446243674167
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Polymer_Degradation\\Results\\Polystyrene\\PS_Campaign_15Nov2024.rslt\\Sample_002.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 3,
+            "conc": 0.03251604056458952,
+            "reag_list": [
+                "Polystyrene",
+                0.03251604056458952,
+                "tBuOOH",
+                8.40238912527745,
+                "NBS",
+                0.1001592333578955
+            ],
+            "condit_dict": {
+                "residence_time": 3092.6188738807914,
+                "light_intensity": 75.3547539833227
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Polymer_Degradation\\Results\\Polystyrene\\PS_Campaign_15Nov2024.rslt\\Sample_003.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 4,
+            "conc": 0.013766576059058913,
+            "reag_list": [
+                "Polystyrene",
+                0.013766576059058913,
+                "tBuOOH",
+                6.340519010054312,
+                "NBS",
+                0.15854957489329113
+            ],
+            "condit_dict": {
+                "residence_time": 2396.8970360379753,
+                "light_intensity": 47.5149493384183
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Polymer_Degradation\\Results\\Polystyrene\\PS_Campaign_15Nov2024.rslt\\Sample_004.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 5,
+            "conc": 0.02680754166047014,
+            "reag_list": [
+                "Polystyrene",
+                0.02680754166047014,
+                "tBuOOH",
+                5.386152406336949,
+                "NBS",
+                0.22347381186018117
+            ],
+            "condit_dict": {
+                "residence_time": 2845.0492732171215,
+                "light_intensity": 78.17363219535576
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Polymer_Degradation\\Results\\Polystyrene\\PS_Campaign_15Nov2024.rslt\\Sample_005.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 6,
+            "conc": 0.08104159802322398,
+            "reag_list": [
+                "Polystyrene",
+                0.08104159802322398,
+                "tBuOOH",
+                4.808690029168854,
+                "NBS",
+                0.17925439284259792
+            ],
+            "condit_dict": {
+                "residence_time": 1139.4550131500275,
+                "light_intensity": 38.04831902369475
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Polymer_Degradation\\Results\\Polystyrene\\PS_Campaign_15Nov2024.rslt\\Sample_006.dx",
+        "analysis": null
+    }
+]

@@ -1,0 +1,36 @@
+[
+    {
+        "run_conditions": {
+            "name": "Debugging",
+            "conc": 0.3,
+            "reag_list": [
+                "Tracer",
+                0.3
+            ],
+            "condit_dict": {
+                "residence_time": 300,
+                "light_intensity": 0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Polymer_Degradation\\Results\\Polystyrene\\Testing_2024-11-8.rslt\\Run3_sample07.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": "Debugging",
+            "conc": 0.3,
+            "reag_list": [
+                "Tracer",
+                0.3
+            ],
+            "condit_dict": {
+                "residence_time": 300,
+                "light_intensity": 0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Polymer_Degradation\\Results\\Polystyrene\\Testing_2024-11-8.rslt\\Run4_sample09.dx",
+        "analysis": null
+    }
+]

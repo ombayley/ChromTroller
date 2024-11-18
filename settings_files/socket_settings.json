@@ -1,0 +1,6 @@
+{
+    "socket_port": 10989,
+    "server_address": "10.10.29.199",
+    "allowed_ips": ["10.10.29.199", "10.10.29.202", "10.10.29.201", "127.0.0.1", "localhost"],
+    "serial_port": "COM5"
+}

@@ -106,9 +106,9 @@ class Controller:
             self._check_device_connectivity()
             self.log_info("Hardware connection check: SUCCESS")
 
-            # Ensure that the switch is in the filling position.
+            # Ensure that the switch is in the filling position when starting acquisition. i.e need sample in loop
             self._check_filling_state()
-            self.log_info("Filling pos_check: SUCCESS")
+            self.log_info("Valve in filling position check: SUCCESS")
 
             # Attempt to send start request and wait for LCMS response
             attempt = 0
@@ -118,17 +118,16 @@ class Controller:
 
                 # Send start analysis and check acknowledgement
                 self._send_start_request()
-                self.log_info(f"Send start signal: ATTEMPT {attempt}")
+                self.log_info(f"Sending start signal: ATTEMPT {attempt}")
 
                 # Check request acknowledgement from spectrometer
-                self.log_info("Start request acknowledged: INITIATED")
                 try:
                     self._wait_on_lcms_response()
                 except LCMSCommunicationError:
                     self.log_info(f"Attempt {attempt} failed. LCMS did not acknowledge start request.")
                     continue  # Try again
 
-                self.log_info("Start request acknowledged: SUCCESS")
+                self.log_info("Start request acknowledged\nSample prep starting")
                 break  # Exit loop if successful
             else:
                 error_msg = f"HPLC not starting after {max_attempts} attempts"
@@ -138,19 +137,20 @@ class Controller:
             time.sleep(0.3)
 
             # Wait for start signal/sample prep completion response from spectrometer
-            self.log_info("Start signal: WAITING")
+            self.log_info("Waiting on Start signal")
             self._wait_on_lcms_start()
-            self.log_info("Start signal: SUCCESS")
+            self.log_info("Aquisition Started")
 
-            # Load from the switch valve
-            self.log_info("Valve set to load position: WAITING")
-            self.set_valve_to_pos(self.hardware_settings["valve_filling_position"])
+            # Inject sample from the switch valve
+            self.log_info("Setting valve to load position...")
+            self.set_valve_to_pos(self.hardware_settings["valve_injection_position"])
             self.log_info("Valve set to load position: SUCCESS")
 
             # Sleep while emptying sample loop to prevent any accidental switching (Safety precaution)
-            self.log_info("Sample loading: WAITING")
-            time.sleep(self.hardware_settings["sample_loop_fill_time"])
-            self.log_info("Sample loading: SUCCESS")
+            flush_time = self.hardware_settings["sample_loop_flush_time"]
+            self.log_info(f"Waiting {flush_time}s to flush out the sample loop")
+            time.sleep(flush_time)
+            self.log_info("Sample loading complete")
 
             # Report triggering success
             self.log_info("Analysis cycle started successfully")

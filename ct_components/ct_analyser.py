@@ -128,6 +128,9 @@ class Analyser:
             or None if no peaks are found.
         """
         try:
+            # Update the analysis settings in case they were changed
+            self.analysis_json_data = self.load_analysis_json()
+
             # Identify bkg file. File tag for searching specified in analysis.json but is typically 'gradient'
             bkg_filepath = self.get_bkg_filepath(sample_filepath)
 
@@ -146,11 +149,14 @@ class Analyser:
             max_time = peak_rt + rt_tolerance
 
             # Process Chrom
+            logging.info(f"Processing chrom with min time: {min_time} and max time : {max_time}")
             smpl_chromatogram = self.process_chrom(chrom=smpl_chromatogram, min_time=min_time, max_time=max_time)
+            logging.info(f"Processed Spectrum: {smpl_chromatogram}")
 
             # From the smpl_chromatogram find the most applicable component
             best_fit_component: Component = self.filter_best_fit(smpl_chromatogram=smpl_chromatogram,
                                                                  filter_conditions=peak_rt)
+            logging.info(f"Best fit component: {best_fit_component}")
 
             # Return dictionary of elution_time and integral of the best fitting component
             elut_time = smpl_chromatogram.time[best_fit_component.elution_time]
@@ -178,6 +184,7 @@ class Analyser:
         """
         # Get processed data
         components: List[Component] = smpl_chromatogram.all_components()
+        logging.info(f"Filtering components for best match to target {components}")
 
         # Set search variables
         closest_component: Optional[Component] = None
@@ -283,10 +290,10 @@ class Analyser:
 
         # Get dirname and tag info.
         dirpath = os.path.dirname(sample_filepath)
-        bkg_tag = self.file_tags.get("bkg_tag", "").replace(" ", "_").lower()
-        data_file_type = self.file_tags.get("data_file_type", "")
-        message = (f"Searching dirpath: {dirpath} for a background trace of type {data_file_type} "
-                   f"containing the tag {bkg_tag}")
+        bkg_tag = self.file_tags["bkg_filename_tag"].replace(" ", "_").lower()
+        data_file_type = self.file_tags["data_file_tag"]
+        message = (f"Searching dirpath: {dirpath} for a background trace of type: {data_file_type} "
+                   f"containing the tag: {bkg_tag}")
         print(message)
         self.log_file.info(message)
 
