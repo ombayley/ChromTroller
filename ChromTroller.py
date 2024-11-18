@@ -110,7 +110,7 @@ class ChromTroller:
         log_dir_path = os.path.join(get_project_dir(), 'run_logs')
 
         # Set the runlog file name
-        date_str = datetime.now().strftime("%H-%M-%S_%d-%m-%Y")
+        date_str = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         log_file_name = f"RunLog_{date_str}.json"
         log_file_path = os.path.join(log_dir_path, log_file_name)
         logging.info("Set RunLog path successfully")
@@ -400,7 +400,7 @@ class ChromTroller:
             filename=str(log_file_path),
             level=logging.INFO,
             format='%(asctime)s - %(levelname)s - %(filename)s - %(message)s',
-            datefmt='%d-%m-%Y %H:%M:%S',
+            datefmt="%Y-%m-%d--%H-%M-%S",
             filemode='w'  # w=write, a=append
         )
 
