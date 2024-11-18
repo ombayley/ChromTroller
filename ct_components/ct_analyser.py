@@ -10,6 +10,7 @@ This script handles:
     - Multi-file batch analysis and logging of results
 """
 import logging
+from datetime import datetime
 import os
 import json
 from glob import glob
@@ -36,8 +37,9 @@ class Analyser:
             peak_match_rt_tolerance (float): Tolerance range for matching retention times.
         """
 
-    def __init__(self):
+    def __init__(self, log_file: Optional[logging] = None):
 
+        self.log_file = log_file if log_file is not None else self.setup_logging()
         self.analysis_json_data: Dict[str, Any] = self.load_analysis_json()
         self.settings_obj: ProcessingSettings = self.get_settings_obj()
         self.file_tags: Dict[str, Any] = self.analysis_json_data["tags"]
@@ -47,12 +49,24 @@ class Analyser:
 
         message = "Analyser Object Initialized Successfully"
         print(message)
-        logging.info(message)
+        self.log_file.info(message)
 
     # -----Init Methods START-----
+    def setup_logging(self):
+        """
+       Sets up basic logging to file
+       """
+        date_str = datetime.now().strftime("%Y-%m-%d--%H-%M-%S")
+        log_path = os.path.join(get_project_dir(), 'log_files', f"CTAnalysis_{date_str}.log")
+        log_file = logging
+        log_file.basicConfig(level=logging.DEBUG,
+                             datefmt='%Y-%m-%d %H-%M-%S',
+                             format='%(asctime)s %(message)s',
+                             filename=log_path,
+                             filemode='w')
+        return log_file
 
-    @staticmethod
-    def load_analysis_json() -> dict:
+    def load_analysis_json(self) -> dict:
         """
         Load the analysis settings from a JSON file.
 
@@ -68,11 +82,11 @@ class Analyser:
 
             settings_json_path = os.path.join(get_project_dir(), 'settings_files', 'settings.json')
             with open(settings_json_path, mode='r', encoding='utf-8') as infile:
-                logging.info(f"loaded analysis settings from json at path: {settings_json_path}")
+                self.log_file.info(f"loaded analysis settings from json at path: {settings_json_path}")
                 return json.load(infile)
 
         except (FileNotFoundError, PermissionError, json.JSONDecodeError) as error:
-            logging.error(f"Error: {error}")
+            self.log_file.error(f"Error: {error}")
             raise error
 
     def get_settings_obj(self) -> ProcessingSettings:
@@ -91,10 +105,10 @@ class Analyser:
                 raise KeyError("No analysis_settings key found in the loaded JSON dict")
 
             sett_obj = ProcessingSettings.from_dict(sett_dict)
-            logging.info("Settings object created from analysis JSON")
+            self.log_file.info("Settings object created from analysis JSON")
             return sett_obj
         except Exception as error:
-            logging.error(f"Error: {error}")
+            self.log_file.error(f"Error: {error}")
             raise error
 
     # -----Analysis Methods -----
@@ -123,37 +137,36 @@ class Analyser:
             # Create Chrom
             if bkg_filepath:
                 smpl_chromatogram = Chromatogram(sample=sample_filepath, blank=bkg_filepath, name='sample')
-                logging.info(f"Chromatogram object generated with background reference correction")
+                self.log_file.info(f"Chromatogram object generated with background reference correction")
             else:
                 smpl_chromatogram = Chromatogram(sample=sample_filepath, name='sample')
                 message = f"Chromatogram object generated WITHOUT a background reference file"
                 print(message)
-                logging.warning(message)
-
-            # Set min and max times based on the given target and tolerance
-            min_time = peak_rt - rt_tolerance
-            max_time = peak_rt + rt_tolerance
+                self.log_file.warning(message)
 
             # Process Chrom
-            logging.info(f"Processing chrom with min time: {min_time} and max time : {max_time}")
-            smpl_chromatogram = self.process_chrom(chrom=smpl_chromatogram, min_time=min_time, max_time=max_time)
-            logging.info(f"Processed Spectrum: {smpl_chromatogram}")
+            smpl_chromatogram = self.process_chrom(chrom=smpl_chromatogram)
+            self.log_file.info(f"Processed Spectrum: {smpl_chromatogram.__str__()}")
 
             # From the smpl_chromatogram find the most applicable component
             best_fit_component: Component = self.filter_best_fit(smpl_chromatogram=smpl_chromatogram,
-                                                                 filter_conditions=peak_rt)
-            logging.info(f"Best fit component: {best_fit_component}")
+                                                                 target_rt=peak_rt,
+                                                                 rt_tolerance=rt_tolerance)
+            self.log_file.info(f"Best fit component: {best_fit_component}")
+
+            # Return if not found
+            if not best_fit_component:
+                return {"peak_rt": None, "integral": None}
 
             # Return dictionary of elution_time and integral of the best fitting component
             elut_time = smpl_chromatogram.time[best_fit_component.elution_time]
             return {"peak_rt": elut_time, "integral": best_fit_component.integral}
 
         except Exception as e:
-            logging.error(f"Error during analysis of file {sample_filepath}: {e}")
+            self.log_file.error(f"Error during analysis of file {sample_filepath}: {e}")
             return None
 
-    @staticmethod
-    def filter_best_fit(smpl_chromatogram: Chromatogram, filter_conditions: float) -> Component:
+    def filter_best_fit(self, smpl_chromatogram: Chromatogram, target_rt: float, rt_tolerance: float = 0.1) -> Optional[Component]:
         """
         Filters the list of suitable peaks and identifies the most applicable based on retention time.
 
@@ -163,28 +176,45 @@ class Analyser:
 
         Args:
             smpl_chromatogram (Chromatogram): Chromatogram object
-            filter_conditions (float): The expected retention time for the target peak.
+            target_rt (float): The expected retention time for the target peak.
+            rt_tolerance (float): The tolerance for retention time matching (0.1 by Default).
 
         Returns:
             Component: The component object correlating to the best match with the target peak
         """
         # Get processed data
         components: List[Component] = smpl_chromatogram.all_components()
-        logging.info(f"Filtering components for best match to target {components}")
+        self.log_file.info(f"Filtering {len(components)} components to identify best match to target rt")
 
-        # Set search variables
+        # Exit if no components identified
+        if not components:
+            return None
+
+        # Get a list of peaks within the target window
+        peaks_list = []
+        for component in components:
+            elut_time = smpl_chromatogram.time[component.elution_time]
+            if target_rt - rt_tolerance <= elut_time <= target_rt + rt_tolerance:
+                peaks_list.append(component)
+        self.log_file.info(f"{len(peaks_list)} peaks identified within target window")
+
+        # Exit if no components identified
+        if not peaks_list:
+            return None
+
+        # Set search variables - Search for closet peak based on rt with at least 10% of the max integral in the window
         closest_component: Optional[Component] = None
         smallest_diff = float('inf')
-        max_integral = max(component.integral for component in components)
-        peak_size_min_cutoff = 0.1  # ignore any peaks that are less than 10% of the max peak
+        max_integral = max(peak.integral for peak in peaks_list)
+        peak_size_min_cutoff = 0.1  # ignore any peaks that are less than 10% of the max peak in the window
         min_integral = peak_size_min_cutoff * max_integral
 
-        for component in components:
-            elut_time_index = component.elution_time
-            elut_time = smpl_chromatogram.time[elut_time_index]
-            if component.integral >= min_integral and abs(elut_time - filter_conditions) > smallest_diff:
-                smallest_diff = abs(elut_time - filter_conditions)
-                closest_component = component
+        for peak in peaks_list:
+            elut_time = smpl_chromatogram.time[peak.elution_time]
+            if peak.integral >= min_integral and abs(elut_time - target_rt) < smallest_diff:
+                smallest_diff = abs(elut_time - target_rt)
+                closest_component = peak
+        self.log_file.info(f"Identified component at: {closest_component.elution_time}")
 
         return closest_component
 
@@ -254,7 +284,7 @@ class Analyser:
         if not data_files:
             message = f"No {data_file_type} files found in: {dirpath}"
             print(message)
-            logging.error(message)
+            self.log_file.error(message)
 
         sample_name = sample_name.replace(__old=" ", __new="_").lower()
         sample_files_list = [file for file in data_files if sample_name in file.replace(" ", "_").lower()]
@@ -272,7 +302,7 @@ class Analyser:
         Returns:
             str: Path to the closest background file.
         """
-        logging.info(f"get_bkg_filepath method called with filepath: {sample_filepath}")
+        self.log_file.info(f"get_bkg_filepath method called with filepath: {sample_filepath}")
 
         # Get dirname and tag info.
         dirpath = os.path.dirname(sample_filepath)
@@ -281,7 +311,7 @@ class Analyser:
         message = (f"Searching dirpath: {dirpath} for a background trace of type: {data_file_type} "
                    f"containing the tag: {bkg_tag}")
         print(message)
-        logging.info(message)
+        self.log_file.info(message)
 
         # Find all gradient files
         data_files = glob(dirpath + "/*" + data_file_type)
@@ -291,7 +321,7 @@ class Analyser:
         if not bkg_files_list:
             message = f"No background files of type {data_file_type} found in {dirpath} with the tag {bkg_tag}"
             print(message)
-            logging.info(message)
+            self.log_file.info(message)
             return
 
         # Filter based on file creation time
@@ -302,6 +332,7 @@ class Analyser:
 
 
 if __name__ == "__main__":
-    dirpath = r"C:\Users\obayley\Documents\UPLCMS_Data\FGT_Calibration"
+    dirpath = r"\\fnwi-s0.science.uva.nl\hims-nrg-robochem\lcms_data\FGT\FGT_12_11_2024.rslt\Sample_003_06.dx"
     analyser = Analyser()
-    analyser.run_analysis(sample_filepath=dirpath, peak_rt=2.0, rt_tolerance=0.1)
+    run_result = analyser.run_analysis(sample_filepath=dirpath, peak_rt=2.76, rt_tolerance=0.1)
+    print(run_result)
