@@ -1,0 +1,1535 @@
+[
+    {
+        "run_conditions": {
+            "name": 0,
+            "conc": 0.0846,
+            "reag_list": [
+                "SF",
+                0.0846,
+                "clbp",
+                0.0223,
+                "tertButyl",
+                1.0
+            ],
+            "condit_dict": {
+                "residence_time": 130,
+                "light_intensity": 0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_001_02.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 1,
+            "conc": 0.0846,
+            "reag_list": [
+                "SF",
+                0.0846,
+                "clbp",
+                0.0223,
+                "tertButyl",
+                1.0
+            ],
+            "condit_dict": {
+                "residence_time": 1164,
+                "light_intensity": 35
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_002_04.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 2,
+            "conc": 0.0846,
+            "reag_list": [
+                "SF",
+                0.0846,
+                "clbp",
+                0.0223,
+                "tertButyl",
+                1.0
+            ],
+            "condit_dict": {
+                "residence_time": 1164,
+                "light_intensity": 35
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_003_06.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 3,
+            "conc": 0.0846,
+            "reag_list": [
+                "SF",
+                0.0846,
+                "clbp",
+                0.0223,
+                "olefine",
+                1.0
+            ],
+            "condit_dict": {
+                "residence_time": 130,
+                "light_intensity": 0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_004_08.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 4,
+            "conc": 0.0846,
+            "reag_list": [
+                "SF",
+                0.0846,
+                "clbp",
+                0.0223,
+                "olefine",
+                1.0
+            ],
+            "condit_dict": {
+                "residence_time": 1164,
+                "light_intensity": 35
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_005_10.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 5,
+            "conc": 0.0846,
+            "reag_list": [
+                "SF",
+                0.0846,
+                "clbp",
+                0.0223,
+                "olefine",
+                1.0
+            ],
+            "condit_dict": {
+                "residence_time": 1164,
+                "light_intensity": 35
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_006_12.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 6,
+            "conc": 0.0846,
+            "reag_list": [
+                "SF",
+                0.0846,
+                "clbp",
+                0.0223,
+                "alkyne",
+                1.0
+            ],
+            "condit_dict": {
+                "residence_time": 130,
+                "light_intensity": 0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_007_14.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 7,
+            "conc": 0.0846,
+            "reag_list": [
+                "SF",
+                0.0846,
+                "clbp",
+                0.0223,
+                "alkyne",
+                1.0
+            ],
+            "condit_dict": {
+                "residence_time": 1164,
+                "light_intensity": 35
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_008_16.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 8,
+            "conc": 0.0846,
+            "reag_list": [
+                "SF",
+                0.0846,
+                "clbp",
+                0.0223,
+                "alkyne",
+                1.0
+            ],
+            "condit_dict": {
+                "residence_time": 1164,
+                "light_intensity": 35
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_009_18.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 9,
+            "conc": 0.0846,
+            "reag_list": [
+                "SF",
+                0.0846,
+                "clbp",
+                0.0223,
+                "phenol",
+                1.0
+            ],
+            "condit_dict": {
+                "residence_time": 130,
+                "light_intensity": 0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_010_20.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 10,
+            "conc": 0.0846,
+            "reag_list": [
+                "SF",
+                0.0846,
+                "clbp",
+                0.0223,
+                "phenol",
+                1.0
+            ],
+            "condit_dict": {
+                "residence_time": 1164,
+                "light_intensity": 35
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_011_23.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 11,
+            "conc": 0.0846,
+            "reag_list": [
+                "SF",
+                0.0846,
+                "clbp",
+                0.0223,
+                "phenol",
+                1.0
+            ],
+            "condit_dict": {
+                "residence_time": 1164,
+                "light_intensity": 35
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_012_25.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 12,
+            "conc": 0.0846,
+            "reag_list": [
+                "SF",
+                0.0846,
+                "clbp",
+                0.0223,
+                "anisole",
+                1.0
+            ],
+            "condit_dict": {
+                "residence_time": 130,
+                "light_intensity": 0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_013_27.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 13,
+            "conc": 0.0846,
+            "reag_list": [
+                "SF",
+                0.0846,
+                "clbp",
+                0.0223,
+                "anisole",
+                1.0
+            ],
+            "condit_dict": {
+                "residence_time": 1164,
+                "light_intensity": 35
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_014_29.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 14,
+            "conc": 0.0846,
+            "reag_list": [
+                "SF",
+                0.0846,
+                "clbp",
+                0.0223,
+                "anisole",
+                1.0
+            ],
+            "condit_dict": {
+                "residence_time": 1164,
+                "light_intensity": 35
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_015_31.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 15,
+            "conc": 0.0846,
+            "reag_list": [
+                "SF",
+                0.0846,
+                "clbp",
+                0.0223,
+                "acid",
+                1.0
+            ],
+            "condit_dict": {
+                "residence_time": 130,
+                "light_intensity": 0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_016_33.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 16,
+            "conc": 0.0846,
+            "reag_list": [
+                "SF",
+                0.0846,
+                "clbp",
+                0.0223,
+                "acid",
+                1.0
+            ],
+            "condit_dict": {
+                "residence_time": 1164,
+                "light_intensity": 35
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_017_35.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 17,
+            "conc": 0.0846,
+            "reag_list": [
+                "SF",
+                0.0846,
+                "clbp",
+                0.0223,
+                "acid",
+                1.0
+            ],
+            "condit_dict": {
+                "residence_time": 1164,
+                "light_intensity": 35
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_018_37.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 18,
+            "conc": 0.0846,
+            "reag_list": [
+                "SF",
+                0.0846,
+                "clbp",
+                0.0223,
+                "aldehyde",
+                1.0
+            ],
+            "condit_dict": {
+                "residence_time": 130,
+                "light_intensity": 0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_019_39.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 19,
+            "conc": 0.0846,
+            "reag_list": [
+                "SF",
+                0.0846,
+                "clbp",
+                0.0223,
+                "aldehyde",
+                1.0
+            ],
+            "condit_dict": {
+                "residence_time": 1164,
+                "light_intensity": 35
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_020_41.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 20,
+            "conc": 0.0846,
+            "reag_list": [
+                "SF",
+                0.0846,
+                "clbp",
+                0.0223,
+                "aldehyde",
+                1.0
+            ],
+            "condit_dict": {
+                "residence_time": 1164,
+                "light_intensity": 35
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_021_44.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 21,
+            "conc": 0.0846,
+            "reag_list": [
+                "SF",
+                0.0846,
+                "clbp",
+                0.0223,
+                "methylEster",
+                1.0
+            ],
+            "condit_dict": {
+                "residence_time": 130,
+                "light_intensity": 0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_022_46.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 22,
+            "conc": 0.0846,
+            "reag_list": [
+                "SF",
+                0.0846,
+                "clbp",
+                0.0223,
+                "methylEster",
+                1.0
+            ],
+            "condit_dict": {
+                "residence_time": 1164,
+                "light_intensity": 35
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_023_48.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 23,
+            "conc": 0.0846,
+            "reag_list": [
+                "SF",
+                0.0846,
+                "clbp",
+                0.0223,
+                "methylEster",
+                1.0
+            ],
+            "condit_dict": {
+                "residence_time": 1164,
+                "light_intensity": 35
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_024_50.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 24,
+            "conc": 0.0846,
+            "reag_list": [
+                "SF",
+                0.0846,
+                "clbp",
+                0.0223,
+                "tBuEster",
+                1.0
+            ],
+            "condit_dict": {
+                "residence_time": 130,
+                "light_intensity": 0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_025_52.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 0,
+            "conc": 0.0846,
+            "reag_list": [
+                "SF",
+                0.0846,
+                "clbp",
+                0.0223,
+                "tBuEster",
+                1.0
+            ],
+            "condit_dict": {
+                "residence_time": 130,
+                "light_intensity": 0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_026_54.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 0,
+            "conc": 0.0846,
+            "reag_list": [
+                "SF",
+                0.0846,
+                "clbp",
+                0.0223,
+                "none",
+                1.0
+            ],
+            "condit_dict": {
+                "residence_time": 130,
+                "light_intensity": 0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_027_56.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 1,
+            "conc": 0.0846,
+            "reag_list": [
+                "SF",
+                0.0846,
+                "clbp",
+                0.0223,
+                "none",
+                1.0
+            ],
+            "condit_dict": {
+                "residence_time": 1164,
+                "light_intensity": 35
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_028_58.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 2,
+            "conc": 0.0846,
+            "reag_list": [
+                "SF",
+                0.0846,
+                "clbp",
+                0.0223,
+                "none",
+                1.0
+            ],
+            "condit_dict": {
+                "residence_time": 1164,
+                "light_intensity": 35
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_029_60.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 3,
+            "conc": 0.0846,
+            "reag_list": [
+                "SF",
+                0.0846,
+                "clbp",
+                0.0223,
+                "tBuEster",
+                1.0
+            ],
+            "condit_dict": {
+                "residence_time": 130,
+                "light_intensity": 0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_030_62.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": "blank-MeCN",
+            "conc": 0.0,
+            "reag_list": [
+                "SF",
+                0.0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "condit_dict": {
+                "residence_time": 300,
+                "light_intensity": 0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_031_65.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": "blank-SF",
+            "conc": 0.1,
+            "reag_list": [
+                "SF",
+                0.1,
+                0,
+                0,
+                0,
+                0
+            ],
+            "condit_dict": {
+                "residence_time": 300,
+                "light_intensity": 0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_032_67.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": "blank-clbp",
+            "conc": 0.02,
+            "reag_list": [
+                "clbp",
+                0.02,
+                0,
+                0,
+                0,
+                0
+            ],
+            "condit_dict": {
+                "residence_time": 300,
+                "light_intensity": 0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_033_69.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": "blank-mixture",
+            "conc": 0.02,
+            "reag_list": [
+                "clbp",
+                0.02,
+                0,
+                0,
+                0,
+                0
+            ],
+            "condit_dict": {
+                "residence_time": 150,
+                "light_intensity": 0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_034_71.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 0,
+            "conc": 0.045,
+            "reag_list": [
+                "SF",
+                0.045,
+                0,
+                0,
+                0,
+                0
+            ],
+            "condit_dict": {
+                "residence_time": 130,
+                "light_intensity": 0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_035_73.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 0,
+            "conc": 0.08,
+            "reag_list": [
+                "SF",
+                0.08,
+                0,
+                0,
+                0,
+                0
+            ],
+            "condit_dict": {
+                "residence_time": 130,
+                "light_intensity": 0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_036_75.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 1,
+            "conc": 0.08,
+            "reag_list": [
+                "none",
+                0.08,
+                0,
+                0,
+                0,
+                0
+            ],
+            "condit_dict": {
+                "residence_time": 130,
+                "light_intensity": 0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_037_77.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 2,
+            "conc": 0.08,
+            "reag_list": [
+                "tertButyl",
+                0.08,
+                0,
+                0,
+                0,
+                0
+            ],
+            "condit_dict": {
+                "residence_time": 130,
+                "light_intensity": 0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_038_79.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 3,
+            "conc": 0.08,
+            "reag_list": [
+                "olefine",
+                0.08,
+                0,
+                0,
+                0,
+                0
+            ],
+            "condit_dict": {
+                "residence_time": 130,
+                "light_intensity": 0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_039_81.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 4,
+            "conc": 0.08,
+            "reag_list": [
+                "alkyne",
+                0.08,
+                0,
+                0,
+                0,
+                0
+            ],
+            "condit_dict": {
+                "residence_time": 130,
+                "light_intensity": 0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_040_83.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 5,
+            "conc": 0.08,
+            "reag_list": [
+                "phenol",
+                0.08,
+                0,
+                0,
+                0,
+                0
+            ],
+            "condit_dict": {
+                "residence_time": 130,
+                "light_intensity": 0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_041_86.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 6,
+            "conc": 0.08,
+            "reag_list": [
+                "anisole",
+                0.08,
+                0,
+                0,
+                0,
+                0
+            ],
+            "condit_dict": {
+                "residence_time": 130,
+                "light_intensity": 0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_042_88.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 8,
+            "conc": 0.08,
+            "reag_list": [
+                "aldehyde",
+                0.08,
+                0,
+                0,
+                0,
+                0
+            ],
+            "condit_dict": {
+                "residence_time": 130,
+                "light_intensity": 0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_043_90.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 9,
+            "conc": 0.08,
+            "reag_list": [
+                "methylEster",
+                0.08,
+                0,
+                0,
+                0,
+                0
+            ],
+            "condit_dict": {
+                "residence_time": 130,
+                "light_intensity": 0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_044_92.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 10,
+            "conc": 0.08,
+            "reag_list": [
+                "tBuEster",
+                0.08,
+                0,
+                0,
+                0,
+                0
+            ],
+            "condit_dict": {
+                "residence_time": 130,
+                "light_intensity": 0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_045_94.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 11,
+            "conc": 0.08,
+            "reag_list": [
+                "hamide",
+                0.08,
+                0,
+                0,
+                0,
+                0
+            ],
+            "condit_dict": {
+                "residence_time": 130,
+                "light_intensity": 0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_046_96.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 13,
+            "conc": 0.08,
+            "reag_list": [
+                "haniline",
+                0.08,
+                0,
+                0,
+                0,
+                0
+            ],
+            "condit_dict": {
+                "residence_time": 130,
+                "light_intensity": 0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_047_98.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 15,
+            "conc": 0.08,
+            "reag_list": [
+                "bromine",
+                0.08,
+                0,
+                0,
+                0,
+                0
+            ],
+            "condit_dict": {
+                "residence_time": 130,
+                "light_intensity": 0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_048_100.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 16,
+            "conc": 0.08,
+            "reag_list": [
+                "chlorine",
+                0.08,
+                0,
+                0,
+                0,
+                0
+            ],
+            "condit_dict": {
+                "residence_time": 130,
+                "light_intensity": 0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_049_102.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 17,
+            "conc": 0.08,
+            "reag_list": [
+                "fluorine",
+                0.08,
+                0,
+                0,
+                0,
+                0
+            ],
+            "condit_dict": {
+                "residence_time": 130,
+                "light_intensity": 0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_050_104.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 18,
+            "conc": 0.08,
+            "reag_list": [
+                "diMethylSilane",
+                0.08,
+                0,
+                0,
+                0,
+                0
+            ],
+            "condit_dict": {
+                "residence_time": 130,
+                "light_intensity": 0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_051_107.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 19,
+            "conc": 0.08,
+            "reag_list": [
+                "sulphonylAmide",
+                0.08,
+                0,
+                0,
+                0,
+                0
+            ],
+            "condit_dict": {
+                "residence_time": 130,
+                "light_intensity": 0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_052_109.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 20,
+            "conc": 0.08,
+            "reag_list": [
+                "nitroso",
+                0.08,
+                0,
+                0,
+                0,
+                0
+            ],
+            "condit_dict": {
+                "residence_time": 130,
+                "light_intensity": 0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_053_111.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 0,
+            "conc": 0.0846,
+            "reag_list": [
+                "SF",
+                0.0846,
+                "clbp",
+                0.0223,
+                "tertButyl",
+                1.0
+            ],
+            "condit_dict": {
+                "residence_time": 1164,
+                "light_intensity": 35
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_054_113.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 1,
+            "conc": 0.0846,
+            "reag_list": [
+                "SF",
+                0.0846,
+                "clbp",
+                0.0223,
+                "tertButyl",
+                1.0
+            ],
+            "condit_dict": {
+                "residence_time": 1164,
+                "light_intensity": 35
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_055_115.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 2,
+            "conc": 0.0846,
+            "reag_list": [
+                "SF",
+                0.0846,
+                "clbp",
+                0.0223,
+                "alkyne",
+                1.0
+            ],
+            "condit_dict": {
+                "residence_time": 1164,
+                "light_intensity": 35
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_056_117.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 3,
+            "conc": 0.0846,
+            "reag_list": [
+                "SF",
+                0.0846,
+                "clbp",
+                0.0223,
+                "alkyne",
+                1.0
+            ],
+            "condit_dict": {
+                "residence_time": 1164,
+                "light_intensity": 35
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_057_119.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 4,
+            "conc": 0.0846,
+            "reag_list": [
+                "SF",
+                0.0846,
+                "clbp",
+                0.0223,
+                "tBuEster",
+                1.0
+            ],
+            "condit_dict": {
+                "residence_time": 1164,
+                "light_intensity": 35
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_058_121.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 5,
+            "conc": 0.0846,
+            "reag_list": [
+                "SF",
+                0.0846,
+                "clbp",
+                0.0223,
+                "tBuEster",
+                1.0
+            ],
+            "condit_dict": {
+                "residence_time": 1164,
+                "light_intensity": 35
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_059_123.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 6,
+            "conc": 0.0846,
+            "reag_list": [
+                "SF",
+                0.0846,
+                "clbp",
+                0.0223,
+                "hamide",
+                1.0
+            ],
+            "condit_dict": {
+                "residence_time": 1164,
+                "light_intensity": 35
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_060_125.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 7,
+            "conc": 0.0846,
+            "reag_list": [
+                "SF",
+                0.0846,
+                "clbp",
+                0.0223,
+                "hamide",
+                1.0
+            ],
+            "condit_dict": {
+                "residence_time": 1164,
+                "light_intensity": 35
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_061_127.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 10,
+            "conc": 0.0846,
+            "reag_list": [
+                "SF",
+                0.0846,
+                "clbp",
+                0.0223,
+                "haniline",
+                1.0
+            ],
+            "condit_dict": {
+                "residence_time": 1164,
+                "light_intensity": 35
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_062_129.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 11,
+            "conc": 0.0846,
+            "reag_list": [
+                "SF",
+                0.0846,
+                "clbp",
+                0.0223,
+                "haniline",
+                1.0
+            ],
+            "condit_dict": {
+                "residence_time": 1164,
+                "light_intensity": 35
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_063_131.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 14,
+            "conc": 0.0846,
+            "reag_list": [
+                "SF",
+                0.0846,
+                "clbp",
+                0.0223,
+                "bromine",
+                1.0
+            ],
+            "condit_dict": {
+                "residence_time": 1164,
+                "light_intensity": 35
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_064_133.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 15,
+            "conc": 0.0846,
+            "reag_list": [
+                "SF",
+                0.0846,
+                "clbp",
+                0.0223,
+                "bromine",
+                1.0
+            ],
+            "condit_dict": {
+                "residence_time": 1164,
+                "light_intensity": 35
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_065_135.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 16,
+            "conc": 0.0846,
+            "reag_list": [
+                "SF",
+                0.0846,
+                "clbp",
+                0.0223,
+                "chlorine",
+                1.0
+            ],
+            "condit_dict": {
+                "residence_time": 1164,
+                "light_intensity": 35
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_066_137.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 17,
+            "conc": 0.0846,
+            "reag_list": [
+                "SF",
+                0.0846,
+                "clbp",
+                0.0223,
+                "chlorine",
+                1.0
+            ],
+            "condit_dict": {
+                "residence_time": 1164,
+                "light_intensity": 35
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_067_140.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 18,
+            "conc": 0.0846,
+            "reag_list": [
+                "SF",
+                0.0846,
+                "clbp",
+                0.0223,
+                "fluorine",
+                1.0
+            ],
+            "condit_dict": {
+                "residence_time": 1164,
+                "light_intensity": 35
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_068_142.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 19,
+            "conc": 0.0846,
+            "reag_list": [
+                "SF",
+                0.0846,
+                "clbp",
+                0.0223,
+                "fluorine",
+                1.0
+            ],
+            "condit_dict": {
+                "residence_time": 1164,
+                "light_intensity": 35
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_069_144.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 20,
+            "conc": 0.0846,
+            "reag_list": [
+                "SF",
+                0.0846,
+                "clbp",
+                0.0223,
+                "diMethylSilane",
+                1.0
+            ],
+            "condit_dict": {
+                "residence_time": 1164,
+                "light_intensity": 35
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_070_146.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 21,
+            "conc": 0.0846,
+            "reag_list": [
+                "SF",
+                0.0846,
+                "clbp",
+                0.0223,
+                "diMethylSilane",
+                1.0
+            ],
+            "condit_dict": {
+                "residence_time": 1164,
+                "light_intensity": 35
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_071_148.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 22,
+            "conc": 0.0846,
+            "reag_list": [
+                "SF",
+                0.0846,
+                "clbp",
+                0.0223,
+                "sulphonylAmide",
+                1.0
+            ],
+            "condit_dict": {
+                "residence_time": 1164,
+                "light_intensity": 35
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_072_150.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 23,
+            "conc": 0.0846,
+            "reag_list": [
+                "SF",
+                0.0846,
+                "clbp",
+                0.0223,
+                "sulphonylAmide",
+                1.0
+            ],
+            "condit_dict": {
+                "residence_time": 1164,
+                "light_intensity": 35
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\FGT_12_11_2024.rslt\\Sample_073_152.dx",
+        "analysis": null
+    }
+]

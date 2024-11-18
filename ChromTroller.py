@@ -56,7 +56,8 @@ class ChromTroller:
         self.lcms_controller: Controller = self._init_controller()
 
         print("\nChromTroller Ready For Analysis")
-        print("REMINDER - Ensure OpenLab CDS is running and has the correct sequence queued\n")
+        print("REMINDERS: - Ensure OpenLab CDS is running and has the correct sequence queued")
+        print("           - Ensure the monitoring path in the settings.json matches that of the OpenLab project\n")
 
     # ----- Initialization Methods -----
 
