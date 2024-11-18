@@ -10,6 +10,7 @@ This script handles:
     - Multi-file batch analysis and logging of results
 """
 import logging
+from datetime import datetime
 import os
 import json
 from glob import glob
@@ -36,23 +37,36 @@ class Analyser:
             peak_match_rt_tolerance (float): Tolerance range for matching retention times.
         """
 
-    def __init__(self):
+    def __init__(self, log_file: Optional[logging] = None):
 
+        self.log_file = log_file if log_file is not None else self.setup_logging()
         self.analysis_json_data: Dict[str, Any] = self.load_analysis_json()
         self.settings_obj: ProcessingSettings = self.get_settings_obj()
-        self.file_tags: Dict[str, Any] = self.analysis_json_data["file_tags"]
+        self.file_tags: Dict[str, Any] = self.analysis_json_data["tags"]
         self.fast_bkg: bool = False
         self.expected_peak_rt: float = 0.0
         self.peak_match_rt_tolerance: float = 0.1
 
         message = "Analyser Object Initialized Successfully"
         print(message)
-        logging.info(message)
+        self.log_file.info(message)
 
     # -----Init Methods START-----
+    def setup_logging(self):
+        """
+       Sets up basic logging to file
+       """
+        date_str = datetime.now().strftime("%Y-%m-%d--%H-%M-%S")
+        log_path = os.path.join(get_project_dir(), 'log_files', f"CTAnalysis_{date_str}.log")
+        log_file = logging
+        log_file.basicConfig(level=logging.DEBUG,
+                             datefmt='%Y-%m-%d %H-%M-%S',
+                             format='%(asctime)s %(message)s',
+                             filename=log_path,
+                             filemode='w')
+        return log_file
 
-    @staticmethod
-    def load_analysis_json() -> dict:
+    def load_analysis_json(self) -> dict:
         """
         Load the analysis settings from a JSON file.
 
@@ -66,13 +80,13 @@ class Analyser:
         """
         try:
 
-            settings_json_path = os.path.join(get_project_dir(), 'settings_files', 'analysis_settings.json')
+            settings_json_path = os.path.join(get_project_dir(), 'settings_files', 'settings.json')
             with open(settings_json_path, mode='r', encoding='utf-8') as infile:
-                logging.info(f"loaded analysis settings from json at path: {settings_json_path}")
+                self.log_file.info(f"loaded analysis settings from json at path: {settings_json_path}")
                 return json.load(infile)
 
         except (FileNotFoundError, PermissionError, json.JSONDecodeError) as error:
-            logging.error(f"Error: {error}")
+            self.log_file.error(f"Error: {error}")
             raise error
 
     def get_settings_obj(self) -> ProcessingSettings:
@@ -91,10 +105,10 @@ class Analyser:
                 raise KeyError("No analysis_settings key found in the loaded JSON dict")
 
             sett_obj = ProcessingSettings.from_dict(sett_dict)
-            logging.info("Settings object created from analysis JSON")
+            self.log_file.info("Settings object created from analysis JSON")
             return sett_obj
         except Exception as error:
-            logging.error(f"Error: {error}")
+            self.log_file.error(f"Error: {error}")
             raise error
 
     # -----Analysis Methods -----
@@ -120,12 +134,12 @@ class Analyser:
             # Create Chrom
             if bkg_filepath:
                 smpl_chromatogram = Chromatogram(sample=sample_filepath, blank=bkg_filepath, name='sample')
-                logging.info(f"Chromatogram object generated with background reference correction")
+                self.log_file.info(f"Chromatogram object generated with background reference correction")
             else:
                 smpl_chromatogram = Chromatogram(sample=sample_filepath, name='sample')
                 message = f"Chromatogram object generated WITHOUT a background reference file"
                 print(message)
-                logging.warning(message)
+                self.log_file.warning(message)
 
             # Set min and max times based on the given target and tolerance
             min_time = peak_rt - rt_tolerance
@@ -143,7 +157,7 @@ class Analyser:
             return {"peak_rt": elut_time, "integral": best_fit_component.integral}
 
         except Exception as e:
-            logging.error(f"Error during analysis of file {sample_filepath}: {e}")
+            self.log_file.error(f"Error during analysis of file {sample_filepath}: {e}")
             return None
 
     @staticmethod
@@ -247,7 +261,7 @@ class Analyser:
         if not data_files:
             message = f"No {data_file_type} files found in: {dirpath}"
             print(message)
-            logging.error(message)
+            self.log_file.error(message)
 
         sample_name = sample_name.replace(__old=" ", __new="_").lower()
         sample_files_list = [file for file in data_files if sample_name in file.replace(" ", "_").lower()]
@@ -265,7 +279,7 @@ class Analyser:
         Returns:
             str: Path to the closest background file.
         """
-        logging.info(f"get_bkg_filepath method called with filepath: {sample_filepath}")
+        self.log_file.info(f"get_bkg_filepath method called with filepath: {sample_filepath}")
 
         # Get dirname and tag info.
         dirpath = os.path.dirname(sample_filepath)
@@ -274,7 +288,7 @@ class Analyser:
         message = (f"Searching dirpath: {dirpath} for a background trace of type {data_file_type} "
                    f"containing the tag {bkg_tag}")
         print(message)
-        logging.info(message)
+        self.log_file.info(message)
 
         # Find all gradient files
         data_files = glob(dirpath + "/*" + data_file_type)
@@ -284,7 +298,7 @@ class Analyser:
         if not bkg_files_list:
             message = f"No background files of type {data_file_type} found in {dirpath} with the tag {bkg_tag}"
             print(message)
-            logging.info(message)
+            self.log_file.info(message)
             return
 
         # Filter based on file creation time
@@ -295,6 +309,7 @@ class Analyser:
 
 
 if __name__ == "__main__":
-    dirpath = r"C:\Users\obayley\Documents\UPLCMS_Data\FGT_Calibration"
+    dirpath = r"\\fnwi-s0.science.uva.nl\hims-nrg-robochem\lcms_data\FGT\FGT_12_11_2024.rslt\Sample_003_06.dx"
     analyser = Analyser()
-    analyser.run_analysis(sample_filepath=dirpath, peak_rt=2.0, rt_tolerance=0.1)
+    run_result = analyser.run_analysis(sample_filepath=dirpath, peak_rt=2.0, rt_tolerance=0.1)
+    print(run_result)
