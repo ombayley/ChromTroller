@@ -1,0 +1,551 @@
+[
+    {
+        "run_conditions": {
+            "name": 11,
+            "conc": 0.02125,
+            "reag_list": [
+                "Polystyrene",
+                0.02125,
+                "tBuOOH",
+                4.75,
+                "NBS",
+                0.1125
+            ],
+            "condit_dict": {
+                "residence_time": 2850.0,
+                "light_intensity": 75.0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Polymer_Degradation\\Results\\Polystyrene\\PS_Campaign_19Nov2024.rslt\\Sample_001.dx",
+        "analysis": {
+            "peak_rt": 3.966,
+            "integral": 37587565.274286345
+        }
+    },
+    {
+        "run_conditions": {
+            "name": 12,
+            "conc": 0.043750000000000004,
+            "reag_list": [
+                "Polystyrene",
+                0.043750000000000004,
+                "tBuOOH",
+                4.75,
+                "NBS",
+                0.2375
+            ],
+            "condit_dict": {
+                "residence_time": 2850.0,
+                "light_intensity": 25.0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Polymer_Degradation\\Results\\Polystyrene\\PS_Campaign_19Nov2024.rslt\\Sample_002.dx",
+        "analysis": {
+            "peak_rt": 3.966,
+            "integral": 118237638.76034114
+        }
+    },
+    {
+        "run_conditions": {
+            "name": 13,
+            "conc": 0.0325,
+            "reag_list": [
+                "Polystyrene",
+                0.0325,
+                "tBuOOH",
+                8.25,
+                "NBS",
+                0.1125
+            ],
+            "condit_dict": {
+                "residence_time": 2850.0,
+                "light_intensity": 75.0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Polymer_Degradation\\Results\\Polystyrene\\PS_Campaign_19Nov2024.rslt\\Sample_003.dx",
+        "analysis": {
+            "peak_rt": 3.964,
+            "integral": 50987747.898534976
+        }
+    },
+    {
+        "run_conditions": {
+            "name": 14,
+            "conc": 0.060625000000000005,
+            "reag_list": [
+                "Polystyrene",
+                0.060625000000000005,
+                "tBuOOH",
+                8.6875,
+                "NBS",
+                0.08125
+            ],
+            "condit_dict": {
+                "residence_time": 975.0,
+                "light_intensity": 62.5
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Polymer_Degradation\\Results\\Polystyrene\\PS_Campaign_19Nov2024.rslt\\Sample_004.dx",
+        "analysis": {
+            "peak_rt": 3.977,
+            "integral": 25773618.292055305
+        }
+    },
+    {
+        "run_conditions": {
+            "name": 15,
+            "conc": 0.0999999986588955,
+            "reag_list": [
+                "Polystyrene",
+                0.0999999986588955,
+                "tBuOOH",
+                9.999999895691872,
+                "NBS",
+                0.2999999962747097
+            ],
+            "condit_dict": {
+                "residence_time": 3599.9999552965164,
+                "light_intensity": 99.99999850988388
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Polymer_Degradation\\Results\\Polystyrene\\PS_Campaign_19Nov2024.rslt\\Sample_005.dx",
+        "analysis": {
+            "peak_rt": null,
+            "integral": null
+        }
+    },
+    {
+        "run_conditions": {
+            "name": 16,
+            "conc": 0.09999998927116395,
+            "reag_list": [
+                "Polystyrene",
+                0.09999998927116395,
+                "tBuOOH",
+                9.999999165534973,
+                "NBS",
+                0.2179686903953552
+            ],
+            "condit_dict": {
+                "residence_time": 600.0007152557373,
+                "light_intensity": 51.17189884185791
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Polymer_Degradation\\Results\\Polystyrene\\PS_Campaign_19Nov2024.rslt\\Sample_006.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 17,
+            "conc": 0.06625,
+            "reag_list": [
+                "Polystyrene",
+                0.06625,
+                "tBuOOH",
+                4.75,
+                "NBS",
+                0.2375
+            ],
+            "condit_dict": {
+                "residence_time": 2850.0,
+                "light_intensity": 75.0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Polymer_Degradation\\Results\\Polystyrene\\PS_Campaign_19Nov2024.rslt\\Sample_007.dx",
+        "analysis": {
+            "peak_rt": 3.968,
+            "integral": 318096966.49439347
+        }
+    },
+    {
+        "run_conditions": {
+            "name": 18,
+            "conc": 0.02125,
+            "reag_list": [
+                "Polystyrene",
+                0.02125,
+                "tBuOOH",
+                8.25,
+                "NBS",
+                0.1125
+            ],
+            "condit_dict": {
+                "residence_time": 2850.0,
+                "light_intensity": 25.0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Polymer_Degradation\\Results\\Polystyrene\\PS_Campaign_19Nov2024.rslt\\Sample_008.dx",
+        "analysis": {
+            "peak_rt": null,
+            "integral": null
+        }
+    },
+    {
+        "run_conditions": {
+            "name": 19,
+            "conc": 0.09999725341796875,
+            "reag_list": [
+                "Polystyrene",
+                0.09999725341796875,
+                "tBuOOH",
+                3.000213623046875,
+                "NBS",
+                0.2999847412109375
+            ],
+            "condit_dict": {
+                "residence_time": 974.81689453125,
+                "light_intensity": 17.767333984375
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Polymer_Degradation\\Results\\Polystyrene\\PS_Campaign_19Nov2024.rslt\\Sample_009.dx",
+        "analysis": {
+            "peak_rt": 3.98,
+            "integral": 25862166.243098494
+        }
+    },
+    {
+        "run_conditions": {
+            "name": 20,
+            "conc": 0.07187500000000001,
+            "reag_list": [
+                "Polystyrene",
+                0.07187500000000001,
+                "tBuOOH",
+                9.5625,
+                "NBS",
+                0.065625
+            ],
+            "condit_dict": {
+                "residence_time": 787.5,
+                "light_intensity": 6.25
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Polymer_Degradation\\Results\\Polystyrene\\PS_Campaign_19Nov2024.rslt\\Sample_010.dx",
+        "analysis": {
+            "peak_rt": null,
+            "integral": null
+        }
+    },
+    {
+        "run_conditions": {
+            "name": 21,
+            "conc": 0.0921612548828125,
+            "reag_list": [
+                "Polystyrene",
+                0.0921612548828125,
+                "tBuOOH",
+                9.9991455078125,
+                "NBS",
+                0.299969482421875
+            ],
+            "condit_dict": {
+                "residence_time": 2202.1728515625,
+                "light_intensity": 99.98779296875
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Polymer_Degradation\\Results\\Polystyrene\\PS_Campaign_19Nov2024.rslt\\Sample_011.dx",
+        "analysis": {
+            "peak_rt": null,
+            "integral": null
+        }
+    },
+    {
+        "run_conditions": {
+            "name": 22,
+            "conc": 0.09718750000000001,
+            "reag_list": [
+                "Polystyrene",
+                0.09718750000000001,
+                "tBuOOH",
+                3.21875,
+                "NBS",
+                0.159375
+            ],
+            "condit_dict": {
+                "residence_time": 787.5,
+                "light_intensity": 93.75
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Polymer_Degradation\\Results\\Polystyrene\\PS_Campaign_19Nov2024.rslt\\Sample_012.dx",
+        "analysis": {
+            "peak_rt": 3.979,
+            "integral": 267270587.9218191
+        }
+    },
+    {
+        "run_conditions": {
+            "name": 23,
+            "conc": 0.0775,
+            "reag_list": [
+                "Polystyrene",
+                0.0775,
+                "tBuOOH",
+                4.75,
+                "NBS",
+                0.2375
+            ],
+            "condit_dict": {
+                "residence_time": 2850.0,
+                "light_intensity": 75.0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Polymer_Degradation\\Results\\Polystyrene\\PS_Campaign_19Nov2024.rslt\\Sample_013.dx",
+        "analysis": {
+            "peak_rt": 3.968,
+            "integral": 500494354.9475876
+        }
+    },
+    {
+        "run_conditions": {
+            "name": 24,
+            "conc": 0.08031250000000001,
+            "reag_list": [
+                "Polystyrene",
+                0.08031250000000001,
+                "tBuOOH",
+                9.78125,
+                "NBS",
+                0.284375
+            ],
+            "condit_dict": {
+                "residence_time": 1537.5,
+                "light_intensity": 31.25
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Polymer_Degradation\\Results\\Polystyrene\\PS_Campaign_19Nov2024.rslt\\Sample_014.dx",
+        "analysis": {
+            "peak_rt": 3.977,
+            "integral": 223023309.05859387
+        }
+    },
+    {
+        "run_conditions": {
+            "name": 25,
+            "conc": 0.0775,
+            "reag_list": [
+                "Polystyrene",
+                0.0775,
+                "tBuOOH",
+                8.25,
+                "NBS",
+                0.1125
+            ],
+            "condit_dict": {
+                "residence_time": 1350.0,
+                "light_intensity": 75.0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Polymer_Degradation\\Results\\Polystyrene\\PS_Campaign_19Nov2024.rslt\\Sample_015.dx",
+        "analysis": {
+            "peak_rt": null,
+            "integral": null
+        }
+    },
+    {
+        "run_conditions": {
+            "name": 26,
+            "conc": 0.08875000000000001,
+            "reag_list": [
+                "Polystyrene",
+                0.08875000000000001,
+                "tBuOOH",
+                3.875,
+                "NBS",
+                0.2375
+            ],
+            "condit_dict": {
+                "residence_time": 2850.0,
+                "light_intensity": 75.0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Polymer_Degradation\\Results\\Polystyrene\\PS_Campaign_19Nov2024.rslt\\Sample_016.dx",
+        "analysis": {
+            "peak_rt": 3.97,
+            "integral": 225018710.05105114
+        }
+    },
+    {
+        "run_conditions": {
+            "name": 27,
+            "conc": 0.08875000000000001,
+            "reag_list": [
+                "Polystyrene",
+                0.08875000000000001,
+                "tBuOOH",
+                4.75,
+                "NBS",
+                0.1125
+            ],
+            "condit_dict": {
+                "residence_time": 2850.0,
+                "light_intensity": 25.0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Polymer_Degradation\\Results\\Polystyrene\\PS_Campaign_19Nov2024.rslt\\Sample_017.dx",
+        "analysis": {
+            "peak_rt": 3.969,
+            "integral": 133244959.57148433
+        }
+    },
+    {
+        "run_conditions": {
+            "name": 28,
+            "conc": 0.08875000000000001,
+            "reag_list": [
+                "Polystyrene",
+                0.08875000000000001,
+                "tBuOOH",
+                4.75,
+                "NBS",
+                0.2375
+            ],
+            "condit_dict": {
+                "residence_time": 2850.0,
+                "light_intensity": 75.0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Polymer_Degradation\\Results\\Polystyrene\\PS_Campaign_19Nov2024.rslt\\Sample_018.dx",
+        "analysis": {
+            "peak_rt": 3.967,
+            "integral": 89764179.15762244
+        }
+    },
+    {
+        "run_conditions": {
+            "name": 29,
+            "conc": 0.0775,
+            "reag_list": [
+                "Polystyrene",
+                0.0775,
+                "tBuOOH",
+                4.75,
+                "NBS",
+                0.2375
+            ],
+            "condit_dict": {
+                "residence_time": 1350.0,
+                "light_intensity": 75.0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Polymer_Degradation\\Results\\Polystyrene\\PS_Campaign_19Nov2024.rslt\\Sample_019.dx",
+        "analysis": {
+            "peak_rt": 3.972,
+            "integral": 353979790.0266939
+        }
+    },
+    {
+        "run_conditions": {
+            "name": 30,
+            "conc": 0.0830810546875,
+            "reag_list": [
+                "Polystyrene",
+                0.0830810546875,
+                "tBuOOH",
+                7.26904296875,
+                "NBS",
+                0.2998779296875
+            ],
+            "condit_dict": {
+                "residence_time": 2753.3203125,
+                "light_intensity": 34.86328125
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Polymer_Degradation\\Results\\Polystyrene\\PS_Campaign_19Nov2024.rslt\\Sample_020.dx",
+        "analysis": {
+            "peak_rt": 3.968,
+            "integral": 415557866.02757835
+        }
+    },
+    {
+        "run_conditions": {
+            "name": 31,
+            "conc": 0.06625,
+            "reag_list": [
+                "Polystyrene",
+                0.06625,
+                "tBuOOH",
+                5.625,
+                "NBS",
+                0.1125
+            ],
+            "condit_dict": {
+                "residence_time": 1350.0,
+                "light_intensity": 25.0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Polymer_Degradation\\Results\\Polystyrene\\PS_Campaign_19Nov2024.rslt\\Sample_021.dx",
+        "analysis": {
+            "peak_rt": 3.972,
+            "integral": 37804677.40314245
+        }
+    },
+    {
+        "run_conditions": {
+            "name": 32,
+            "conc": 0.0775,
+            "reag_list": [
+                "Polystyrene",
+                0.0775,
+                "tBuOOH",
+                8.25,
+                "NBS",
+                0.2375
+            ],
+            "condit_dict": {
+                "residence_time": 1350.0,
+                "light_intensity": 25.0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Polymer_Degradation\\Results\\Polystyrene\\PS_Campaign_19Nov2024.rslt\\Sample_022.dx",
+        "analysis": {
+            "peak_rt": null,
+            "integral": null
+        }
+    },
+    {
+        "run_conditions": {
+            "name": 33,
+            "conc": 0.06625,
+            "reag_list": [
+                "Polystyrene",
+                0.06625,
+                "tBuOOH",
+                4.75,
+                "NBS",
+                0.1125
+            ],
+            "condit_dict": {
+                "residence_time": 1350.0,
+                "light_intensity": 75.0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Polymer_Degradation\\Results\\Polystyrene\\PS_Campaign_19Nov2024.rslt\\Sample_023.dx",
+        "analysis": {
+            "peak_rt": null,
+            "integral": null
+        }
+    }
+]

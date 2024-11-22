@@ -1,0 +1,19 @@
+[
+    {
+        "run_conditions": {
+            "name": "product_calibration",
+            "conc": 0.02,
+            "reag_list": [
+                "prod",
+                0.02
+            ],
+            "condit_dict": {
+                "residence_time": 150,
+                "light_intensity": 0
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\RoboChem_FGT\\Results\\Calibration_Product_21_11_2024.rslt\\Sample_003_07.dx",
+        "analysis": null
+    }
+]
