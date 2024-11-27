@@ -29,7 +29,7 @@ class Controller:
         # Get hardware and timing settings
         self.hardware_settings: Dict[str, Any] = hardware_settings
         # Create LCMSDevice object
-        self.lcms_device: LCMSDevice = MockLCMSDevice()   # self._init_device()
+        self.lcms_device: LCMSDevice = self._init_device()  # MockLCMSDevice()
         # Report initialization success
         self.log_info("Controller Object Initialized Successfully")
 
