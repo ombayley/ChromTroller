@@ -33,10 +33,7 @@
         "lcms_sample_prep_timeout": 300,
         "sample_detection_timeout": 1200,
         "empty_phase_sensor_value": "2",
-        "full_phase_sensor_values": [
-            "0",
-            "1"
-        ],
+        "full_phase_sensor_values": ["0", "1"],
         "phase_sensor_stability_time": 0.5,
         "phase_sensor_polling_time": 0.1
     },
@@ -47,23 +44,6 @@
         "result_dir_tag": ".rslt"
     },
     "paths": {
-        "project_results_path": "\\\\fnwi-s0.science.uva.nl\\hims-nrg-robochem\\lcms_data\\FGT"
-    },
-    "baseline_model": "flatfit",
-    "baseline_smoothness": 1.0,
-    "min_rel_prominence": 0.01,
-    "min_prominence": 1,
-    "border_max_peak_cutoff": 0.1,
-    "split_threshold": 0.05,
-    "explained_threshold": 0.995,
-    "peak_model": "Bemg",
-    "max_peak_comps": 4,
-    "max_peak_distance": 1.0,
-    "min_spectrum_correl": 0.99,
-    "min_elution_time": 0.4,
-    "max_elution_time": 10.0,
-    "min_wavelength": 210.0,
-    "max_wavelength": 400.0,
-    "min_rel_integral": 0.01,
-    "relaxe_concs": false
+        "project_results_path": "D:\\CDSProjects\\Development\\Results"
+    }
 }
