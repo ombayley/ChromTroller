@@ -250,7 +250,7 @@ class ChromTroller:
         """
         try:
             print(f"settings: {self.settings['analysis_settings']}")
-            for setting_key, setting_value in self.settings['analysis_settings'].items():
+            for setting_key, setting_value in self.settings['analysis_settings']:
                 print(setting_key, setting_value)
                 if setting_key in parameters:
                     print(f"updating {setting_key} to {parameters[setting_key]}")

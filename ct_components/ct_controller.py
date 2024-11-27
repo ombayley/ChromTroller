@@ -29,7 +29,7 @@ class Controller:
         # Get hardware and timing settings
         self.hardware_settings: Dict[str, Any] = hardware_settings
         # Create LCMSDevice object
-        self.lcms_device: LCMSDevice = self._init_device()  # MockLCMSDevice()
+        self.lcms_device: LCMSDevice = MockLCMSDevice()   # self._init_device()
         # Report initialization success
         self.log_info("Controller Object Initialized Successfully")
 
@@ -202,7 +202,7 @@ class Controller:
         current_position = self.lcms_device.get_valve_pos()
         if current_position != desired_position:
             error_msg = ("WARNING: sample loop was not in filling position when run start was called."
-                         f"current state:{current_position}, desired state: {desired_position}")
+                         f"\nCurrent position: {current_position}, desired position: {desired_position}")
             logging.error(error_msg)
             print(error_msg)
             raise ValvePositionError(error_msg)

@@ -161,7 +161,7 @@ class Server:
                 if client_comm_dict is None:
                     # Client has disconnected
                     date_str = datetime.now().strftime("%H:%M:%S_%d-%m-%Y")
-                    self._print_info(f"\nClient disconnected at {date_str}")
+                    self._print_info(f"Client disconnected at {date_str}")
                     break
 
                 # Handle the command
