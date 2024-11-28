@@ -185,7 +185,7 @@ class ChromTroller:
                 return self.set_analysis_target(target=data)
             case 'set_analysis_tolerance':
                 return self.set_analysis_tolerance(tolerance=data)
-            case "set_valve":
+            case "valve_position":
                 return self.set_valve(position=data)
             case 'start_hplc_run':
                 return self.start_hplc_run()
@@ -361,7 +361,7 @@ class ChromTroller:
         Returns:
             Dict[str, Any]: The result dictionary from the analysis.
         """
-
+        print("Called")
         # Check the self.new_file_path and the latest file by ct time match
         if self.new_file_path != self._find_latest_sample_name_by_ct():
             logging.warning("Mismatch between the identified file and the most recent file based on creation time")
