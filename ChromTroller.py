@@ -381,7 +381,8 @@ class ChromTroller:
         print(message)
         result_dict: Dict[str, Any] = analyser.run_analysis(sample_filepath=self.new_file_path,
                                                             peak_rt=self.rt_target,
-                                                            rt_tolerance=self.rt_tolerance)
+                                                            rt_tolerance=self.rt_tolerance,
+                                                            match_peak=False)
         message = f"Identified Peak: {result_dict}"
         logging.info(message)
         print(message)

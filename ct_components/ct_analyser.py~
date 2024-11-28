@@ -113,7 +113,7 @@ class Analyser:
 
     # -----Analysis Methods -----
 
-    def run_analysis(self, sample_filepath: str, peak_rt: float, rt_tolerance: float = 0.1, match_peak: bool = True) ->\
+    def run_analysis(self, sample_filepath: str, peak_rt: float, rt_tolerance: float = 0.1, match_peak: bool = True) -> \
             Optional[Dict[str, Any]]:
         """
         Perform chromatogram analysis on a given sample file.
@@ -191,12 +191,13 @@ class Analyser:
             return None
 
         # Get a dict of all peaks
-        peaks_dict = {
-            "peak_rt": [smpl_chromatogram.time[component.elution_time] for component in components],
-            "integral": [component.integral for component in components]
-        }
+        peaks_dict = {"peak_rt": [], "integral": []}
+        for component in components:
+            elut_time = smpl_chromatogram.time[component.elution_time]
+            integral = component.integral
+            peaks_dict["peak_rt"].append(elut_time)
+            peaks_dict["integral"].append(integral)
 
-        return peaks_dict
 
     def filter_best_fit(self, smpl_chromatogram: Chromatogram, target_rt: float, rt_tolerance: float = 0.1) -> Optional[Component]:
         """
