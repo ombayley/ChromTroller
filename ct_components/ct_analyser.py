@@ -15,7 +15,7 @@ import os
 import json
 from glob import glob
 from typing import Any, Dict, List, Optional
-
+from scipy.signal import find_peaks
 from ct_components.mocca2.classes import Component
 from utils.get_project_directory import get_project_dir
 from ct_components.mocca2 import ProcessingSettings, Chromatogram
@@ -113,7 +113,8 @@ class Analyser:
 
     # -----Analysis Methods -----
 
-    def run_analysis(self, sample_filepath: str, peak_rt: float, rt_tolerance: float = 0.1, match_peak: bool = True) ->\
+    def run_analysis(self, sample_filepath: str, match_peak: bool = False, peak_rt: float = None,
+                     rt_tolerance: float = 0.1, ) -> \
             Optional[Dict[str, Any]]:
         """
         Perform chromatogram analysis on a given sample file.
@@ -122,32 +123,18 @@ class Analyser:
             sample_filepath (str): Path to the sample chromatogram file.
             peak_rt (float): The expected retention time for the target peak.
             rt_tolerance (float, optional): The tolerance for retention time matching. Default is 0.1 min.
-            match_peak (bool, optional): Whether to filter the peaks to find the most applicable. Default is True.
+            match_peak (bool, optional): Whether to filter the peaks to find the most applicable. Default is False.
 
         Returns:
             Optional[Dict[str, Any]]: A dictionary containing information about the closest peak detected,
             or None if no peaks are found.
         """
+        if match_peak and peak_rt is None:
+            raise Exception("Peak matching specified but no target retention time given")
+
         try:
-            # Update the analysis settings in case they were changed
-            self.analysis_json_data = self.load_analysis_json()
-
-            # Identify bkg file. File tag for searching specified in analysis.json but is typically 'gradient'
-            bkg_filepath = self.get_bkg_filepath(sample_filepath)
-
-            # Create Chrom
-            if bkg_filepath:
-                smpl_chromatogram = Chromatogram(sample=sample_filepath, blank=bkg_filepath, name='sample')
-                self.log_file.info(f"Chromatogram object generated with background reference correction")
-            else:
-                smpl_chromatogram = Chromatogram(sample=sample_filepath, name='sample')
-                message = f"Chromatogram object generated WITHOUT a background reference file"
-                print(message)
-                self.log_file.warning(message)
-
-            # Process Chrom
-            smpl_chromatogram = self.process_chrom(chrom=smpl_chromatogram)
-            self.log_file.info(f"Processed Spectrum: {smpl_chromatogram.__str__()}")
+            # Get Chrom
+            smpl_chromatogram = self.get_processed_spectrum(file_path=sample_filepath)
 
             # Option to return all peaks without peak matching
             if not match_peak:
@@ -171,9 +158,37 @@ class Analyser:
             self.log_file.error(f"Error during analysis of file {sample_filepath}: {e}")
             return None
 
+    def get_processed_spectrum(self, file_path: str) -> Optional[Chromatogram]:
+        try:
+            # Update the analysis settings in case they were changed
+            self.analysis_json_data = self.load_analysis_json()
+
+            # Identify bkg file. File tag for searching specified in analysis.json but is typically 'gradient'
+            bkg_filepath = self.get_bkg_filepath(file_path)
+
+            # Create Chrom
+            if bkg_filepath:
+                smpl_chromatogram = Chromatogram(sample=file_path, blank=bkg_filepath, name='sample')
+                self.log_file.info(f"Chromatogram object generated with background reference correction")
+            else:
+                smpl_chromatogram = Chromatogram(sample=file_path, name='sample')
+                message = f"Chromatogram object generated WITHOUT a background reference file"
+                print(message)
+                self.log_file.warning(message)
+
+            # Process Chrom
+            smpl_chromatogram = self.process_chrom(chrom=smpl_chromatogram)
+            self.log_file.info(f"Processed Spectrum: {smpl_chromatogram.__str__()}")
+
+            return smpl_chromatogram
+
+        except Exception as e:
+            self.log_file.error(f"Error during analysis of file {file_path}: {e}")
+            return None
+
     def get_all_peaks_dict(self, smpl_chromatogram: Chromatogram) -> Optional[Dict[str, List[float]]]:
         """
-        retrieve a dictionary containing all the peak retention times and peak integrals for all peaks in the
+        Retrieve a dictionary containing all the peak retention times and peak integrals for all peaks in the
         chromatogram
         Args:
             smpl_chromatogram (Chromatogram): PROCESSED Chromatogram object
@@ -193,12 +208,14 @@ class Analyser:
         # Get a dict of all peaks
         peaks_dict = {
             "peak_rt": [smpl_chromatogram.time[component.elution_time] for component in components],
-            "integral": [component.integral for component in components]
+            "integral": [component.integral for component in components],
+            "peak_height": [max(component.concentration) for component in components]
         }
-
+        # TODO add peak width once deconvolve working better
         return peaks_dict
 
-    def filter_best_fit(self, smpl_chromatogram: Chromatogram, target_rt: float, rt_tolerance: float = 0.1) -> Optional[Component]:
+    def filter_best_fit(self, smpl_chromatogram: Chromatogram, target_rt: float, rt_tolerance: float = 0.1) -> Optional[
+        Component]:
         """
         Filters the list of suitable peaks and identifies the most applicable based on retention time.
 

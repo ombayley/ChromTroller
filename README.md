@@ -1,7 +1,7 @@
 # <img src = "utils/CrocLogo.png" width = "100" style="vertical-align: middle;"> ChromTroller
 
 ## Overview
-ChromTroller is an automated control and analysis package for triggering an Agilent UPLC-MS system
+ChromTroller (short for Chromatogram Aquisition Controller) is an automated control and analysis package for triggering an Agilent UPLC-MS system
 (via a microcontroller) and automatically analysing the resulting data.
 
 ### Software

@@ -392,12 +392,12 @@ class ChromTroller:
             self._save_run_logs()
 
         if self.runlog_list:
-            given_info = self.runlog_list[-1].run_conditions
+            given_info = self.runlog_list[-1].conditions
         else:
             given_info = None
 
         response = {"data": result_dict,
-                    "file_name": self.new_file_path,
+                    "file_name": os.path.filename(self.new_file_path),
                     "settings": self.settings,
                     "given_info": given_info}
         return response
