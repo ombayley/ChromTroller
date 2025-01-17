@@ -249,13 +249,11 @@ class ChromTroller:
             str: Either 'ACK' upon success or 'ERROR' upon failure
         """
         try:
-            print(f"settings: {self.settings['analysis_settings']}")
-            for setting_key, setting_value in self.settings['analysis_settings'].items():
-                print(setting_key, setting_value)
-                if setting_key in parameters:
-                    print(f"updating {setting_key} to {parameters[setting_key]}")
-                    self.settings[setting_key] = parameters[setting_key]
-                    logging.info(f"Updated setting: {setting_key} to {parameters[setting_key]}")
+            self.print_info(f"All Current Settings: {self.settings['analysis_settings']}")
+            for parameter_key, parameter_value in parameters.items():
+                if parameter_key in self.settings['analysis_settings'].keys():
+                    self.print_info(f"Updated setting {parameter_key} to {parameter_value}")
+                    self.settings['analysis_settings'][parameter_key] = parameter_value
             self._save_settings()
             self.print_info("Analysis parameters updated")
             return "ACK"

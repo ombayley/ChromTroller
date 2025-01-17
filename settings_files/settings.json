@@ -33,7 +33,10 @@
         "lcms_sample_prep_timeout": 300,
         "sample_detection_timeout": 1200,
         "empty_phase_sensor_value": "2",
-        "full_phase_sensor_values": ["0", "1"],
+        "full_phase_sensor_values": [
+            "0",
+            "1"
+        ],
         "phase_sensor_stability_time": 0.5,
         "phase_sensor_polling_time": 0.1
     },
@@ -44,6 +47,6 @@
         "result_dir_tag": ".rslt"
     },
     "paths": {
-        "project_results_path": "D:\\CDSProjects\\Development\\Results"
+        "project_results_path": "D:\\CDSProjects\\Simone\\Results"
     }
 }
