@@ -116,8 +116,8 @@ def get_compound_peaks(self, path):
 def match_component(self, chromatogram, components_list, retention_time, uv_spectra=None, ms_spectra_peak=None):
     # check within expected expectred r.t
     # Dummy Method. NOT IMPLEMENTED
-    min_elut_time = retention_time - self.settings_obj.max_peak_distance
-    max_elut_time = retention_time + self.settings_obj.max_peak_distance
+    min_elut_time = retention_time - self.analysis_settings_obj.max_peak_distance
+    max_elut_time = retention_time + self.analysis_settings_obj.max_peak_distance
 
     for component in components_list:
         elut_time = chromatogram.time[component.elution_time]
@@ -125,7 +125,7 @@ def match_component(self, chromatogram, components_list, retention_time, uv_spec
             print("Component found with desire retention times")
 
         if uv_spectra and cosine_similarity(component.spectrum,
-                                            uv_spectra) >= self.settings_obj.min_spectrum_correl:
+                                            uv_spectra) >= self.analysis_settings_obj.min_spectrum_correl:
             print("Component found with matching UV spectra")
 
         if ms_spectra_peak and ms_spectra_peak in component.ms_spectrum:
