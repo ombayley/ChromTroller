@@ -10,15 +10,19 @@ This script handles:
     - Multi-file batch analysis and logging of results
 """
 import logging
-from datetime import datetime
 import os
 import json
+from scipy.interpolate import interp1d
+from sklearn.metrics.pairwise import cosine_similarity
+import numpy as np
+import pandas as pd
+from copy import deepcopy
 from glob import glob
-from typing import Any, Dict, List, Optional
-from scipy.signal import find_peaks
+from typing import Any, Dict, List, Optional, Tuple
 from ct_components.mocca2.classes import Component
 from utils.get_project_directory import get_project_dir
 from ct_components.mocca2 import ProcessingSettings, Chromatogram
+from utils.logger import get_logger
 
 
 class Analyser:
@@ -29,43 +33,255 @@ class Analyser:
         processing chromatogram data, detecting peaks, and managing batch analysis.
 
         Attributes:
-            analysis_json_data (dict): Holds the analysis settings loaded from a JSON file.
-            settings_obj (ProcessingSettings): An object holding the processed settings.
+            global_settings (dict): Holds the analysis settings loaded from a JSON file.
+            analysis_settings_obj (ProcessingSettings): An object holding the processed settings.
             file_tags (dict): Tags used to filter and identify files.
-            fast_bkg (bool): Flag to indicate whether to use fast background subtraction.
-            expected_peak_rt (float): Target retention time for peak detection.
-            peak_match_rt_tolerance (float): Tolerance range for matching retention times.
         """
 
-    def __init__(self, log_file: Optional[logging] = None):
+    def __init__(self):
+        self._log_file: logging.Logger = get_logger("Analyser")
+        self.global_settings: Dict[str, Any] = self.load_analysis_json()
+        self.analysis_settings_obj: ProcessingSettings = self.get_settings_obj()
+        self.file_tags: Dict[str, Any] = self.global_settings["tags"]
+        self.log("Analyser Object Initialized Successfully", print_msg=True)
 
-        self.log_file = log_file if log_file is not None else self.setup_logging()
-        self.analysis_json_data: Dict[str, Any] = self.load_analysis_json()
-        self.settings_obj: ProcessingSettings = self.get_settings_obj()
-        self.file_tags: Dict[str, Any] = self.analysis_json_data["tags"]
-        self.fast_bkg: bool = False
-        self.expected_peak_rt: float = 0.0
-        self.peak_match_rt_tolerance: float = 0.1
 
-        message = "Analyser Object Initialized Successfully"
-        print(message)
-        self.log_file.info(message)
+    # -----Main Function-----
 
-    # -----Init Methods START-----
-    def setup_logging(self):
+    def run_analysis(self, sample_filepath: str) -> Optional[Dict[str, Any]]:
         """
-       Sets up basic logging to file
-       """
-        date_str = datetime.now().strftime("%Y-%m-%d--%H-%M-%S")
-        log_path = os.path.join(get_project_dir(), 'log_files', f"CTAnalysis_{date_str}.log")
-        log_file = logging
-        log_file.basicConfig(level=logging.DEBUG,
-                             datefmt='%Y-%m-%d %H-%M-%S',
-                             format='%(asctime)s %(message)s',
-                             filename=log_path,
-                             filemode='w')
-        return log_file
+        Perform chromatogram analysis on a given sample file.
 
+        Args:
+            sample_filepath (str): Path to the sample chromatogram file
+        Returns:
+            Optional[Dict[str, Any]]: A dictionary containing information about the closest peak detected,
+            or None if no peaks are found.
+        """
+        try:
+            # Get Chrom
+            raw_chrom = self.get_chrom(file_path=sample_filepath)
+
+            # Create copy of raw chrom as processing occurs in place
+            chrom_copy = deepcopy(raw_chrom)
+
+            # Process Chrom
+            proc_chrom = self.process_chrom(chrom=raw_chrom)
+
+            # Extract peak data
+            peak_data = self.tabulate_data(proc_chrom=proc_chrom, raw_chrom=chrom_copy)
+
+            return peak_data
+
+        except Exception as e:
+            self.log(f"Error during analysis of file {sample_filepath}: {e}", print_msg=True, level="error")
+            return None
+
+    #-----Main Function-----
+    def get_chrom(self, file_path: str) -> Optional[Chromatogram]:
+        try:
+           # Identify bkg file. File tag for searching specified in analysis.json but is typically 'gradient'
+            bkg_filepath = self.get_bkg_filepath(file_path)
+
+            # Create Chrom
+            if bkg_filepath:
+                smpl_chromatogram = Chromatogram(sample=file_path, blank=bkg_filepath, name='sample')
+                self.log(f"Chromatogram object generated with background reference correction")
+            else:
+                smpl_chromatogram = Chromatogram(sample=file_path, name='sample')
+                self.log("Chromatogram object generated WITHOUT a background reference file", level="warning")
+
+            return smpl_chromatogram
+
+        except Exception as e:
+            self.log(f"Error during analysis of file {file_path}: {e}", level="error")
+            raise
+
+    def get_bkg_filepath(self, sample_filepath: str) -> Optional[str]:
+        """
+        Find the background file recorded closest in time to the sample file.
+
+        Args:
+            sample_filepath (str): Path to the sample chromatogram file.
+
+        Returns:
+            str: Path to the closest background file.
+        """
+        self.log(f"get_bkg_filepath method called with filepath: {sample_filepath}")
+
+        # Get dirname and tag info.
+        dirpath = os.path.dirname(sample_filepath)
+        bkg_tag = self.file_tags["bkg_filename_tag"].replace(" ", "_").lower()
+        data_file_type = self.file_tags["data_file_tag"]
+        self.log(f"Searching: {dirpath} for tag: {bkg_tag} of type: {data_file_type}")
+
+        # Find all gradient files
+        data_files = glob(dirpath + "/*" + data_file_type)
+        bkg_files_list = [file for file in data_files if bkg_tag in file.replace(" ", "_").lower()]
+
+        # Catch no cases with no background data
+        if not bkg_files_list:
+            self.log(f"No background files found in {dirpath}", print_msg=True)
+            return
+
+        # Filter based on file creation time
+        ctime_sample = os.path.getctime(sample_filepath)
+        closest_bkg = min(bkg_files_list, key=lambda file: abs(ctime_sample - os.path.getctime(file)))
+
+        return closest_bkg
+
+    def process_chrom(self, chrom: Chromatogram) -> Chromatogram:
+        """
+        Processes the chromatogram according to the settings stored in the analysis_settings.json
+        NOTE: the methods using inplace=True mutate the chrom object.
+
+        Args:
+            chrom (Chromatogram): The chromatogram to process.
+
+        Returns:
+            Chromatogram: The processed chromatogram.
+        """
+
+        chrom.extract_wavelength(
+            min_wavelength=self.analysis_settings_obj.min_wavelength,
+            max_wavelength=self.analysis_settings_obj.max_wavelength,
+            inplace=True
+        )
+
+        chrom = chrom.correct_baseline(
+            method=self.analysis_settings_obj.baseline_model,
+            smoothness=self.analysis_settings_obj.baseline_smoothness
+        )
+
+        chrom = chrom.find_peaks(
+            contraction="max",
+            min_rel_height=self.analysis_settings_obj.min_rel_prominence,
+            min_height=self.analysis_settings_obj.min_prominence,
+            width_at=self.analysis_settings_obj.border_max_peak_cutoff,
+            split_threshold=self.analysis_settings_obj.split_threshold,
+            expand_borders=True,
+            merge_overlapping=True,
+            min_elution_time=self.analysis_settings_obj.min_elution_time,
+            max_elution_time=self.analysis_settings_obj.max_elution_time
+        )
+
+        chrom = chrom.deconvolve_peaks(
+            model=self.analysis_settings_obj.peak_model,
+            min_r2=self.analysis_settings_obj.explained_threshold,
+            relaxe_concs=self.analysis_settings_obj.relaxe_concs,
+            max_comps=self.analysis_settings_obj.max_peak_comps
+        )
+
+        return chrom
+
+
+    def tabulate_data(self, proc_chrom: Chromatogram, raw_chrom: Chromatogram) -> Optional[Dict[str, List[float]]]:
+        """
+        Create a dictionary containing tabulated data for all the peaks of the chromatogram.
+        Args:
+            proc_chrom (Chromatogram): PROCESSED Chromatogram object
+            raw_chrom (Chromatogram): RAW Chromatogram object
+
+        Returns:
+            Dict[str, List[float]]: in the form {"peak_rt": List[float], "integral": List[float]} with all peak
+            retention times and integrals. Returns None if no peaks found.
+        """
+        # Get processed data
+        components: List[Component] = proc_chrom.all_components()
+        self.log(f"Filtering {len(components)} components to identify best match to target rt")
+
+        # Exit if no components identified
+        if not components:
+            return None
+
+        spectra = []
+        for component in components:
+            peak_rt = proc_chrom.time[component.elution_time]
+            absorbance, wavelengths = self.get_spectrum(raw_chrom, time=peak_rt)
+            spectra.append({"absorbance": absorbance, "wavelength": wavelengths})
+
+        # Get a dict of all peaks
+        peaks_dict = {
+            "peak_rt": [proc_chrom.time[component.elution_time] for component in components],
+            "integral": [component.integral for component in components],
+            "peak_height": [max(component.concentration) for component in components],
+            "spectrum": spectra
+        }
+        return peaks_dict
+
+    def get_spectrum(self, chrom: Chromatogram, time: float, min_wl: float = 200, max_wl: float=500) -> Tuple[np.ndarray, np.ndarray]:
+        """
+        Extracts the spectrum for a specific time point from a chromatogram.
+        Returns:
+            Tuple[np.ndarray, np.ndarray]: spectrum, wavelengths. A tuple containing the extracted spectrum and the corresponding wavelengths.
+            """
+        chrom = chrom.extract_wavelength(
+            min_wavelength=min_wl,
+            max_wavelength=max_wl,
+            inplace=True
+        )
+
+        # Filter out wavelengths outside of min/max chrom.wavelength
+        wavelengths = np.array([wavelength for wavelength in chrom.wavelength if min_wl <= wavelength <= max_wl])
+
+
+        # Ensure input validity
+        if time < chrom.time.min() or time > chrom.time.max():
+            raise ValueError(
+                f"Target time {time} is out of range. Available range: {chrom.time.min()} to {chrom.time.max()}")
+
+        # Find the index of the timepoint closest to the target time
+        time_idx = np.abs(chrom.time - time).argmin()
+
+        # Extract the spectrum for the corresponding timepoint
+        spectrum = chrom.data[:, time_idx]
+
+        return spectrum, wavelengths
+
+    def compare_spectra(self, spectrum1, spectrum2):
+        """
+        Compares two spectra and calculates a % match.
+
+        Args:
+            spectrum1 (dict): Spectrum 1 with keys 'wavelength' and 'absorbance'.
+            spectrum2 (dict): Spectrum 2 with keys 'wavelength' and 'absorbance'.
+
+        Returns:
+            float: Percentage similarity between the two spectra.
+        """
+        # Extract wavelength and absorbance
+        wl1, abs1 = np.array(spectrum1['wavelength']), np.array(spectrum1['absorbance'])
+        wl2, abs2 = np.array(spectrum2['wavelength']), np.array(spectrum2['absorbance'])
+
+        # Align wavelengths using interpolation
+        min_wl, max_wl = max(min(wl1), min(wl2)), min(max(wl1), max(wl2))  # Overlap range
+        common_wavelengths = np.linspace(min_wl, max_wl, 500)  # Resample to 500 points
+
+        # Interpolate absorbances
+        interp1 = interp1d(wl1, abs1, kind='linear', bounds_error=False, fill_value=0)
+        interp2 = interp1d(wl2, abs2, kind='linear', bounds_error=False, fill_value=0)
+        aligned_abs1 = interp1(common_wavelengths)
+        aligned_abs2 = interp2(common_wavelengths)
+
+        # Normalize the spectra
+        norm_abs1 = aligned_abs1 / np.linalg.norm(aligned_abs1)
+        norm_abs2 = aligned_abs2 / np.linalg.norm(aligned_abs2)
+
+        # Calculate Cosine Similarity
+        cosine_sim = cosine_similarity(norm_abs1.reshape(1, -1), norm_abs2.reshape(1, -1))[0, 0]
+
+        # Convert to % match
+        similarity_percentage = cosine_sim * 100
+
+        return similarity_percentage
+
+    def add_match_similarity(self):
+        """
+        Add the match similarity between a spectra and a reference to the peaks list
+        """
+
+
+    # -----Utility Functions-----
     def load_analysis_json(self) -> dict:
         """
         Load the analysis settings from a JSON file.
@@ -74,20 +290,16 @@ class Analyser:
             dict: A dictionary containing the loaded JSON data.
 
         Raises:
-            FileNotFoundError: If the settings file is not found.
-            PermissionError: If the settings file cannot be accessed due to permission issues.
-            json.JSONDecodeError: If there is an error decoding the JSON file.
+            Exception: If there is an error loading the JSON file.
         """
         try:
-
             settings_json_path = os.path.join(get_project_dir(), 'settings_files', 'settings.json')
             with open(settings_json_path, mode='r', encoding='utf-8') as infile:
-                self.log_file.info(f"loaded analysis settings from json at path: {settings_json_path}")
+                self.log(f"loaded analysis settings from json at path: {settings_json_path}")
                 return json.load(infile)
-
-        except (FileNotFoundError, PermissionError, json.JSONDecodeError) as error:
-            self.log_file.error(f"Error: {error}")
-            raise error
+        except Exception as e:
+            self.log(f"Error: {e}", print_msg=True, level="error")
+            raise
 
     def get_settings_obj(self) -> ProcessingSettings:
         """
@@ -100,288 +312,105 @@ class Analyser:
             Exception: If the settings object cannot be created.
         """
         try:
-            sett_dict = self.analysis_json_data.get("analysis_settings", {})
+            sett_dict = self.global_settings.get("analysis_settings", {})
             if not sett_dict:
                 raise KeyError("No analysis_settings key found in the loaded JSON dict")
 
             sett_obj = ProcessingSettings.from_dict(sett_dict)
-            self.log_file.info("Settings object created from analysis JSON")
+            self.log("Settings object created from analysis JSON")
             return sett_obj
         except Exception as error:
-            self.log_file.error(f"Error: {error}")
+            self.log(f"Error: {error}", level="error")
             raise error
 
-    # -----Analysis Methods -----
-
-    def run_analysis(self, sample_filepath: str, match_peak: bool = False, peak_rt: float = None,
-                     rt_tolerance: float = 0.1, ) -> \
-            Optional[Dict[str, Any]]:
+    def save_spectrum_to_csv(self, spectrum, filename):
         """
-        Perform chromatogram analysis on a given sample file.
+        Saves a spectrum to a CSV file.
 
         Args:
-            sample_filepath (str): Path to the sample chromatogram file.
-            peak_rt (float): The expected retention time for the target peak.
-            rt_tolerance (float, optional): The tolerance for retention time matching. Default is 0.1 min.
-            match_peak (bool, optional): Whether to filter the peaks to find the most applicable. Default is False.
-
-        Returns:
-            Optional[Dict[str, Any]]: A dictionary containing information about the closest peak detected,
-            or None if no peaks are found.
+            spectrum (dict): A dictionary with keys 'wavelength' and 'absorbance'.
+            filename (str): Path to the CSV file to save the spectrum.
         """
-        if match_peak and peak_rt is None:
-            raise Exception("Peak matching specified but no target retention time given")
+        # Create a DataFrame
+        spectrum_df = pd.DataFrame({
+            "Wavelength": spectrum["wavelength"],
+            "Absorbance": spectrum["absorbance"]
+        })
 
-        try:
-            # Get Chrom
-            smpl_chromatogram = self.get_processed_spectrum(file_path=sample_filepath)
+        # Save to CSV
+        spectrum_df.to_csv(filename, index=False)
+        print(f"Spectrum saved to {filename}")
 
-            # Option to return all peaks without peak matching
-            if not match_peak:
-                return self.get_all_peaks_dict(smpl_chromatogram=smpl_chromatogram)
-
-            # From the smpl_chromatogram find the most applicable component
-            best_fit_component: Component = self.filter_best_fit(smpl_chromatogram=smpl_chromatogram,
-                                                                 target_rt=peak_rt,
-                                                                 rt_tolerance=rt_tolerance)
-            self.log_file.info(f"Best fit component: {best_fit_component}")
-
-            # Return if not found
-            if not best_fit_component:
-                return {"peak_rt": None, "integral": None}
-
-            # Return dictionary of elution_time and integral of the best fitting component
-            elut_time = smpl_chromatogram.time[best_fit_component.elution_time]
-            return {"peak_rt": elut_time, "integral": best_fit_component.integral}
-
-        except Exception as e:
-            self.log_file.error(f"Error during analysis of file {sample_filepath}: {e}")
-            return None
-
-    def get_processed_spectrum(self, file_path: str) -> Optional[Chromatogram]:
-        try:
-            # Update the analysis settings in case they were changed
-            self.analysis_json_data = self.load_analysis_json()
-
-            # Identify bkg file. File tag for searching specified in analysis.json but is typically 'gradient'
-            bkg_filepath = self.get_bkg_filepath(file_path)
-
-            # Create Chrom
-            if bkg_filepath:
-                smpl_chromatogram = Chromatogram(sample=file_path, blank=bkg_filepath, name='sample')
-                self.log_file.info(f"Chromatogram object generated with background reference correction")
-            else:
-                smpl_chromatogram = Chromatogram(sample=file_path, name='sample')
-                message = f"Chromatogram object generated WITHOUT a background reference file"
-                print(message)
-                self.log_file.warning(message)
-
-            # Process Chrom
-            smpl_chromatogram = self.process_chrom(chrom=smpl_chromatogram)
-            self.log_file.info(f"Processed Spectrum: {smpl_chromatogram.__str__()}")
-
-            return smpl_chromatogram
-
-        except Exception as e:
-            self.log_file.error(f"Error during analysis of file {file_path}: {e}")
-            return None
-
-    def get_all_peaks_dict(self, smpl_chromatogram: Chromatogram) -> Optional[Dict[str, List[float]]]:
+    def load_spectrum_from_csv(self, filename):
         """
-        Retrieve a dictionary containing all the peak retention times and peak integrals for all peaks in the
-        chromatogram
+        Loads a spectrum from a CSV file.
+
         Args:
-            smpl_chromatogram (Chromatogram): PROCESSED Chromatogram object
+            filename (str): Path to the CSV file containing the spectrum.
 
         Returns:
-            Dict[str, List[float]]: in the form {"peak_rt": List[float], "integral": List[float]} with all peak
-            retention times and integrals. Returns None if no peaks found.
+            dict: A dictionary with keys 'wavelength' and 'absorbance'.
         """
-        # Get processed data
-        components: List[Component] = smpl_chromatogram.all_components()
-        self.log_file.info(f"Filtering {len(components)} components to identify best match to target rt")
+        # Read the CSV into a DataFrame
+        spectrum_df = pd.read_csv(filename)
 
-        # Exit if no components identified
-        if not components:
-            return None
-
-        # Get a dict of all peaks
-        peaks_dict = {
-            "peak_rt": [smpl_chromatogram.time[component.elution_time] for component in components],
-            "integral": [component.integral for component in components],
-            "peak_height": [max(component.concentration) for component in components]
+        # Convert the DataFrame to a dictionary
+        spectrum = {
+            "wavelength": spectrum_df["Wavelength"].to_numpy(),
+            "absorbance": spectrum_df["Absorbance"].to_numpy()
         }
-        # TODO add peak width once deconvolve working better
-        return peaks_dict
 
-    def filter_best_fit(self, smpl_chromatogram: Chromatogram, target_rt: float, rt_tolerance: float = 0.1) -> Optional[
-        Component]:
+        print(f"Spectrum loaded from {filename}")
+        return spectrum
+
+    def log(self, msg: str or Exception, print_msg: bool = False, level: str = "info") -> None:
         """
-        Filters the list of suitable peaks and identifies the most applicable based on retention time.
-
-        NOTE 1: The filtering requirements will change to filter based on mass once the MS data can be accessed.
-        NOTE 2: Component objects have attributes: concentration (NDArray), spectrum (NDArray),
-        compound_id (int | None), elution_time (int), integral (float) and peak_fraction (float)
+        Log a message pertaining to this device.
+        uses stacklevel to ensure that the log message is logged at the same level as the calling function
+        and not from within this function
 
         Args:
-            smpl_chromatogram (Chromatogram): Chromatogram object
-            target_rt (float): The expected retention time for the target peak.
-            rt_tolerance (float): The tolerance for retention time matching (0.1 by Default).
-
-        Returns:
-            Component: The component object correlating to the best match with the target peak
+            msg (str): The message to be logged.
+            print_msg (bool): If True, print the message to the console
+            level (str): The level of the message, e.g. 'debug', 'info', 'warning', 'error'
         """
-        # Get processed data
-        components: List[Component] = smpl_chromatogram.all_components()
-        self.log_file.info(f"Filtering {len(components)} components to identify best match to target rt")
+        # Log at the appropriate logging level.
+        level = level.lower()
+        if level == "debug":
+            self._log_file.debug(msg, stacklevel=2)
+        elif level == "info":
+            self._log_file.info(msg, stacklevel=2)
+        elif level == "warning":
+            self._log_file.warning(msg, stacklevel=2)
+        elif level == "error":
+            self._log_file.error(msg, stacklevel=2)
+        else:
+            # Default to debug if an unknown level is supplied
+            self._log_file.debug(msg, stacklevel=2)
 
-        # Exit if no components identified
-        if not components:
-            return None
-
-        # Get a list of peaks within the target window
-        peaks_list = []
-        for component in components:
-            elut_time = smpl_chromatogram.time[component.elution_time]
-            if target_rt - rt_tolerance <= elut_time <= target_rt + rt_tolerance:
-                peaks_list.append(component)
-        self.log_file.info(f"{len(peaks_list)} peaks identified within target window")
-
-        # Exit if no components identified
-        if not peaks_list:
-            return None
-
-        # Set search variables - Search for closet peak based on rt with at least 10% of the max integral in the window
-        closest_component: Optional[Component] = None
-        smallest_diff = float('inf')
-        max_integral = max(peak.integral for peak in peaks_list)
-        peak_size_min_cutoff = 0.1  # ignore any peaks that are less than 10% of the max peak in the window
-        min_integral = peak_size_min_cutoff * max_integral
-
-        for peak in peaks_list:
-            elut_time = smpl_chromatogram.time[peak.elution_time]
-            if peak.integral >= min_integral and abs(elut_time - target_rt) < smallest_diff:
-                smallest_diff = abs(elut_time - target_rt)
-                closest_component = peak
-        self.log_file.info(f"Identified component at: {closest_component.elution_time}")
-
-        return closest_component
-
-    def process_chrom(self, chrom: Chromatogram, min_time: float = None, max_time: float = None) -> Chromatogram:
-        """
-        Processes the chromatogram according to the settings stored in the analysis_settings.json
-        NOTE: the methods using inplace=True mutate the chrom object.
-
-        Args:
-            chrom (Chromatogram): The chromatogram to process.
-            min_time (float, optional): Minimum elution time to consider.
-            max_time (float, optional): Maximum elution time to consider.
-
-        Returns:
-            Chromatogram: The processed chromatogram.
-        """
-
-        min_time = min_time if not None else self.settings_obj.min_elution_time
-        max_time = max_time if not None else self.settings_obj.max_elution_time
-
-        chrom.extract_wavelength(
-            min_wavelength=self.settings_obj.min_wavelength,
-            max_wavelength=self.settings_obj.max_wavelength,
-            inplace=True
-        )
-
-        chrom = chrom.correct_baseline(
-            method=self.settings_obj.baseline_model,
-            smoothness=self.settings_obj.baseline_smoothness
-        )
-
-        chrom = chrom.find_peaks(
-            contraction="max",
-            min_rel_height=self.settings_obj.min_rel_prominence,
-            min_height=self.settings_obj.min_prominence,
-            width_at=self.settings_obj.border_max_peak_cutoff,
-            split_threshold=self.settings_obj.split_threshold,
-            expand_borders=True,
-            merge_overlapping=True,
-            min_elution_time=min_time,
-            max_elution_time=max_time
-        )
-
-        chrom = chrom.deconvolve_peaks(
-            model=self.settings_obj.peak_model,
-            min_r2=self.settings_obj.explained_threshold,
-            relaxe_concs=self.settings_obj.relaxe_concs,
-            max_comps=self.settings_obj.max_peak_comps
-        )
-
-        return chrom
-
-    def get_data_filepath_list(self, sample_name: str, dirpath: str) -> List[str]:
-        """
-        Finds all files in the given directory that match the given sample name.
-        NOTE: Returns all data runs whether they be file duplicates or different conditions.
-
-        Args:
-          sample_name (str): The name of the sample to search for.
-          dirpath (str): The directory path to search in.
-
-        Returns:
-          List[str]: A sorted list of file paths that match the sample name.
-        """
-        data_file_type = self.file_tags["data_file_type"]
-        data_files = glob(dirpath + "/*" + data_file_type)
-        if not data_files:
-            message = f"No {data_file_type} files found in: {dirpath}"
-            print(message)
-            self.log_file.error(message)
-
-        sample_name = sample_name.replace(__old=" ", __new="_").lower()
-        sample_files_list = [file for file in data_files if sample_name in file.replace(" ", "_").lower()]
-        sample_files_list = sorted(sample_files_list)
-
-        return sample_files_list
-
-    def get_bkg_filepath(self, sample_filepath: str) -> Optional[str]:
-        """
-        Find the background file recorded closest in time to the sample file.
-
-        Args:
-            sample_filepath (str): Path to the sample chromatogram file.
-
-        Returns:
-            str: Path to the closest background file.
-        """
-        self.log_file.info(f"get_bkg_filepath method called with filepath: {sample_filepath}")
-
-        # Get dirname and tag info.
-        dirpath = os.path.dirname(sample_filepath)
-        bkg_tag = self.file_tags["bkg_filename_tag"].replace(" ", "_").lower()
-        data_file_type = self.file_tags["data_file_tag"]
-        message = (f"Searching dirpath: {dirpath} for a background trace of type: {data_file_type} "
-                   f"containing the tag: {bkg_tag}")
-        print(message)
-        self.log_file.info(message)
-
-        # Find all gradient files
-        data_files = glob(dirpath + "/*" + data_file_type)
-        bkg_files_list = [file for file in data_files if bkg_tag in file.replace(" ", "_").lower()]
-
-        # Catch no cases with no background data
-        if not bkg_files_list:
-            message = f"No background files of type {data_file_type} found in {dirpath} with the tag {bkg_tag}"
-            print(message)
-            self.log_file.info(message)
-            return
-
-        # Filter based on file creation time
-        ctime_sample = os.path.getctime(sample_filepath)
-        closest_bkg = min(bkg_files_list, key=lambda file: abs(ctime_sample - os.path.getctime(file)))
-
-        return closest_bkg
+        if print_msg:
+            print(msg)
 
 
 if __name__ == "__main__":
-    dirpath = r"\\fnwi-s0.science.uva.nl\hims-nrg-robochem\lcms_data\FGT\FGT_12_11_2024.rslt\Sample_003_06.dx"
+    import matplotlib.pyplot as plt
+
+    # dirpath = r"\\fnwi-s0.science.uva.nl\hims-nrg-robochem\lcms_data\FGT\FGT_12_11_2024.rslt\Sample_003_06.dx"
+    path=r"C:\Users\obayley\Documents\polyurethane_data.rslt\RoboChem Sample.dx"
     analyser = Analyser()
-    run_result = analyser.run_analysis(sample_filepath=dirpath, peak_rt=2.76, rt_tolerance=0.1)
-    print(run_result)
+    run_result = analyser.run_analysis(sample_filepath=path)
+    ref_spectrum = analyser.load_spectrum_from_csv(r"C:\Users\obayley\Documents\GitHub_Repositries\ChromTroller\utils\spectrum_3_rt_3.001.csv")
+    if run_result:
+        spectra_list = run_result.get("spectrum", [])
+        if spectra_list:
+            for i, spectra in enumerate(spectra_list):
+                print(f"Percentage Similarity: {analyser.compare_spectra(spectra, ref_spectrum)}%")
+                # analyser.save_spectrum_to_csv(spectra, filename=f"spectrum_{i + 1}_rt_{run_result['peak_rt'][i]}.csv")
+                # plt.figure(figsize=(8, 5))
+                # plt.plot(spectra.get("wavelength"), spectra.get("absorbance"), label=f'Component {i + 1}')
+                # plt.title(f'Spectrum of Component {i + 1}')
+                # plt.xlabel('Wavelength Index (or other units)')
+                # plt.ylabel('Absorbance/Intensity')
+                # plt.legend()
+                # plt.grid(False)
+                # plt.show()

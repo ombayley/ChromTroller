@@ -209,29 +209,10 @@ class Analyser:
         peaks_dict = {
             "peak_rt": [smpl_chromatogram.time[component.elution_time] for component in components],
             "integral": [component.integral for component in components],
-            "peak_height": [max(component.concentration) for component in components],
-            "peak_width": [self.get_peak_widths(smpl_chromatogram)]
+            "peak_height": [max(component.concentration) for component in components]
         }
-
+        # TODO add peak width once deconvolve working better
         return peaks_dict
-
-    @staticmethod
-    def get_peak_widths(smpl_chromatogram: Chromatogram) -> List[float]:
-        """
-        Get the width of the peak
-        Args:
-            smpl_chromatogram (Chromatogram): PROCESSED Chromatogram object
-
-        Returns:
-            List[float]: Width of the peak
-        """
-        components: List[Component] = smpl_chromatogram.all_components()
-
-        for component in components:
-            peaks, peak_properties = find_peaks(component.concentration)
-            print(peaks)
-            print(peak_properties)
-
 
     def filter_best_fit(self, smpl_chromatogram: Chromatogram, target_rt: float, rt_tolerance: float = 0.1) -> Optional[
         Component]:
