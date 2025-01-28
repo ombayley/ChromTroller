@@ -71,6 +71,9 @@ class Analyser:
             # Extract peak data
             peak_data = self.tabulate_data(proc_chrom=proc_chrom, raw_chrom=chrom_copy)
 
+            # Optional - match to reference spectra
+            peak_data = self.match_spectra(peak_data)
+
             return peak_data
 
         except Exception as e:
@@ -209,6 +212,7 @@ class Analyser:
         }
         return peaks_dict
 
+
     def get_spectrum(self, chrom: Chromatogram, time: float, min_wl: float = 200, max_wl: float=500) -> Tuple[np.ndarray, np.ndarray]:
         """
         Extracts the spectrum for a specific time point from a chromatogram.
@@ -237,6 +241,46 @@ class Analyser:
         spectrum = chrom.data[:, time_idx]
 
         return spectrum, wavelengths
+
+    # --- Spectral Matching Functions ---
+    def match_spectra(self, peak_data: Dict[str, List[float]]):
+        """
+        Matches the spectra of the peaks to a reference spectrum.
+
+        Args:
+            peak_data (Dict[str, List[float]]): A dictionary containing the peak retention times and integrals.
+        """
+        dirpath = r"C:\Users\obayley\Documents\GitHub_Repositries\ChromTroller\reference_spectra"
+        ref_spectra_list = self.load_reference_spectra(dirpath)
+        spectra_list: Optional[List[dict]] = peak_data.get("spectrum")
+
+        if spectra_list is not None:
+            for ref in ref_spectra_list:
+                ref_name = ref["name"]
+                ref_spectrum = ref["spectra"]
+                matches = []
+                for spectra in spectra_list:
+                    similarity = self.compare_spectra(spectra, ref_spectrum)
+                    matches.append(similarity)
+                # Add matches to the peak_data
+                peak_data[ref_name] = matches
+
+        return peak_data
+
+    def load_reference_spectra(self, dirpath:str) -> List[Dict[str, Any]]:
+        """
+        Loads all the reference spectra from a CSV files in the given directory.
+        """
+        referee_spectra_list = []
+
+        for file in os.listdir(dirpath):
+            if file.endswith(".csv"):
+                spectra = self.load_spectrum_from_csv(os.path.join(dirpath, file))
+                spectra_dict = {"name": file.strip(".csv"), "spectra": spectra}
+                referee_spectra_list.append(spectra_dict)
+
+        return referee_spectra_list
+
 
     def compare_spectra(self, spectrum1, spectrum2):
         """
@@ -267,19 +311,84 @@ class Analyser:
         norm_abs1 = aligned_abs1 / np.linalg.norm(aligned_abs1)
         norm_abs2 = aligned_abs2 / np.linalg.norm(aligned_abs2)
 
-        # Calculate Cosine Similarity
-        cosine_sim = cosine_similarity(norm_abs1.reshape(1, -1), norm_abs2.reshape(1, -1))[0, 0]
-
-        # Convert to % match
-        similarity_percentage = cosine_sim * 100
+        # Calculate Similarity
+        similarity_percentage = self.get_similarity(norm_abs1, norm_abs2, model="pearson")
 
         return similarity_percentage
 
-    def add_match_similarity(self):
+    def get_similarity(self, vec_a, vec_b, model):
         """
         Add the match similarity between a spectra and a reference to the peaks list
+        models: cosine, rmse, manhattan, euclidean, Pearson correlation
         """
+        similarity_percentage = 0
+        # Calculate Cosine Similarity
+        if model == "cosine":
+            cosine_sim = cosine_similarity(vec_a.reshape(1, -1), vec_b.reshape(1, -1))[0, 0]
+            similarity_percentage = cosine_sim * 100
 
+        # Root Mean Square Error
+        if model == "rmse":
+            rmse = np.sqrt(np.mean((vec_a - vec_b) ** 2))
+            similarity_percentage = 100 - (rmse * 100)
+
+        #  Manhattan Distance (L1 Norm)
+        if model == 'manhattan':
+            manhattan_distance = np.sum(np.abs(vec_a - vec_b))
+            similarity_percentage = 100 - (manhattan_distance * 100 / len(vec_a))
+
+        # Euclidean Distance (L2 Norm)
+        if model == 'euclidean':
+            euclidean_distance = np.sqrt(np.sum((vec_a - vec_b) ** 2))
+            similarity_percentage = 100 - (euclidean_distance * 100 / len(vec_a))
+
+        # Correlation Coefficient
+        if model == 'pearson':
+            correlation_coefficient = np.corrcoef(vec_a, vec_b)[0, 1]
+            similarity_percentage = correlation_coefficient * 100
+
+        return similarity_percentage
+
+
+    def save_spectrum_to_csv(self, spectrum, filename):
+        """
+        Saves a spectrum to a CSV file.
+
+        Args:
+            spectrum (dict): A dictionary with keys 'wavelength' and 'absorbance'.
+            filename (str): Path to the CSV file to save the spectrum.
+        """
+        # Create a DataFrame
+        spectrum_df = pd.DataFrame({
+            "Wavelength": spectrum["wavelength"],
+            "Absorbance": spectrum["absorbance"]
+        })
+
+        # Save to CSV
+        spectrum_df.to_csv(filename, index=False)
+        print(f"Spectrum saved to {filename}")
+
+    def load_spectrum_from_csv(self, filename):
+        """
+        Loads a spectrum from a CSV file.
+
+        Args:
+            filename (str): Path to the CSV file containing the spectrum.
+
+        Returns:
+            dict: A dictionary with keys 'wavelength' and 'absorbance'.
+        """
+        # Read the CSV into a DataFrame
+        spectrum_df = pd.read_csv(filename)
+
+        # Convert the DataFrame to a dictionary
+        spectrum = {
+            "wavelength": spectrum_df["Wavelength"].to_numpy(),
+            "absorbance": spectrum_df["Absorbance"].to_numpy()
+        }
+
+        print(f"Spectrum loaded from {filename}")
+        return spectrum
 
     # -----Utility Functions-----
     def load_analysis_json(self) -> dict:
@@ -323,45 +432,6 @@ class Analyser:
             self.log(f"Error: {error}", level="error")
             raise error
 
-    def save_spectrum_to_csv(self, spectrum, filename):
-        """
-        Saves a spectrum to a CSV file.
-
-        Args:
-            spectrum (dict): A dictionary with keys 'wavelength' and 'absorbance'.
-            filename (str): Path to the CSV file to save the spectrum.
-        """
-        # Create a DataFrame
-        spectrum_df = pd.DataFrame({
-            "Wavelength": spectrum["wavelength"],
-            "Absorbance": spectrum["absorbance"]
-        })
-
-        # Save to CSV
-        spectrum_df.to_csv(filename, index=False)
-        print(f"Spectrum saved to {filename}")
-
-    def load_spectrum_from_csv(self, filename):
-        """
-        Loads a spectrum from a CSV file.
-
-        Args:
-            filename (str): Path to the CSV file containing the spectrum.
-
-        Returns:
-            dict: A dictionary with keys 'wavelength' and 'absorbance'.
-        """
-        # Read the CSV into a DataFrame
-        spectrum_df = pd.read_csv(filename)
-
-        # Convert the DataFrame to a dictionary
-        spectrum = {
-            "wavelength": spectrum_df["Wavelength"].to_numpy(),
-            "absorbance": spectrum_df["Absorbance"].to_numpy()
-        }
-
-        print(f"Spectrum loaded from {filename}")
-        return spectrum
 
     def log(self, msg: str or Exception, print_msg: bool = False, level: str = "info") -> None:
         """
@@ -391,26 +461,24 @@ class Analyser:
         if print_msg:
             print(msg)
 
+    # -----Debug Functions-----
+    def plot_spectra(self, spectra):
+        import matplotlib.pyplot as plt
+        plt.figure(figsize=(8, 5))
+        plt.plot(spectra.get("wavelength"), spectra.get("absorbance"), label=f'Component {i + 1}')
+        plt.title(f'Spectrum of Component {i + 1}')
+        plt.xlabel('Wavelength Index (or other units)')
+        plt.ylabel('Absorbance/Intensity')
+        plt.legend()
+        plt.grid(False)
+        plt.show()
+
 
 if __name__ == "__main__":
-    import matplotlib.pyplot as plt
-
-    # dirpath = r"\\fnwi-s0.science.uva.nl\hims-nrg-robochem\lcms_data\FGT\FGT_12_11_2024.rslt\Sample_003_06.dx"
     path=r"C:\Users\obayley\Documents\polyurethane_data.rslt\RoboChem Sample.dx"
     analyser = Analyser()
     run_result = analyser.run_analysis(sample_filepath=path)
-    ref_spectrum = analyser.load_spectrum_from_csv(r"C:\Users\obayley\Documents\GitHub_Repositries\ChromTroller\utils\spectrum_3_rt_3.001.csv")
-    if run_result:
-        spectra_list = run_result.get("spectrum", [])
-        if spectra_list:
-            for i, spectra in enumerate(spectra_list):
-                print(f"Percentage Similarity: {analyser.compare_spectra(spectra, ref_spectrum)}%")
-                # analyser.save_spectrum_to_csv(spectra, filename=f"spectrum_{i + 1}_rt_{run_result['peak_rt'][i]}.csv")
-                # plt.figure(figsize=(8, 5))
-                # plt.plot(spectra.get("wavelength"), spectra.get("absorbance"), label=f'Component {i + 1}')
-                # plt.title(f'Spectrum of Component {i + 1}')
-                # plt.xlabel('Wavelength Index (or other units)')
-                # plt.ylabel('Absorbance/Intensity')
-                # plt.legend()
-                # plt.grid(False)
-                # plt.show()
+    res=pd.DataFrame(run_result)
+    res.to_csv(r"C:\Users\obayley\Documents\polyurethane_data.rslt\RoboChem Sample.csv")
+    print(res)
+
