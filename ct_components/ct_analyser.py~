@@ -312,7 +312,7 @@ class Analyser:
         norm_abs2 = aligned_abs2 / np.linalg.norm(aligned_abs2)
 
         # Calculate Similarity
-        similarity_percentage = self.get_similarity(norm_abs1, norm_abs2, model="cosine")
+        similarity_percentage = self.get_similarity(norm_abs1, norm_abs2, model="pearson")
 
         return similarity_percentage
 
