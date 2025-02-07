@@ -1,0 +1,11 @@
+[
+    {
+        "run_conditions": {
+            "name": "Simone_SPES41_AlcoholCoupling_run21_20250129135539",
+            "recipe": "[4-Ph py: 50 mM, EtOH: 2770 mM, pTsOH: 163.4 mM, Ru(bpy)3(PF6)2: 0.7914 mM, HSCH2(Me)COOMe: 1.42 mM]"
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Simone\\Results\\SPES41_alcoholcoupling_3.rslt\\Sample_002.dx",
+        "analysis": null
+    }
+]

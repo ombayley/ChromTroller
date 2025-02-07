@@ -1,0 +1,304 @@
+[
+    {
+        "run_conditions": {
+            "name": "Simone_SPES40_AlcoholCoupling_run24.0_20250116174638",
+            "recipe": "[4-Ph py: 50 mM, EtOH: 2660 mM, pTsOH: 198.6 mM, Ir(ppy)3: 0.9204 mM, HSCH2COOMe: 4.65 mM]"
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Simone\\Results\\SPES40_AlcoholCoupling_250116_2.rslt\\Sample_001_04.dx",
+        "analysis": {
+            "peak_rt": [
+                0.973,
+                1.997,
+                3.36,
+                3.684,
+                3.884,
+                4.233,
+                4.573,
+                5.003,
+                5.379
+            ],
+            "integral": [
+                10264515672.57602,
+                876470574.5042217,
+                2374535896.5632505,
+                39408893546.25085,
+                923806909.4133581,
+                3378697257.884647,
+                324804102.9051888,
+                611482418.3553216,
+                475902258.73076415
+            ],
+            "peak_height": [
+                176554375.97531465,
+                13398691.880740538,
+                59057827.70260322,
+                500844278.2833017,
+                13698521.389848273,
+                119415478.75706293,
+                10734050.624648307,
+                28750603.474836536,
+                12782363.252362102
+            ]
+        }
+    },
+    {
+        "run_conditions": {
+            "name": "Simone_SPES40_AlcoholCoupling_run25.0_20250116200446",
+            "recipe": "[4-Ph py: 50 mM, EtOH: 1770 mM, pTsOH: 199.2 mM, Ru(bpy)3(PF6)2: 0.4698 mM, HSCH2COOMe: 3.86 mM]"
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Simone\\Results\\SPES40_AlcoholCoupling_250116_2.rslt\\Sample_002_06.dx",
+        "analysis": {
+            "peak_rt": [
+                0.976,
+                2.042,
+                3.706,
+                4.579
+            ],
+            "integral": [
+                12508772930.584444,
+                384626261.81098795,
+                35993661201.59342,
+                324285061.5508576
+            ],
+            "peak_height": [
+                226580124.06266746,
+                8368412.887655701,
+                498385136.515916,
+                10915967.588885603
+            ]
+        }
+    },
+    {
+        "run_conditions": {
+            "name": "Simone_SPES40_AlcoholCoupling_run26.0_20250116204049",
+            "recipe": "[4-Ph py: 50 mM, EtOH: 1092 mM, pTsOH: 64.2 mM, Ir(dF(CF3)ppy)2(dtbbpy)PF6: 0.924 mM, HSCH2(Me)COOMe: 4.76 mM]"
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Simone\\Results\\SPES40_AlcoholCoupling_250116_2.rslt\\Sample_003_08.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": "Simone_SPES40_AlcoholCoupling_run27.0_20250116215940",
+            "recipe": "[4-Ph py: 50 mM, EtOH: 2795 mM, pTsOH: 175.6 mM, Ru(bpy)3(PF6)2: 0.9606 mM, HSCH2COOMe: 4.3 mM]"
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Simone\\Results\\SPES40_AlcoholCoupling_250116_2.rslt\\Sample_004_10.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": "Simone_SPES40_AlcoholCoupling_run28.0_20250116232515",
+            "recipe": "[4-Ph py: 50 mM, EtOH: 2750 mM, pTsOH: 198.8 mM, Ir(ppy)3: 0.4812 mM, HSCH2(Me)COOMe: 1.1 mM]"
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Simone\\Results\\SPES40_AlcoholCoupling_250116_2.rslt\\Sample_005_12.dx",
+        "analysis": {
+            "peak_rt": [
+                0.964,
+                2.002,
+                3.353,
+                3.687,
+                4.573
+            ],
+            "integral": [
+                10525998242.713242,
+                1064447987.7031299,
+                2582146385.8212314,
+                43026156525.52543,
+                351205940.09292805
+            ],
+            "peak_height": [
+                172185621.2418229,
+                15862353.574437657,
+                60447835.33336681,
+                496608494.24136156,
+                11692799.465885727
+            ]
+        }
+    },
+    {
+        "run_conditions": {
+            "name": "Simone_SPES40_AlcoholCoupling_run29.0_20250117011501",
+            "recipe": "[4-Ph py: 50 mM, EtOH: 37.1 mM, pTsOH: 198.2 mM, Ru(bpy)3(PF6)2: 0.5814 mM, HSCH2COOMe: 4.67 mM]"
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Simone\\Results\\SPES40_AlcoholCoupling_250116_2.rslt\\Sample_006_14.dx",
+        "analysis": {
+            "peak_rt": [
+                0.971,
+                2.022,
+                3.696,
+                4.575
+            ],
+            "integral": [
+                12900440358.847979,
+                466983207.9863367,
+                37261015686.389015,
+                313560336.1619975
+            ],
+            "peak_height": [
+                256991563.59202558,
+                9724151.405818228,
+                499183909.8650771,
+                10442151.273756558
+            ]
+        }
+    },
+    {
+        "run_conditions": {
+            "name": "Simone_SPES40_AlcoholCoupling_run30.0_20250117030232",
+            "recipe": "[4-Ph py: 50 mM, EtOH: 2027 mM, pTsOH: 199.8 mM, Ir(ppy)2(dtbbpy)PF6: 0.9108 mM, HSCH2(Me)COOMe: 3.47 mM]"
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Simone\\Results\\SPES40_AlcoholCoupling_250116_2.rslt\\Sample_007_16.dx",
+        "analysis": {
+            "peak_rt": [
+                0.961,
+                2.038,
+                3.358,
+                3.685,
+                4.039,
+                4.231,
+                4.574,
+                4.835,
+                4.893,
+                5.408
+            ],
+            "integral": [
+                9596400170.47429,
+                517537649.2121234,
+                5794731613.810746,
+                36068429056.75814,
+                302901097.00929487,
+                18890284450.40487,
+                197408607.3445652,
+                334917386.35930467,
+                543626770.5466871,
+                8274540500.5175495
+            ],
+            "peak_height": [
+                164170328.50979534,
+                10008545.474035932,
+                166367901.1021069,
+                494308167.37388766,
+                11626884.815170739,
+                476032825.4615612,
+                7442314.404229985,
+                14150642.646982558,
+                19616206.731595952,
+                111920915.27413182
+            ]
+        }
+    },
+    {
+        "run_conditions": {
+            "name": "Simone_SPES40_AlcoholCoupling_run31.0_20250117043012",
+            "recipe": "[4-Ph py: 50 mM, EtOH: 37.5 mM, pTsOH: 199.4 mM, Ir(dF(CF3)ppy)2(dtbbpy)PF6: 0.6894 mM, HSCH2COOMe: 1.77 mM]"
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Simone\\Results\\SPES40_AlcoholCoupling_250116_2.rslt\\Sample_008_18.dx",
+        "analysis": {
+            "peak_rt": [
+                0.971,
+                2.031,
+                3.682,
+                4.576,
+                5.805
+            ],
+            "integral": [
+                9413622115.611652,
+                559570491.9098873,
+                37823351230.51673,
+                315342450.0076134,
+                8824474864.82868
+            ],
+            "peak_height": [
+                191803187.07653597,
+                10840741.032777464,
+                500465284.0075196,
+                10443675.706392188,
+                87547043.84934606
+            ]
+        }
+    },
+    {
+        "run_conditions": {
+            "name": "Simone_SPES40_AlcoholCoupling_run32.0_20250117060336",
+            "recipe": "[4-Ph py: 50 mM, EtOH: 2905 mM, pTsOH: 121.6 mM, Ru(bpy)3(PF6)2: 0.924 mM, HSCH2(Me)COOMe: 4.63 mM]"
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Simone\\Results\\SPES40_AlcoholCoupling_250116_2.rslt\\Sample_009_20.dx",
+        "analysis": {
+            "peak_rt": [
+                0.903,
+                0.982,
+                2.051,
+                3.105,
+                3.613,
+                3.699,
+                4.579
+            ],
+            "integral": [
+                211983176.9574345,
+                10553466263.824528,
+                421768084.485287,
+                753378207.0185533,
+                119828114.14035164,
+                35903334193.000435,
+                191027667.84650454
+            ],
+            "peak_height": [
+                5988449.373988718,
+                215391948.8236279,
+                8555921.181412783,
+                7151653.73638179,
+                4280817.257245282,
+                498547627.4951461,
+                6436952.831454875
+            ]
+        }
+    },
+    {
+        "run_conditions": {
+            "name": "Simone_SPES40_AlcoholCoupling_run33.0_20250117070016",
+            "recipe": "[4-Ph py: 50 mM, EtOH: 2968 mM, pTsOH: 132.4 mM, Ir(ppy)3: 0.7446 mM, HSCH2COOMe: 4.66 mM]"
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Simone\\Results\\SPES40_AlcoholCoupling_250116_2.rslt\\Sample_010_22.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": "Simone_SPES40_AlcoholCoupling_run34.0_20250117074848",
+            "recipe": "[4-Ph py: 50 mM, EtOH: 683.5 mM, pTsOH: 200 mM, Ir(ppy)3: 0.2094 mM, HSCH2COOMe: 4.48 mM]"
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Simone\\Results\\SPES40_AlcoholCoupling_250116_2.rslt\\Sample_011_24.dx",
+        "analysis": {
+            "peak_rt": [
+                0.978,
+                2.023,
+                3.374,
+                3.692,
+                4.577
+            ],
+            "integral": [
+                9998427655.385391,
+                1063347221.612487,
+                1298941338.608872,
+                38674993272.28559,
+                333809385.84093726
+            ],
+            "peak_height": [
+                182267124.54730377,
+                15064280.832609277,
+                31441118.276102696,
+                493664320.4808598,
+                11123805.48176362
+            ]
+        }
+    }
+]
