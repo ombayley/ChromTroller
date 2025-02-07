@@ -86,11 +86,11 @@ class Chromatogram(Data2D):
             ), "The wavelength sampling of the sample and blank are different"
 
             if not self.check_same_sampling(blank_data, wavelength=False):
-                if overwrite_blank_time:
-                    # Overwrite the timing of the blank to match the sample's time points
-                    blank_data.time = self.time
-                    blank_data.data = np.interp(self.time, blank_data.time, blank_data.data)
-                else:
+                # if overwrite_blank_time:
+                #     # Overwrite the timing of the blank to match the sample's time points
+                #     blank_data.time = self.time
+                #     blank_data.data = np.interp(self.time, blank_data.time, blank_data.data)
+                # else:
                     assert interpolate_blank, "The time sampling of the sample and blank are different."
                     blank_data = blank_data.interpolate_time(self.time)
 
