@@ -45,10 +45,13 @@ class Analyser:
         self.file_tags: Dict[str, Any] = self.global_settings["tags"]
         self.log("Analyser Object Initialized Successfully", print_msg=True)
 
-
     # -----Main Function-----
 
-    def run_analysis(self, sample_filepath: str) -> Optional[Dict[str, Any]]:
+    def run_analysis(self, sample_filepath: str,
+                     peak_rt: Optional[float] = None,
+                     rt_tolerance: Optional[float] = None,
+                     match_peak=False
+                     ) -> Optional[Dict[str, Any]]:
         """
         Perform chromatogram analysis on a given sample file.
 
@@ -83,7 +86,7 @@ class Analyser:
     #-----Main Function-----
     def get_chrom(self, file_path: str) -> Optional[Chromatogram]:
         try:
-           # Identify bkg file. File tag for searching specified in analysis.json but is typically 'gradient'
+            # Identify bkg file. File tag for searching specified in analysis.json but is typically 'gradient'
             bkg_filepath = self.get_bkg_filepath(file_path)
 
             # Create Chrom
@@ -177,7 +180,6 @@ class Analyser:
 
         return chrom
 
-
     def tabulate_data(self, proc_chrom: Chromatogram, raw_chrom: Chromatogram) -> Optional[Dict[str, List[float]]]:
         """
         Create a dictionary containing tabulated data for all the peaks of the chromatogram.
@@ -201,7 +203,7 @@ class Analyser:
         for component in components:
             peak_rt = proc_chrom.time[component.elution_time]
             absorbance, wavelengths = self.get_spectrum(raw_chrom, time=peak_rt)
-            spectra.append({"absorbance": absorbance, "wavelength": wavelengths})
+            spectra.append({"absorbance": absorbance.tolist(), "wavelength": wavelengths.tolist()})
 
         # Get a dict of all peaks
         peaks_dict = {
@@ -212,8 +214,8 @@ class Analyser:
         }
         return peaks_dict
 
-
-    def get_spectrum(self, chrom: Chromatogram, time: float, min_wl: float = 200, max_wl: float=500) -> Tuple[np.ndarray, np.ndarray]:
+    def get_spectrum(self, chrom: Chromatogram, time: float, min_wl: float = 200, max_wl: float = 500) -> Tuple[
+        np.ndarray, np.ndarray]:
         """
         Extracts the spectrum for a specific time point from a chromatogram.
         Returns:
@@ -227,7 +229,6 @@ class Analyser:
 
         # Filter out wavelengths outside of min/max chrom.wavelength
         wavelengths = np.array([wavelength for wavelength in chrom.wavelength if min_wl <= wavelength <= max_wl])
-
 
         # Ensure input validity
         if time < chrom.time.min() or time > chrom.time.max():
@@ -250,7 +251,7 @@ class Analyser:
         Args:
             peak_data (Dict[str, List[float]]): A dictionary containing the peak retention times and integrals.
         """
-        dirpath = r"C:\Users\obayley\Documents\GitHub_Repositries\ChromTroller\reference_spectra"
+        dirpath = os.path.join(get_project_dir(), "reference_spectra")
         ref_spectra_list = self.load_reference_spectra(dirpath)
         spectra_list: Optional[List[dict]] = peak_data.get("spectrum")
 
@@ -265,9 +266,13 @@ class Analyser:
                 # Add matches to the peak_data
                 peak_data[ref_name] = matches
 
+        # Remove the spectum data as it is too much data to send nicely
+        if peak_data.get('spectrum') is not None:
+            del peak_data['spectrum']
+
         return peak_data
 
-    def load_reference_spectra(self, dirpath:str) -> List[Dict[str, Any]]:
+    def load_reference_spectra(self, dirpath: str) -> List[Dict[str, Any]]:
         """
         Loads all the reference spectra from a CSV files in the given directory.
         """
@@ -276,11 +281,10 @@ class Analyser:
         for file in os.listdir(dirpath):
             if file.endswith(".csv"):
                 spectra = self.load_spectrum_from_csv(os.path.join(dirpath, file))
-                spectra_dict = {"name": file.strip(".csv"), "spectra": spectra}
+                spectra_dict = {"name": file.split(".csv")[0], "spectra": spectra}
                 referee_spectra_list.append(spectra_dict)
 
         return referee_spectra_list
-
 
     def compare_spectra(self, spectrum1, spectrum2):
         """
@@ -349,7 +353,6 @@ class Analyser:
 
         return similarity_percentage
 
-
     def save_spectrum_to_csv(self, spectrum, filename):
         """
         Saves a spectrum to a CSV file.
@@ -399,8 +402,7 @@ class Analyser:
         """
         spectra_list: Optional[List[dict]] = peak_data.get("spectrum")
         for i, spectra in enumerate(spectra_list):
-            self.save_spectrum_to_csv(spectra, str(peak_data["peak_rt"][i])+".csv")
-
+            self.save_spectrum_to_csv(spectra, str(peak_data["peak_rt"][i]) + ".csv")
 
     # -----Utility Functions-----
     def load_analysis_json(self) -> dict:
@@ -444,7 +446,6 @@ class Analyser:
             self.log(f"Error: {error}", level="error")
             raise error
 
-
     def log(self, msg: str or Exception, print_msg: bool = False, level: str = "info") -> None:
         """
         Log a message pertaining to this device.
@@ -487,12 +488,12 @@ class Analyser:
 
 
 if __name__ == "__main__":
-    # path=r"C:\Users\obayley\Documents\polyurethane_data.rslt\RoboChem Sample.dx"
-    path=r"\\fnwi-s0.science.uva.nl\hims-nrg-robochem\lcms_data\Simone\Results\SPES40_AlcoholCoupling_250117_1.rslt\Sample_001_04.dx"
+    # path = r"\\fnwi-s0.science.uva.nl\hims-nrg-robochem\lcms_data\Simone\Results\SPES40_AlcoholCoupling_250117_1.rslt\Sample_001_04.dx"
+    path = r"\\10.10.29.250\hims-nrg-robochem\lcms_data\Simone\Results\SPES40_AlcoholCoupling_250117_1.rslt\Sample_001_04.dx"
     analyser = Analyser()
     run_result = analyser.run_analysis(sample_filepath=path)
-    res=pd.DataFrame(run_result)
-    # analyser.save_all_peaks_to_csv(run_result)
-    res.to_csv(r"C:\Users\obayley\OneDrive - UvA\Desktop\results_files\Sample.csv")
+    res = pd.DataFrame(run_result)
     print(res)
-
+    # analyser.save_all_peaks_to_csv(run_result)
+    # res.to_csv(r"C:\Users\obayley\OneDrive - UvA\Desktop\results_files\Sample.csv")
+    # print(os.path.join(get_project_dir(), "reference_spectra"))

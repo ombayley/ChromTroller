@@ -1,0 +1,76 @@
+[
+    {
+        "run_conditions": {
+            "name": "Simone_SPES40_AlcoholCoupling_run24_20250115181402",
+            "recipe": "[4-Ph py: 50 mM, EtOH: 154.5 mM, pTsOH: 106.6 mM, Ir(ppy)3: 0.7488 mM, HSCH2(Me)COOMe: 4.38 mM]"
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Simone\\Results\\SPES40_AlcoholCoupling_5.rslt\\Sample_001_04.dx",
+        "analysis": {
+            "peak_rt": [
+                0.94,
+                3.313,
+                3.619,
+                4.538,
+                4.972
+            ],
+            "integral": [
+                5185180769.979942,
+                1362149303.4263537,
+                43033253391.04996,
+                121962962.61323673,
+                508316080.86293143
+            ],
+            "peak_height": [
+                120819383.03787574,
+                31769981.22053472,
+                502821800.12172776,
+                4398094.433764702,
+                23032071.21805222
+            ]
+        }
+    },
+    {
+        "run_conditions": {
+            "name": "Simone_SPES40_AlcoholCoupling_run25_20250115202133",
+            "recipe": "[4-Ph py: 50 mM, EtOH: 1032 mM, pTsOH: 170.8 mM, Ru(bpy)3(PF6)2: 0.6324 mM, HSCH2(Me)COOMe: 1.31 mM]"
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Simone\\Results\\SPES40_AlcoholCoupling_5.rslt\\Sample_002_06.dx",
+        "analysis": {
+            "peak_rt": [
+                0.866,
+                0.951,
+                1.915,
+                3.035,
+                3.674,
+                4.556
+            ],
+            "integral": [
+                0.0,
+                11365935884.12498,
+                715668925.7333562,
+                631827215.8617258,
+                36998848675.41553,
+                287183325.5576372
+            ],
+            "peak_height": [
+                0.0,
+                279429942.86707306,
+                8305420.426997195,
+                5527304.863202849,
+                498364168.88107836,
+                9483969.244358135
+            ]
+        }
+    },
+    {
+        "run_conditions": {
+            "name": "Simone_SPES40_AlcoholCoupling_run26_20250115214641",
+            "recipe": "[4-Ph py: 50 mM, EtOH: 687.5 mM, pTsOH: 130.2 mM, Ru(bpy)3(PF6)2: 0.8034 mM, HSCH2COOMe: 4.49 mM]"
+        },
+        "hplc_start": "",
+        "file": "",
+        "analysis": {}
+    }
+]
