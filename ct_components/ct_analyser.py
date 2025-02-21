@@ -267,8 +267,9 @@ class Analyser:
                 peak_data[ref_name] = matches
 
         # Remove the spectum data as it is too much data to send nicely
-        if peak_data.get('spectrum') is not None:
-            del peak_data['spectrum']
+        #if peak_data.get('spectrum') is not None:
+        #    del peak_data['spectrum']
+        # note: removing it before sending
 
         return peak_data
 
@@ -489,11 +490,13 @@ class Analyser:
 
 if __name__ == "__main__":
     # path = r"\\fnwi-s0.science.uva.nl\hims-nrg-robochem\lcms_data\Simone\Results\SPES40_AlcoholCoupling_250117_1.rslt\Sample_001_04.dx"
-    path = r"\\10.10.29.250\hims-nrg-robochem\lcms_data\Simone\Results\SPES40_AlcoholCoupling_250117_1.rslt\Sample_001_04.dx"
+    # path = r"\\10.10.29.250\hims-nrg-robochem\lcms_data\Simone\Results\SPES40_AlcoholCoupling_250117_1.rslt\Sample_001_04.dx"
+    path = r"D:\CDSProjects\Simone\Results\enzymatic_reduction_methdev_6.rslt\CrudeOfSideProduct_80min.dx"
     analyser = Analyser()
     run_result = analyser.run_analysis(sample_filepath=path)
     res = pd.DataFrame(run_result)
     print(res)
-    # analyser.save_all_peaks_to_csv(run_result)
-    # res.to_csv(r"C:\Users\obayley\OneDrive - UvA\Desktop\results_files\Sample.csv")
-    # print(os.path.join(get_project_dir(), "reference_spectra"))
+    if input("Save results?").lower() in ("y", "yes"):
+        analyser.save_all_peaks_to_csv(run_result)
+        res.to_csv(r"C:\Users\obayley\OneDrive - UvA\Desktop\results_files\Sample.csv")
+        print(os.path.join(get_project_dir(), "reference_spectra"))

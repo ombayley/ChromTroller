@@ -392,6 +392,10 @@ class ChromTroller:
         else:
             given_info = None
 
+        # Removing the spectrum from the payload, as the large amount of data was causing issues.
+        if result_dict.get('spectrum') is not None:
+           del result_dict['spectrum']
+
         response = {"data": result_dict,
                     "file_name": self.new_file_path,
                     "settings": self.settings,
