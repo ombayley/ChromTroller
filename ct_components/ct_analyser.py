@@ -491,7 +491,8 @@ class Analyser:
 if __name__ == "__main__":
     # path = r"\\fnwi-s0.science.uva.nl\hims-nrg-robochem\lcms_data\Simone\Results\SPES40_AlcoholCoupling_250117_1.rslt\Sample_001_04.dx"
     # path = r"\\10.10.29.250\hims-nrg-robochem\lcms_data\Simone\Results\SPES40_AlcoholCoupling_250117_1.rslt\Sample_001_04.dx"
-    path = r"D:\CDSProjects\Simone\Results\enzymatic_reduction_methdev_6.rslt\CrudeOfSideProduct_80min.dx"
+    # path = r"D:\CDSProjects\Simone\Results\enzymatic_reduction_methdev_6.rslt\CrudeOfSideProduct_80min.dx"
+    path = r"D:\CDSProjects\Simone\Results\SPES42_enzreduction_campaign_test_5.rslt\Sample_001.dx"
     analyser = Analyser()
     run_result = analyser.run_analysis(sample_filepath=path)
     res = pd.DataFrame(run_result)

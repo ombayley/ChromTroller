@@ -48,6 +48,9 @@ def smooth_timings(times_ms):
     times_min = np.arange(start=0, stop=(len(times_ms) * aqq_time_min), step=aqq_time_min)
     times_min = np.round(times_min, 3)
 
+    if len(times_min) > len(times_ms):
+        times_min = times_min[:len(times_ms)]
+
     return times_min
 
 
