@@ -90,12 +90,12 @@ class Analyser:
             bkg_filepath = self.get_bkg_filepath(file_path)
 
             # Create Chrom
-            if bkg_filepath:
-                smpl_chromatogram = Chromatogram(sample=file_path, blank=bkg_filepath, name='sample')
-                self.log(f"Chromatogram object generated with background reference correction")
-            else:
-                smpl_chromatogram = Chromatogram(sample=file_path, name='sample')
-                self.log("Chromatogram object generated WITHOUT a background reference file", level="warning")
+            # if bkg_filepath:
+            #     smpl_chromatogram = Chromatogram(sample=file_path, blank=bkg_filepath, name='sample')
+            #     self.log(f"Chromatogram object generated with background reference correction")
+            # else:
+            smpl_chromatogram = Chromatogram(sample=file_path, name='sample')
+            self.log("Chromatogram object generated WITHOUT a background reference file", level="warning")
 
             return smpl_chromatogram
 

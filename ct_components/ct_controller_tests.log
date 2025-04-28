@@ -1,11 +1,3 @@
-27-01-2025 17:39:30 - INFO - ct_controller.py - Loaded hardware settings successfully
-27-01-2025 17:39:30 - INFO - ct_controller.py - Initializing LCMSDevice on port COM5 with baud rate 9600
-27-01-2025 17:39:32 - INFO - ct_controller.py - Controller Object Initialized Successfully
-27-01-2025 17:39:32 - INFO - ct_controller.py - {'HPLC_analysis': 'INITIATED'}
-27-01-2025 17:39:32 - INFO - ct_controller.py - Hardware connection check: SUCCESS
-27-01-2025 17:39:32 - ERROR - ct_controller.py - WARNING: sample loop was not in filling position when run start was called.
-Current position: B, desired position: A
-27-01-2025 17:39:32 - ERROR - ct_controller.py - Analysis cycle FAILED: WARNING: sample loop was not in filling position when run start was called.
-Current position: B, desired position: A
-27-01-2025 17:39:32 - ERROR - ct_controller.py - Controller encountered an error: WARNING: sample loop was not in filling position when run start was called.
-Current position: B, desired position: A
+24-04-2025 15:34:03 - INFO - ct_controller.py - Loaded hardware settings successfully
+24-04-2025 15:34:03 - INFO - ct_controller.py - Initializing LCMSDevice on port COM5 with baud rate 9600
+24-04-2025 15:34:05 - INFO - ct_controller.py - Controller Object Initialized Successfully

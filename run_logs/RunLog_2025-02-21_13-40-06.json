@@ -1,0 +1,11 @@
+[
+    {
+        "run_conditions": {
+            "name": "Simone_SPES42_enz_reduction_run2_20250221134253",
+            "recipe": "[SM: 10 mM]"
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Simone\\Results\\SPES42_enzreduction_campaign_test_1.rslt\\Sample_004.dx",
+        "analysis": null
+    }
+]

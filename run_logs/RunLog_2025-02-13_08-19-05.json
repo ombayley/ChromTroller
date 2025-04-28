@@ -1,0 +1,21 @@
+[
+    {
+        "run_conditions": {
+            "name": 1,
+            "conc": 30.0,
+            "reag_list": [
+                "limiting",
+                30.0,
+                "amine",
+                2.05
+            ],
+            "condit_dict": {
+                "residence_time": 600.5,
+                "light_intensity": null
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Polymer_Degradation\\Results\\Polyurethanes\\polyurethanes_test_13-2-25-run14.rslt\\Sample_001.dx",
+        "analysis": null
+    }
+]

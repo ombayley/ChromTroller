@@ -1,0 +1,187 @@
+[
+    {
+        "run_conditions": {
+            "name": 1,
+            "conc": 30.0,
+            "reag_list": [
+                "limiting",
+                30.0,
+                "amine",
+                2.95
+            ],
+            "condit_dict": {
+                "residence_time": 3600.5,
+                "light_intensity": null
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Polymer_Degradation\\Results\\Polyurethanes\\polyurethanes_test_12-2-25-run12.rslt\\Sample_001.dx",
+        "analysis": {
+            "peak_rt": [
+                3.266,
+                4.979
+            ],
+            "integral": [
+                8543709.423783613,
+                66297898.40186921
+            ],
+            "peak_height": [
+                116987.4302298844,
+                1167750.4486919679
+            ]
+        }
+    },
+    {
+        "run_conditions": {
+            "name": 1,
+            "conc": 30.0,
+            "reag_list": [
+                "limiting",
+                30.0,
+                "amine",
+                2.95
+            ],
+            "condit_dict": {
+                "residence_time": 600.5,
+                "light_intensity": null
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Polymer_Degradation\\Results\\Polyurethanes\\polyurethanes_test_12-2-25-run12.rslt\\Sample_002.dx",
+        "analysis": {
+            "peak_rt": [
+                3.386,
+                5.052
+            ],
+            "integral": [
+                6194223.373081246,
+                81571543.37208892
+            ],
+            "peak_height": [
+                124211.27986831754,
+                1260564.0541742377
+            ]
+        }
+    },
+    {
+        "run_conditions": {
+            "name": 2,
+            "conc": 30.0,
+            "reag_list": [
+                "limiting",
+                30.0,
+                "amine",
+                2.95
+            ],
+            "condit_dict": {
+                "residence_time": 600.5,
+                "light_intensity": null
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Polymer_Degradation\\Results\\Polyurethanes\\polyurethanes_test_12-2-25-run12.rslt\\Sample_003.dx",
+        "analysis": {}
+    },
+    {
+        "run_conditions": {
+            "name": 1,
+            "conc": 30.0,
+            "reag_list": [
+                "limiting",
+                30.0,
+                "amine",
+                2.95
+            ],
+            "condit_dict": {
+                "residence_time": 600.5,
+                "light_intensity": null
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Polymer_Degradation\\Results\\Polyurethanes\\polyurethanes_test_12-2-25-run12.rslt\\Sample_004.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": 1,
+            "conc": 30.0,
+            "reag_list": [
+                "limiting",
+                30.0,
+                "amine",
+                2.95
+            ],
+            "condit_dict": {
+                "residence_time": 600.5,
+                "light_intensity": null
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Polymer_Degradation\\Results\\Polyurethanes\\polyurethanes_test_12-2-25-run12.rslt\\Sample_005.dx",
+        "analysis": {
+            "peak_rt": [
+                3.253,
+                4.992
+            ],
+            "integral": [
+                8809346.53270719,
+                81943042.41009538
+            ],
+            "peak_height": [
+                112676.73765102998,
+                1360292.5761199053
+            ]
+        }
+    },
+    {
+        "run_conditions": {
+            "name": 1,
+            "conc": 30.0,
+            "reag_list": [
+                "limiting",
+                30.0,
+                "amine",
+                2.95
+            ],
+            "condit_dict": {
+                "residence_time": 300.5,
+                "light_intensity": null
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Polymer_Degradation\\Results\\Polyurethanes\\polyurethanes_test_12-2-25-run12.rslt\\Sample_006.dx",
+        "analysis": {
+            "peak_rt": [
+                3.332,
+                4.971
+            ],
+            "integral": [
+                5290666.506301729,
+                69145388.88687187
+            ],
+            "peak_height": [
+                100760.29065592603,
+                1208327.7973342375
+            ]
+        }
+    },
+    {
+        "run_conditions": {
+            "name": 1,
+            "conc": 30.0,
+            "reag_list": [
+                "limiting",
+                30.0,
+                "amine",
+                2.05
+            ],
+            "condit_dict": {
+                "residence_time": 3600.5,
+                "light_intensity": null
+            }
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Polymer_Degradation\\Results\\Polyurethanes\\polyurethanes_test_12-2-25-run13.rslt\\Sample_001.dx",
+        "analysis": {}
+    }
+]

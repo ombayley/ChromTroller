@@ -1,0 +1,78 @@
+[
+    {
+        "run_conditions": {
+            "name": 1,
+            "conc": 30.0,
+            "reag_list": [
+                "limiting",
+                30.0,
+                "amine",
+                2.05
+            ],
+            "condit_dict": {
+                "residence_time": 3600.5,
+                "light_intensity": null
+            }
+        },
+        "hplc_start": "",
+        "file": "",
+        "analysis": {}
+    },
+    {
+        "run_conditions": {
+            "name": 1,
+            "conc": 30.0,
+            "reag_list": [
+                "limiting",
+                30.0,
+                "amine",
+                2.05
+            ],
+            "condit_dict": {
+                "residence_time": 3600.5,
+                "light_intensity": null
+            }
+        },
+        "hplc_start": "",
+        "file": "",
+        "analysis": {}
+    },
+    {
+        "run_conditions": {
+            "name": 1,
+            "conc": 30.0,
+            "reag_list": [
+                "limiting",
+                30.0,
+                "amine",
+                2.05
+            ],
+            "condit_dict": {
+                "residence_time": 3600.5,
+                "light_intensity": null
+            }
+        },
+        "hplc_start": "",
+        "file": "",
+        "analysis": {}
+    },
+    {
+        "run_conditions": {
+            "name": 1,
+            "conc": 30.0,
+            "reag_list": [
+                "limiting",
+                30.0,
+                "amine",
+                2.05
+            ],
+            "condit_dict": {
+                "residence_time": 3600.5,
+                "light_intensity": null
+            }
+        },
+        "hplc_start": "",
+        "file": "",
+        "analysis": {}
+    }
+]

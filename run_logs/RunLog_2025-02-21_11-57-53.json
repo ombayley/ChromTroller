@@ -1,0 +1,29 @@
+[
+    {
+        "run_conditions": {
+            "name": "Simone_SPES42_enz_reduction_run5_20250221120035",
+            "recipe": "[SM: 10 mM]"
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Simone\\Results\\SPES42_enzreduction_campaign_test_1.rslt\\Sample_002.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": "Simone_SPES42_enz_reduction_run2_20250221120035",
+            "recipe": "[SM: 10 mM]"
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Simone\\Results\\SPES42_enzreduction_campaign_test_1.rslt\\Sample_003.dx",
+        "analysis": null
+    },
+    {
+        "run_conditions": {
+            "name": "Simone_SPES42_enz_reduction_run4_20250221120035",
+            "recipe": "[SM: 10 mM]"
+        },
+        "hplc_start": "",
+        "file": "",
+        "analysis": {}
+    }
+]

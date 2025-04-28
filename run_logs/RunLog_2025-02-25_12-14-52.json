@@ -1,0 +1,85 @@
+[
+    {
+        "run_conditions": {
+            "name": "Simone_SPES42_enz_reduction_run6_20250225121658",
+            "recipe": "[SM: 9.996 mM, HCOONa: 30.4 mM, NAD: 2.69 mM, FDH: 0.008395 mM, Ht: 0.01682 mM]"
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Simone\\Results\\SPES42_enz_reduction_campaign_3.rslt\\Sample_001.dx",
+        "analysis": {
+            "peak_rt": [
+                2.335,
+                3.233
+            ],
+            "integral": [
+                96774604.60880473,
+                2908476619.9429135
+            ],
+            "peak_height": [
+                2077858.0583406426,
+                114794650.21037199
+            ],
+            "sideproduct_A": [
+                83.81253025715894,
+                75.20552658943683
+            ],
+            "target": [
+                92.7204273957755,
+                80.09996589039629
+            ],
+            "unwanted": [
+                75.21511261218757,
+                50.45483789763958
+            ]
+        }
+    },
+    {
+        "run_conditions": {
+            "name": "Simone_SPES42_enz_reduction_run2_20250225121658",
+            "recipe": "[SM: 9.996 mM, HCOONa: 48.2 mM, NAD: 3.48 mM, FDH: 0.004488 mM, Ht: 0.01858 mM]"
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Simone\\Results\\SPES42_enz_reduction_campaign_3.rslt\\Sample_002.dx",
+        "analysis": {
+            "peak_rt": [
+                2.324,
+                3.189,
+                3.226
+            ],
+            "integral": [
+                83180039.70405075,
+                195084654.1615741,
+                2335542828.169123
+            ],
+            "peak_height": [
+                1776132.5137497522,
+                6191013.138104908,
+                99049891.23240952
+            ],
+            "sideproduct_A": [
+                85.68343426711303,
+                77.46433883330018,
+                75.69736581183356
+            ],
+            "target": [
+                90.46122202807972,
+                81.68561786252776,
+                80.48612549628622
+            ],
+            "unwanted": [
+                79.90884182276989,
+                58.550147730391444,
+                52.08692034817888
+            ]
+        }
+    },
+    {
+        "run_conditions": {
+            "name": "Simone_SPES42_enz_reduction_run6_20250225151123",
+            "recipe": "[SM: 9.996 mM, HCOONa: 62.4 mM, NAD: 3.87 mM, FDH: 0.009445 mM, Ht: 0.0135 mM]"
+        },
+        "hplc_start": "SUCCESS",
+        "file": "D:\\CDSProjects\\Simone\\Results\\SPES42_enz_reduction_campaign_3.rslt\\Sample_003.dx",
+        "analysis": null
+    }
+]
