@@ -1,3 +1,3 @@
-24-04-2025 15:34:03 - INFO - ct_controller.py - Loaded hardware settings successfully
-24-04-2025 15:34:03 - INFO - ct_controller.py - Initializing LCMSDevice on port COM5 with baud rate 9600
-24-04-2025 15:34:05 - INFO - ct_controller.py - Controller Object Initialized Successfully
+06-05-2025 08:55:10 - INFO - ct_controller.py - Loaded hardware settings successfully
+06-05-2025 08:55:10 - INFO - ct_controller.py - Initializing LCMSDevice on port COM5 with baud rate 9600
+06-05-2025 08:55:12 - INFO - ct_controller.py - Controller Object Initialized Successfully

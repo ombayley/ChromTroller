@@ -13,11 +13,11 @@
         "max_peak_comps": 1,
         "max_peak_distance": 0.99,
         "min_spectrum_correl": 0.99,
-        "min_elution_time": 1.5,
-        "max_elution_time": 4.5,
+        "min_elution_time": 6,
+        "max_elution_time": 12,
         "peak_maxima_identification": "max",
-        "min_wavelength": 290.0,
-        "max_wavelength": 300.0,
+        "min_wavelength": 270,
+        "max_wavelength": 280,
         "min_rel_integral": 0.01,
         "relaxe_concs": 1,
         "__classname__": "ProcessingSettings"
@@ -47,6 +47,6 @@
         "result_dir_tag": ".rslt"
     },
     "paths": {
-        "project_results_path": "D:\\CDSProjects\\Simone\\Results"
+        "project_results_path": "D:\\CDSProjects\\Polymer_Degradation\\Results\\Polyurethanes"
     }
 }

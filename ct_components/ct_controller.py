@@ -314,7 +314,7 @@ if __name__ == "__main__":
         with open(settings_path, 'r', encoding='utf-8') as settings_file:
             settings = json.load(settings_file)
         controller = Controller(settings['hardware_settings'])
-        controller.set_valve_to_pos(desired_position='A')
+        controller.set_valve_to_pos(desired_position='B')
         # controller.run_analysis_cycle()
 
     except ControllerError as e:
