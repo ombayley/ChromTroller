@@ -83,6 +83,26 @@ class Analyser:
             self.log(f"Error during analysis of file {sample_filepath}: {e}", print_msg=True, level="error")
             return None
 
+    def get_abs_at_time(self, sample_filepath: str, time: float) -> float:
+        # Get Chrom
+        chrom = self.get_chrom(file_path=sample_filepath)
+
+        chrom.extract_wavelength(
+            min_wavelength=self.analysis_settings_obj.min_wavelength,
+            max_wavelength=self.analysis_settings_obj.max_wavelength,
+            inplace=True
+        )
+
+        chrom = chrom.correct_baseline(
+            method=self.analysis_settings_obj.baseline_model,
+            smoothness=self.analysis_settings_obj.baseline_smoothness
+        )
+
+        idx, _ = chrom.closest_time(time)
+        sum_absorbance = np.sum(chrom.data[:, idx])
+        return sum_absorbance
+
+
     #-----Main Function-----
     def get_chrom(self, file_path: str) -> Optional[Chromatogram]:
         try:
