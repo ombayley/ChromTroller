@@ -39,6 +39,8 @@ class ChromTroller:
     """
 
     def __init__(self) -> None:
+        input("Press ENTER to acknowledge that you have checked the seal wash is full before starting this campaign")
+
         # Setup Log
         self._setup_logging()
 
@@ -191,6 +193,8 @@ class ChromTroller:
                 return self.start_hplc_run()
             case 'run_data_analysis':
                 return self.run_data_analysis()
+            case 'get_abs_at_time':
+                return self.get_abs_at_time(time=data)
             case _:
                 message = f"Unknown command received: {command}"
                 logging.warning(message)
@@ -402,6 +406,11 @@ class ChromTroller:
                     "given_info": given_info}
         return response
         # return result_dict if result_dict is not None else {"peak_rt": None, "integral": None}
+
+    def get_abs_at_time(self, time: float) -> float:
+        analyser = Analyser()
+        time = analyser.get_abs_at_time(sample_filepath=self.new_file_path, time=time)
+        return time
 
     # ----- Utility Methods -----
 
