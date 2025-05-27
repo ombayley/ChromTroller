@@ -291,7 +291,7 @@ class ChromTroller:
             self.print_info(f"Updated the rt tolerance for peak picking to {self.rt_tolerance} min")
             return "ACK"
         except Exception as err:
-            logging.error(f"Error Arsose: {err} during method: {__name__}")
+            logging.error(f"Error Arose: {err} during method: {__name__}")
             return "ERROR"
 
     def start_hplc_run(self) -> str:
@@ -408,9 +408,24 @@ class ChromTroller:
         # return result_dict if result_dict is not None else {"peak_rt": None, "integral": None}
 
     def get_abs_at_time(self, time: float) -> float:
+        """
+        Gets absorbance at a defined time (min)
+
+        Return:
+            Absorbance(int, float): absorbance value at given time
+        """
+        message = f"Getting absorbance at time {time} min"
+        logging.info(message)
+        print(message)
+
         analyser = Analyser()
-        time = analyser.get_abs_at_time(sample_filepath=self.new_file_path, time=time)
-        return time
+        absorbance = analyser.get_abs_at_time(sample_filepath=self.new_file_path, time=time)
+
+        message = f"Absorbance at time {time} min: {absorbance}"
+        logging.info(message)
+        print(message)
+
+        return absorbance
 
     # ----- Utility Methods -----
 
