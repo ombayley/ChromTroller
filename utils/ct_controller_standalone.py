@@ -31,9 +31,10 @@ class StandaloneController:
         """
         try:
             project_path = os.path.dirname(os.path.dirname(__file__))
-            settings_path = os.path.join(project_path, 'settings_files', 'hardware_settings.json')
+            settings_path = os.path.join(project_path, 'settings_files', 'settings.json')
             with open(settings_path, 'r') as settings_file:
-                hardware_settings = json.load(settings_file)
+                settings = json.load(settings_file)
+                hardware_settings = settings["hardware_settings"]
                 logging.info("Loaded hardware settings successfully")
             return hardware_settings
         except (FileNotFoundError, json.JSONDecodeError, PermissionError) as err:
