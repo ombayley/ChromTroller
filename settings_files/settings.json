@@ -4,22 +4,22 @@
         "baseline_smoothness": 1.0,
         "baseline_smooth_filter": false,
         "min_rel_prominence": 0.01,
-        "min_prominence": 1000.0,
-        "border_max_peak_cutoff": 0.5,
-        "split_threshold": 0.9,
-        "explained_threshold": 0.99,
+        "min_prominence": 100.0,
+        "border_max_peak_cutoff": 0.1,
+        "split_threshold": 0.05,
+        "explained_threshold": 0.995,
         "expand_peak_boarders": true,
         "peak_model": "Bemg",
         "max_peak_comps": 1,
         "max_peak_distance": 1.0,
-        "min_spectrum_correl": 0.99,
-        "min_elution_time": 2.0,
-        "max_elution_time": 6.0,
+        "min_spectrum_correl": 0.95,
+        "min_elution_time": 5.0,
+        "max_elution_time": 5.5,
         "peak_maxima_identification": "max",
-        "min_wavelength": 290.0,
-        "max_wavelength": 300.0,
+        "min_wavelength": 260.0,
+        "max_wavelength": 280.0,
         "min_rel_integral": 0.01,
-        "relaxe_concs": 1,
+        "relaxe_concs": false,
         "__classname__": "ProcessingSettings"
     },
     "hardware_settings": {
@@ -47,6 +47,6 @@
         "result_dir_tag": ".rslt"
     },
     "paths": {
-        "project_results_path": "D:\\CDSProjects\\Polymer_Degradation\\Results\\Polyurethanes"
+        "project_results_path": "D:\\CDSProjects\\eRoboChem\\Results\\Reduction_Basic-substrate-campaign"
     }
 }

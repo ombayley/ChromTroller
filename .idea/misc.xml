@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Black">
-    <option name="sdkName" value="LCMS_server" />
+    <option name="sdkName" value="C:\Users\nrg_lcms\anaconda3\envs\ChromTroller" />
   </component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="ChromTroller" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="C:\Users\nrg_lcms\anaconda3\envs\ChromTroller" project-jdk-type="Python SDK" />
 </project>

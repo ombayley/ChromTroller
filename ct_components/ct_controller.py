@@ -92,7 +92,7 @@ class Controller:
 
     # ----- Analysis Method -----
 
-    def run_analysis_cycle(self) -> str:
+    def run_analysis_cycle(self, check_response=True) -> str:
         """
         Run the routine to start an analytical run.
         This involves the detection, sample loading, and LCMS method triggering.
@@ -121,14 +121,18 @@ class Controller:
                 self.log_info(f"Sending start signal: ATTEMPT {attempt}")
 
                 # Check request acknowledgement from spectrometer
-                try:
-                    self._wait_on_lcms_response()
-                except LCMSCommunicationError:
-                    self.log_info(f"Attempt {attempt} failed. LCMS did not acknowledge start request.")
-                    continue  # Try again
+                if check_response:
+                    try:
+                        self._wait_on_lcms_response()
+                    except LCMSCommunicationError:
+                        self.log_info(f"Attempt {attempt} failed. LCMS did not acknowledge start request.")
+                        continue  # Try again
 
-                self.log_info("Start request acknowledged\nSample prep starting")
-                break  # Exit loop if successful
+                    self.log_info("Start request acknowledged\nSample prep starting")
+                    break  # Exit loop if successful
+                else:
+                    self.log_info("Start request acknowledged\nSample prep starting")
+                    break  # Exit loop if successful
             else:
                 error_msg = f"HPLC not starting after {max_attempts} attempts"
                 logging.error(error_msg)

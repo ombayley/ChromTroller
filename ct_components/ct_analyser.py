@@ -64,18 +64,24 @@ class Analyser:
         try:
             # Get Chrom
             raw_chrom = self.get_chrom(file_path=sample_filepath)
+            self.log("Obtained Chromatogram", print_msg=True)
 
             # Create copy of raw chrom as processing occurs in place
             chrom_copy = deepcopy(raw_chrom)
 
             # Process Chrom
             proc_chrom = self.process_chrom(chrom=raw_chrom)
+            self.log("Processed Chromatogram", print_msg=True)
 
             # Extract peak data
             peak_data = self.tabulate_data(proc_chrom=proc_chrom, raw_chrom=chrom_copy)
+            self.log("Tabulating the data", print_msg=True)
+            self.log(f"Tabulated data: {peak_data}", print_msg=False)
 
             # Optional - match to reference spectra
+            self.log("Cross referencing the spectra", print_msg=True)
             peak_data = self.match_spectra(peak_data)
+            self.log("Cross referencing the spectra complete", print_msg=True)
 
             return peak_data
 
@@ -147,17 +153,20 @@ class Analyser:
         Returns:
             Chromatogram: The processed chromatogram.
         """
-
+        min_wl = self.analysis_settings_obj.min_wavelength
+        max_wl = self.analysis_settings_obj.max_wavelength
         chrom.extract_wavelength(
-            min_wavelength=self.analysis_settings_obj.min_wavelength,
-            max_wavelength=self.analysis_settings_obj.max_wavelength,
+            min_wavelength=min_wl,
+            max_wavelength=max_wl,
             inplace=True
         )
+        self.log(f"Cropped data to defined wavelength range - min:{min_wl} nm, max {max_wl} nm", print_msg=False)
 
         chrom = chrom.correct_baseline(
             method=self.analysis_settings_obj.baseline_model,
             smoothness=self.analysis_settings_obj.baseline_smoothness
         )
+        self.log(f"Baselined chromatogram using: {self.analysis_settings_obj.baseline_model}", print_msg=False)
 
         chrom = chrom.find_peaks(
             contraction="max",
@@ -170,6 +179,7 @@ class Analyser:
             min_elution_time=self.analysis_settings_obj.min_elution_time,
             max_elution_time=self.analysis_settings_obj.max_elution_time
         )
+        self.log("Picked peaks", print_msg=False)
 
         chrom = chrom.deconvolve_peaks(
             model=self.analysis_settings_obj.peak_model,
@@ -177,6 +187,7 @@ class Analyser:
             relaxe_concs=self.analysis_settings_obj.relaxe_concs,
             max_comps=self.analysis_settings_obj.max_peak_comps
         )
+        self.log("Deconvolved peaks", print_msg=False)
 
         return chrom
 
@@ -189,28 +200,24 @@ class Analyser:
 
         Returns:
             Dict[str, List[float]]: in the form {"peak_rt": List[float], "integral": List[float]} with all peak
-            retention times and integrals. Returns None if no peaks found.
+            retention times and integrals. Returns empty if no peaks found.
         """
         # Get processed data
         components: List[Component] = proc_chrom.all_components()
         self.log(f"Filtering {len(components)} components to identify best match to target rt")
 
-        # Exit if no components identified
-        if not components:
-            return None
-
-        spectra = []
+        spectra_list = []
         for component in components:
             peak_rt = proc_chrom.time[component.elution_time]
             absorbance, wavelengths = self.get_spectrum(raw_chrom, time=peak_rt)
-            spectra.append({"absorbance": absorbance.tolist(), "wavelength": wavelengths.tolist()})
+            spectra_list.append({"absorbance": absorbance.tolist(), "wavelength": wavelengths.tolist()})
 
         # Get a dict of all peaks
         peaks_dict = {
             "peak_rt": [proc_chrom.time[component.elution_time] for component in components],
             "integral": [component.integral for component in components],
             "peak_height": [max(component.concentration) for component in components],
-            "spectrum": spectra
+            "spectrum": spectra_list
         }
         return peaks_dict
 
@@ -252,6 +259,8 @@ class Analyser:
             peak_data (Dict[str, List[float]]): A dictionary containing the peak retention times and integrals.
         """
         dirpath = os.path.join(get_project_dir(), "reference_spectra")
+        if not os.path.exists(dirpath):
+            os.mkdir(dirpath)
         ref_spectra_list = self.load_reference_spectra(dirpath)
         spectra_list: Optional[List[dict]] = peak_data.get("spectrum")
 
@@ -266,7 +275,7 @@ class Analyser:
                 # Add matches to the peak_data
                 peak_data[ref_name] = matches
 
-        # Remove the spectum data as it is too much data to send nicely
+        # Remove the spectum data as it is too much data to send happily via the current socket implementation
         if peak_data.get('spectrum') is not None:
             del peak_data['spectrum']
 

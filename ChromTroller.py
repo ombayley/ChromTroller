@@ -299,7 +299,7 @@ class ChromTroller:
         message = "HPLC analysis initiated"
         logging.info(message)
         print(message)
-        result = self.lcms_controller.run_analysis_cycle()
+        result = self.lcms_controller.run_analysis_cycle(check_response=False)
 
         if self.runlog_list:
             self.runlog_list[-1].hplc_start = result
@@ -358,6 +358,19 @@ class ChromTroller:
 
         Returns:
             Dict[str, Any]: The result dictionary from the analysis.
+            Dict looks like:
+            {
+                data: {
+                    peak_rt: [...r.t. list...],
+                    integral: [...integral list...],
+                    peak_height: [...height list...],
+                    *name of reference spectra file*: [...spectral correlations....]
+                },
+                file_name: str,
+                settings: {...},
+                given_info: any
+            }
+
         """
         print("run_data_analysis called")
         # Check the self.new_file_path and the latest file by ct time match
@@ -373,8 +386,6 @@ class ChromTroller:
         print(message)
 
         # Run the analysis
-        logging.info(message)
-        print(message)
         result_dict: Dict[str, Any] = analyser.run_analysis(sample_filepath=self.new_file_path,
                                                             peak_rt=self.rt_target,
                                                             rt_tolerance=self.rt_tolerance,
