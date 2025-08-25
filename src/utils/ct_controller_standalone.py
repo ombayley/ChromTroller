@@ -18,6 +18,8 @@ class StandaloneController:
         self._setup_logging()
         # Get hardware and timing settings
         self.hardware_settings = self.get_hardware_settings()
+        # Get secure settings
+        self.secure_settings = self.get_secure_settings()
         # Create LCMSDevice object
         self.lcms_device = self.init_device()
         # Report init success
@@ -37,6 +39,21 @@ class StandaloneController:
                 hardware_settings = settings["hardware_settings"]
                 logging.info("Loaded hardware settings successfully")
             return hardware_settings
+        except (FileNotFoundError, json.JSONDecodeError, PermissionError) as err:
+            logging.error(err)
+
+    @staticmethod
+    def get_secure_settings() -> dict:
+        """
+        Reads the hardware settings JSON and returns all hardware settings
+        """
+        try:
+            project_path = os.path.dirname(os.path.dirname(__file__))
+            settings_path = os.path.join(project_path, 'settings_files', 'socket_settings.json')
+            with open(settings_path, 'r') as settings_file:
+                settings = json.load(settings_file)
+                logging.info("Loaded hardware settings successfully")
+            return settings
         except (FileNotFoundError, json.JSONDecodeError, PermissionError) as err:
             logging.error(err)
 
@@ -68,7 +85,7 @@ class StandaloneController:
         """
         Create the Device object
         """
-        port = self.hardware_settings["serial_port"]
+        port = self.secure_settings["serial_port"]
         baud_rate = self.hardware_settings["serial_baud_rate"]
         timeout = self.hardware_settings["serial_timeout"]
         return LCMSDevice(port, baud_rate, timeout)
@@ -122,4 +139,5 @@ class StandaloneController:
 if __name__ == "__main__":
     controller = StandaloneController()
     print(controller.get_device_id())
-    controller.set_valve_pos("B")
+    # controller.set_valve_pos("B")
+    print(controller.send_start_request())
