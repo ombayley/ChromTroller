@@ -1,0 +1,83 @@
+{
+    "analysis_settings": {
+        "baseline_model": "flatfit",
+        "baseline_smoothness": 1.0,
+        "baseline_smooth_filter": false,
+        "min_rel_prominence": 0.001,
+        "min_prominence": 10.0,
+        "border_max_peak_cutoff": 0.5,
+        "split_threshold": 0.9,
+        "explained_threshold": 0.99,
+        "expand_peak_boarders": true,
+        "peak_model": "Bemg",
+        "max_peak_comps": 1,
+        "max_peak_distance": 1.0,
+        "min_spectrum_correl": 0.99,
+        "min_elution_time": 2.8,
+        "max_elution_time": 6.0,
+        "peak_maxima_identification": "max",
+        "min_wavelength": 200.0,
+        "max_wavelength": 210.0,
+        "min_rel_integral": 0.01,
+        "relaxe_concs": 1,
+        "__classname__": "ProcessingSettings"
+    },
+    "hardware_settings": {
+        "serial_baud_rate": 9600,
+        "serial_timeout": 1,
+        "valve_filling_position": "A",
+        "valve_injection_position": "B",
+        "sample_loop_flush_time": 30,
+        "valve_switching_timeout": 10,
+        "lcms_response_timeout": 20,
+        "lcms_sample_prep_timeout": 300,
+        "sample_detection_timeout": 1200,
+        "empty_phase_sensor_value": "2",
+        "full_phase_sensor_values": [
+            "0",
+            "1"
+        ],
+        "phase_sensor_stability_time": 0.5,
+        "phase_sensor_polling_time": 0.1
+    },
+    "tags": {
+        "bkg_filename_tag": "gradient",
+        "sample_filename_tag": "sample",
+        "data_file_tag": ".dx",
+        "result_dir_tag": ".rslt"
+    },
+    "paths": {
+        "project_results_path": "D:\\CDSProjects\\Polymer_Degradation\\Results\\Polyurethanes"
+    },
+    "targets": {
+        "peak_rt":0,
+        "tolerance":1
+    },
+    "assignment_settings": {
+        "c": {
+            "rt_tolerance": 0.5,
+            "rt": 10.4,
+            "match_id": "diastereomer_A",
+            "min_match_correl": 0.98
+        },
+        "d": {
+            "rt_tolerance": 0.5,
+            "rt": 11.1,
+            "match_id": "diastereomer_A",
+            "min_match_correl": 0.98
+        },
+        "a": {
+            "rt_tolerance": 0.5,
+            "rt": 12.3,
+            "match_id": "diastereomer_B",
+            "min_match_correl": 0.98
+        },
+        "b": {
+            "rt_tolerance": 0.5,
+            "rt": 14.5,
+            "match_id": "diastereomer_B",
+            "min_match_correl": 0.98
+        }
+
+    }
+}

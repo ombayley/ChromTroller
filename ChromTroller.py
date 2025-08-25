@@ -7,7 +7,7 @@ This main script controls:
     - communication between a client and the ChromTroller server
     - hardware automation
     - data analysis
-    - logging.
+    - self.log.
 
 The script logs all operations to a logfile found in the log_files dir but also can optionally log
 data passed by the client to a separate RunLog which is stored in the run_logs.
@@ -15,40 +15,40 @@ The RunLog is not essential to ChromTroller but is useful for maintaining a reco
 chemical conditions used by the RoboChem platform. This helps ensure the UPLC data can always be matched to a run
 """
 
-import logging
 import json
 import queue
 import re
 import os
-from datetime import datetime
+import time
 from typing import Any, Dict, List, Optional
 
-from utils.get_project_directory import get_project_dir
-from utils.custom_error_classes import *
-from ct_components.ct_analyser import Analyser
-from ct_components.ct_controller import Controller
-from ct_components.ct_monitor import Monitor
-from ct_components.ct_runlog import RunLog
-from ct_components.ct_server import Server
+from src.utils.get_project_path import get_project_path
+from src.utils.logger import get_logger, Logger
+from src.utils.custom_error_classes import *
+from src.ct_components.ct_analyser import Analyser
+from src.ct_components.ct_controller import Controller
+from src.ct_components.ct_monitor import Monitor
+from src.ct_components.ct_runlog import RunLog
+from src.ct_components.ct_server import Server
 
+# Constants
+SETTINGS_PATH = os.path.join(get_project_path(), 'settings_files', 'settings.json')
 
 class ChromTroller:
     """
     The ChromTroller class is the master class for the ChromTroller package, responsible for orchestrating
-    the communication between the server, hardware controller, file monitoring, logging, and data analysis components.
+    the communication between the server, hardware controller, file monitoring, self.log, and data analysis components.
     """
 
-    def __init__(self) -> None:
+    def __init__(self):
         # Setup Log
-        self._setup_logging()
+        self.log: Logger = get_logger("ChromTroller")
 
         # Initialise Class Vars
         self.settings: Dict[str, Any] = self._load_settings()
         self.runlog_path: str = self._get_runlog_path()
         self.runlog_list: List[RunLog] = []
         self.new_file_path: str = ""
-        self.rt_target = 0
-        self.rt_tolerance = 0.1
 
         # Start the server
         self.server: Server = self._init_server()
@@ -56,14 +56,13 @@ class ChromTroller:
         # Connect to the Arduino Controller
         self.lcms_controller: Controller = self._init_controller()
 
-        print("\nChromTroller Ready For Analysis")
-        print("REMINDERS: - Ensure OpenLab CDS is running and has the correct sequence queued")
-        print("           - Ensure the monitoring path in the settings.json matches that of the OpenLab project\n")
+        self.log.info("ChromTroller Initialised and Ready For Analysis", print_msg=True)
+        print("REMINDERS: - Ensure OpenLab CDS is running and has the correct sequence queued"
+              "           - Ensure the monitoring path in the settings.json matches that of the OpenLab project\n")
 
     # ----- Initialization Methods -----
 
-    @staticmethod
-    def _load_settings() -> Dict[str, Any]:
+    def _load_settings(self) -> Dict[str, Any]:
         """Read the hardware settings JSON found in the settings_files ir and return all hardware settings.
 
         Returns:
@@ -75,14 +74,13 @@ class ChromTroller:
             PermissionError: If there is a permission error accessing the file.
         """
         try:
-            settings_path = os.path.join(get_project_dir(), 'settings_files', 'settings.json')
-            with open(settings_path, 'r', encoding='utf-8') as settings_file:
+            with open(SETTINGS_PATH, 'r', encoding='utf-8') as settings_file:
                 settings = json.load(settings_file)
-                logging.info("Loaded ChromTroller settings successfully")
+                self.log.info("Loaded ChromTroller settings successfully")
             return settings
         except (FileNotFoundError, json.JSONDecodeError, PermissionError) as err:
-            logging.error(f"Error occurred when loading settings {err}")
-            raise err
+            self.log.error(f"Error occurred when loading settings {err}")
+            raise
 
     def _save_settings(self) -> None:
         """Save the current settings to the settings.json.
@@ -93,30 +91,25 @@ class ChromTroller:
             PermissionError: If there is a permission error accessing the file.
         """
         try:
-            settings_path = os.path.join(get_project_dir(), 'settings_files', 'settings.json')
-            with open(settings_path, 'w', encoding='utf-8') as json_file:
+            with open(SETTINGS_PATH, 'w', encoding='utf-8') as json_file:
                 json.dump(self.settings, json_file, indent=4)
-                logging.info(f"ChromTroller settings saved to {settings_path}")
+                self.log.info(f"ChromTroller settings saved to {SETTINGS_PATH}")
         except (FileNotFoundError, json.JSONDecodeError, PermissionError) as err:
-            logging.error(f"Error occurred when loading settings {err}")
+            self.log.error(f"Error occurred when loading settings {err}")
             raise err
 
-    @staticmethod
-    def _get_runlog_path() -> str:
-        """Set the file saving destination for RunLog data.
+    def _get_runlog_path(self) -> str:
+        """
+        Set the file saving destination for RunLog data.
 
         Returns:
          str: Path to the RunLog file.
         """
-        # Set path to the 'log_files' directory.
-        log_dir_path = os.path.join(get_project_dir(), 'run_logs')
-
-        # Set the runlog file name
-        date_str = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        log_file_name = f"RunLog_{date_str}.json"
-        log_file_path = os.path.join(log_dir_path, log_file_name)
-        logging.info("Set RunLog path successfully")
-        return log_file_path
+        day = time.strftime("%Y_%m_%d")
+        save_dir = os.path.join(get_project_path(), "log_files", "run_logs", day)
+        os.makedirs(save_dir, exist_ok=True)
+        filename = f"RunLog_{time.strftime('%Y_%m_%d-%H_%M_%S')}.json"
+        return os.path.join(save_dir, filename)
 
     def _init_server(self) -> Server:
         """Initialize the server.
@@ -130,12 +123,10 @@ class ChromTroller:
         message = "Server Initialization:"
         try:
             server = Server(self)
-            print(f"{message} SUCCESS")
-            logging.info(f"{message} SUCCESS")
+            self.log.info(f"{message} SUCCESS", print_msg=True)
             return server
         except Exception as err:
-            logging.error(f"{message} FAILURE - {err}")
-            print(f"{message} FAILURE")
+            self.log.error(f"{message} FAILURE - {err}", print_msg=True)
             raise
 
     def _init_controller(self) -> Controller:
@@ -150,12 +141,10 @@ class ChromTroller:
         message = "Controller Connection:"
         try:
             controller = Controller(hardware_settings=self.settings['hardware_settings'])
-            print(f"{message} SUCCESS")
-            logging.info(f"{message} SUCCESS")
+            self.log.info(f"{message} SUCCESS", print_msg=True)
             return controller
         except Exception as err:
-            logging.error(f"{message} FAILURE - {err}")
-            print(f"{message} FAILURE")
+            self.log.error(f"{message} FAILURE - {err}", print_msg=True)
             raise
 
     # ----- Management Methods -----
@@ -173,7 +162,7 @@ class ChromTroller:
         command = received_dict.get('command')
         data = received_dict.get('data')
 
-        logging.info(f"Command received: {command} with data: {data}")
+        self.log.info(f"Command received: {command} with data: {data}")
 
         # Process command to trigger the correct method
         match command:
@@ -193,7 +182,7 @@ class ChromTroller:
                 return self.run_data_analysis()
             case _:
                 message = f"Unknown command received: {command}"
-                logging.warning(message)
+                self.log.warning(message)
                 return f"ERROR: {message}"
 
     # ----- Action Methods -----
@@ -211,10 +200,10 @@ class ChromTroller:
             new_log = RunLog(run_conditions=run_info)
             self.runlog_list.append(new_log)
             self._save_run_logs()
-            self.print_info("New RunLog created")
+            self.log.info("New RunLog created")
             return "ACK"
         except Exception as err:
-            logging.error(f"Error Arsose: {err} during method: {__name__}")
+            self.log.error(f"Error Arsose: {err} during method: {__name__}")
             return "ERROR"
 
     def set_valve(self, position: str) -> str:
@@ -235,10 +224,10 @@ class ChromTroller:
 
             # set the valve to the desired position
             self.lcms_controller.set_valve_to_pos(desired_position=cmd_position)
-            self.print_info(f"Set valve to position: {position}")
+            self.log.info(f"Set valve to position: {position}")
             return "ACK"
         except ValveSwitchError as err:
-            logging.error(f"Error Arsose: {err} during method: {__name__}")
+            self.log.error(f"Error Arsose: {err} during method: {__name__}")
             return "ERROR"
 
     def set_analysis_parameters(self, parameters: Dict[str, Any]) -> str:
@@ -249,17 +238,17 @@ class ChromTroller:
             str: Either 'ACK' upon success or 'ERROR' upon failure
         """
         try:
-            self.print_info(f"All Current Settings: {self.settings['analysis_settings']}")
+            self.log.info(f"All Current Settings: {self.settings['analysis_settings']}")
             for parameter_key, parameter_value in parameters.items():
                 if parameter_key in self.settings['analysis_settings'].keys():
-                    self.print_info(f"Updated setting {parameter_key} to {parameter_value}")
+                    self.log.info(f"Updated setting {parameter_key} to {parameter_value}")
                     self.settings['analysis_settings'][parameter_key] = parameter_value
             self._save_settings()
-            self.print_info("Analysis parameters updated")
+            self.log.info("Analysis parameters updated")
             return "ACK"
         except Exception as err:
             print(err)
-            logging.error(f"Error Arsose: {err} during method: {__name__}")
+            self.log.error(f"Error Arsose: {err} during method: {__name__}")
             return "ERROR"
 
     def set_analysis_target(self, target: float) -> str:
@@ -269,11 +258,12 @@ class ChromTroller:
             str: Either 'ACK' upon success or 'ERROR' upon failure
         """
         try:
-            self.rt_target: float = target
-            self.print_info(f"Updated the rt_target to {self.rt_target} min")
+            self.settings["targets"]["peak_rt"]: float = target
+            self._save_settings()
+            self.log.info(f"Updated the rt_target to {target} min")
             return "ACK"
         except Exception as err:
-            logging.error(f"Error Arsose: {err} during method: {__name__}")
+            self.log.error(f"Error Arsose: {err} during method: {__name__}")
             return "ERROR"
 
     def set_analysis_tolerance(self, tolerance: float) -> str:
@@ -283,11 +273,12 @@ class ChromTroller:
             str: Either 'ACK' upon success or 'ERROR' upon failure
         """
         try:
-            self.rt_tolerance: float = tolerance
-            self.print_info(f"Updated the rt tolerance for peak picking to {self.rt_tolerance} min")
+            self.settings["targets"]["tolerance"]: float = tolerance
+            self._save_settings()
+            self.log.info(f"Updated the rt tolerance for peak picking to {tolerance} min")
             return "ACK"
         except Exception as err:
-            logging.error(f"Error Arsose: {err} during method: {__name__}")
+            self.log.error(f"Error Arsose: {err} during method: {__name__}")
             return "ERROR"
 
     def start_hplc_run(self) -> str:
@@ -296,25 +287,19 @@ class ChromTroller:
         Returns:
             str: status of run start.
         """
-        message = "HPLC analysis initiated"
-        logging.info(message)
-        print(message)
-        result = self.lcms_controller.run_analysis_cycle()
+        self.log.info("HPLC analysis initiated", print_msg=True)
+        acq_outcome = self.lcms_controller.run_sample_acquisition()
 
         if self.runlog_list:
-            self.runlog_list[-1].hplc_start = result
+            self.runlog_list[-1].hplc_start = acq_outcome
             self._save_run_logs()
 
-        message = f"HPLC analysis initiation: {result}"
-        logging.info(message)
-        print(message)
+        self.log.info(f"HPLC analysis initiation: {acq_outcome}", print_msg=True)
 
         # Start file monitoring to ensure the run completes, and the desired output file can be found
         new_file_path = self.start_file_monitoring()
 
-        message = f"HPLC analysis initiation {result} with results saved at {new_file_path}"
-        logging.info(message)
-        return message
+        return f"HPLC analysis initiation {acq_outcome} with results saved at {new_file_path}"
 
     def start_file_monitoring(self) -> Optional[str]:
         """Start the file monitoring process to track the newly generated file.
@@ -325,7 +310,7 @@ class ChromTroller:
         # Get the directory to monitor
         results_dirpath: str = self._get_latest_result_dirpath()
         if not results_dirpath:
-            logging.error("Results directory path is invalid.")
+            self.log.error("Results directory path is invalid.", print_msg=True)
             return None
 
         # Set Up Monitor
@@ -334,16 +319,12 @@ class ChromTroller:
 
         # Monitor dir until new file observed
         monitor.start_monitoring()
-        message = "File Monitoring Started"
-        logging.info(message)
-        print(message)
+        self.log.info("File Monitoring Started", print_msg=True)
         file_path = monitor_queue.get()
         monitor.stop_monitoring()
 
         # Log info
-        message = f"New File Found At: {file_path}"
-        logging.info(message)
-        print(message)
+        self.log.info(f"New File Found At: {file_path}", print_msg=True)
         if self.runlog_list:
             self.runlog_list[-1].file = file_path
             self._save_run_logs()
@@ -359,29 +340,18 @@ class ChromTroller:
         Returns:
             Dict[str, Any]: The result dictionary from the analysis.
         """
-        print("run_data_analysis called")
+        self.log.info("run_data_analysis called", print_msg=True)
         # Check the self.new_file_path and the latest file by ct time match
         if self.new_file_path != self._find_latest_sample_name_by_ct():
-            logging.warning("Mismatch between the identified file and the most recent file based on creation time")
-            logging.info(f"File found by monitor:{self.new_file_path}")
-            logging.info(f"File identified based on creation time :{self._find_latest_sample_name_by_ct()}")
+            self.log.warning("Mismatch between the identified file and the most recent file based on creation time"
+                             f" {self.new_file_path} != {self._find_latest_sample_name_by_ct()}")
 
         # Create the necessary analyser object
         analyser = Analyser()
-        message = "Analysis Initiated"
-        logging.info(message)
-        print(message)
+        self.log.info("Analysis Initiated", print_msg=True)
 
-        # Run the analysis
-        logging.info(message)
-        print(message)
-        result_dict: Dict[str, Any] = analyser.run_analysis(sample_filepath=self.new_file_path,
-                                                            peak_rt=self.rt_target,
-                                                            rt_tolerance=self.rt_tolerance,
-                                                            match_peak=False)
-        message = f"Identified Peaks: {result_dict}"
-        logging.info(message)
-        print(message)
+        result_dict: Dict[str, Any] = analyser.run_analysis(sample_filepath=self.new_file_path)
+        self.log.info(result_dict)
 
         if self.runlog_list:
             self.runlog_list[-1].analysis = result_dict
@@ -396,36 +366,10 @@ class ChromTroller:
                     "file_name": self.new_file_path,
                     "settings": self.settings,
                     "given_info": given_info}
+
         return response
-        # return result_dict if result_dict is not None else {"peak_rt": None, "integral": None}
 
     # ----- Utility Methods -----
-
-    @staticmethod
-    def _setup_logging() -> None:
-        """
-        Sets log format and file destination
-        """
-        # Set path to the 'log_files' directory.
-        root_dir_path = os.path.dirname(os.path.abspath(__file__))
-        log_dir_path = os.path.join(root_dir_path, 'log_files')
-
-        # Ensure the log_files directory exists
-        os.makedirs(log_dir_path, exist_ok=True)
-
-        # Set the log file name
-        date_str = datetime.now().strftime("%Y-%m-%d--%H-%M-%S")
-        log_file_name = f"ChromTroller_{date_str}.log"
-        log_file_path = os.path.join(log_dir_path, log_file_name)
-
-        # Set up logging configuration
-        logging.basicConfig(
-            filename=str(log_file_path),
-            level=logging.INFO,
-            format='%(asctime)s - %(levelname)s - %(filename)s - %(message)s',
-            datefmt="%Y-%m-%d--%H-%M-%S",
-            filemode='w'  # w=write, a=append
-        )
 
     def _save_run_logs(self) -> None:
         """Save the RunLog information to the runlog file."""
@@ -443,8 +387,6 @@ class ChromTroller:
             Optional[str]: Path to the most recent directory, or None if not found.
         """
         # OpenLab CDS stores all new results within the projects 'Results' directoy:
-        # "D:\\CDSProjects\\Project\\Results"
-        # project_all_results_dir: str = os.path.join("D:", "CDSProjects", project, "Results")
 
         project_results_path: str = self.settings["paths"]["project_results_path"]
         subdir_names: List[str] = next(os.walk(project_results_path))[1]
@@ -464,7 +406,7 @@ class ChromTroller:
                     most_recent_ctime = os.path.getctime(subdir_path)
                     most_recent_dirpath = subdir_path
 
-        logging.info(f"Current results directory set to: {most_recent_dirpath}")
+        self.log.info(f"Current results directory set to: {most_recent_dirpath}")
         return most_recent_dirpath
 
     def _find_latest_sample_name_by_ct(self) -> Optional[str]:
@@ -479,14 +421,14 @@ class ChromTroller:
 
         # Check if the directory exists
         if not os.path.exists(result_dir_path):
-            logging.error(f"Result directory does not exist: {result_dir_path}")
+            self.log.error(f"Result directory does not exist: {result_dir_path}")
             return None
 
         # Get all files ending with the specified data file type
         matching_files = [filename for filename in os.listdir(result_dir_path) if filename.endswith(data_file_type)]
 
         if not matching_files:
-            logging.info("No matching files found.")
+            self.log.info("No matching files found.")
             return None
 
         # Find the most recent file using max()
@@ -495,17 +437,8 @@ class ChromTroller:
             key=lambda f: os.path.getctime(os.path.join(result_dir_path, f))
         )
 
-        logging.info(f"Most recent file found: {most_recent_filename}")
+        self.log.info(f"Most recent file found: {most_recent_filename}")
         return most_recent_filename
-
-    @staticmethod
-    def print_info(message: str) -> None:
-        """
-        Shortened method to both log info and print to console.
-        Allows logging.info to be used without always printing to console
-        """
-        logging.info(message)
-        print(message)
 
 
 if __name__ == "__main__":
@@ -513,6 +446,6 @@ if __name__ == "__main__":
         chromtroller = ChromTroller()
         chromtroller.server.listen_for_new_connections()
     except KeyboardInterrupt:
-        logging.info("Shutting down the server.")
+        print("Shutting down the server.")
 
 
