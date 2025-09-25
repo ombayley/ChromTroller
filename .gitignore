@@ -1,7 +1,12 @@
 # Program Specific
-settings_files/protected_settings.json
+src/settings_files/protected_settings.json
 log_files
 *.pkl
+
+# General files
+*.log
+*.csv
+*.xlsx
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -64,5 +69,5 @@ coverage.xml
 .DS_Store
 Thumbs.db
 *.pyc
-/utils/__pycache__
+/src/utils/__pycache__
 /log_files
