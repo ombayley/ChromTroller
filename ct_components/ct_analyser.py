@@ -97,6 +97,7 @@ class Analyser:
 
             # Create Chrom
             if bkg_filepath:
+                self.log(f"Creating chromatogram with parameters:\nfile path: {file_path}\nblank: {bkg_filepath}")
                 smpl_chromatogram = Chromatogram(sample=file_path, blank=bkg_filepath, name='sample')
                 self.log(f"Chromatogram object generated with background reference correction")
             else:
@@ -497,8 +498,7 @@ class Analyser:
 
 
 if __name__ == "__main__":
-    # path = r"\\fnwi-s0.science.uva.nl\hims-nrg-robochem\lcms_data\Simone\Results\SPES40_AlcoholCoupling_250117_1.rslt\Sample_001_04.dx"
-    path = r"\\10.10.29.250\hims-nrg-robochem\lcms_data\Simone\Results\SPES40_AlcoholCoupling_250117_1.rslt\Sample_001_04.dx"
+    path = r"D:/CDSProjects/RoboChem_1/NovoNordisk/Results/Tyrosine_Funct_Campaign/Camp1_05_09_2025\NN_Tyrosine_Campaign_1_2025-09-05 16-26-22+02-00.rslt\Sample_2025-09-05 18-00-29+02-00-r003.dx"
     analyser = Analyser()
     run_result = analyser.run_analysis(sample_filepath=path)
     res = pd.DataFrame(run_result)
