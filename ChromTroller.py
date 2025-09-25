@@ -24,6 +24,8 @@ from typing import Any, Dict, List, Optional
 import tkinter as tk
 from tkinter import filedialog
 
+import pandas as pd
+
 from src.utils.get_project_path import get_project_path
 from src.utils.logger import get_logger, Logger
 from src.utils.custom_error_classes import *
@@ -35,6 +37,7 @@ from src.ct_components.ct_server import Server
 
 # Constants
 SETTINGS_PATH = os.path.join(get_project_path(), 'settings_files', 'settings.json')
+
 
 class ChromTroller:
     """
@@ -62,7 +65,7 @@ class ChromTroller:
         self.lcms_controller: Controller = self._init_controller()
 
         self.log.info("\nChromTroller Initialised and Ready For Analysis", print_msg=True)
-        print("REMINDERS: - Ensure OpenLab CDS is running and has the correct sequence queued"
+        print("REMINDERS: - Ensure OpenLab CDS is running and has the correct sequence queued\n"
               "           - Ensure the monitoring path in the settings.json matches that of the OpenLab project\n")
 
     # ----- Initialization Methods -----
@@ -185,6 +188,8 @@ class ChromTroller:
                 return self.start_hplc_run()
             case 'run_data_analysis':
                 return self.run_data_analysis()
+            case 'get_abs_at_time':
+                return self.get_abs_at_time(elution_time=data)
             case _:
                 message = f"Unknown command received: {command}"
                 self.log.warning(message)
@@ -369,7 +374,8 @@ class ChromTroller:
         analyser = Analyser()
         self.log.info("Analysis Initiated", print_msg=True)
 
-        result_dict: Dict[str, Any] = analyser.run_analysis(sample_filepath=self.new_file_path)
+        result_df: pd.DataFrame = analyser.run_analysis(sample_filepath=self.new_file_path)
+        result_dict: Dict[str, Any] = result_df.to_dict()
         self.log.info(result_dict)
 
         if self.runlog_list:
@@ -388,6 +394,17 @@ class ChromTroller:
 
         return response
         # return result_dict if result_dict is not None else {"peak_rt": None, "integral": None}
+
+    def get_abs_at_time(self, elution_time: float) -> float:
+        """
+        Returns the absorbance value at a set timepoint
+        """
+        if self.new_file_path != self._find_latest_sample_name_by_ct():
+            self.log.warning("Mismatch between the identified file and the most recent file based on creation time"
+                             f" {self.new_file_path} != {self._find_latest_sample_name_by_ct()}")
+        analyser = Analyser()
+        return analyser.get_abs_at_time(sample_filepath=self.new_file_path, elution_time=elution_time)
+
 
     # ----- Utility Methods -----
 
@@ -467,15 +484,6 @@ class ChromTroller:
 
         self.log.info(f"Most recent file found: {most_recent_filename}")
         return most_recent_filename
-
-    @staticmethod
-    def print_info(message: str) -> None:
-        """
-        Shortened method to both log info and print to console.
-        Allows logging.info to be used without always printing to console
-        """
-        logging.info(message)
-        print(message)
 
     def set_result_directory(self):
         """Uses tkinter to select the directory for monitoring and saves to the settings.json"""

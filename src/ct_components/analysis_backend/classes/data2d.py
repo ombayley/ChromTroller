@@ -333,4 +333,4 @@ def _closest(data: NDArray, point: float) -> Tuple[int, float]:
         idx = np.argmin(data)
     else:
         idx = np.argmin(np.abs(data - point))
-    return int(idx), data[idx]
+    return int(idx), float(data[idx])

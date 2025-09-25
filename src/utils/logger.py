@@ -10,6 +10,7 @@ import time
 from pathlib import Path
 from typing import Optional
 
+
 class Logger(logging.Logger):
     """
     A custom Logger that adds a `print_msg` keyword argument to its logging methods
@@ -45,9 +46,10 @@ class Logger(logging.Logger):
 
     def critical(self, msg, *args, print_msg=False, **kwargs):
         kwargs['stacklevel'] = kwargs.get('stacklevel', 1) + 1
-        super().critical(msg, stacklevel=1,*args, **kwargs)
+        super().critical(msg, stacklevel=1, *args, **kwargs)
         if print_msg:
             print(msg)
+
 
 class CustomFormatter(logging.Formatter):
     def __init__(self, fmt=None, datefmt=None):
@@ -128,4 +130,3 @@ def get_logger(
     logger.addHandler(handler)
 
     return logger
-

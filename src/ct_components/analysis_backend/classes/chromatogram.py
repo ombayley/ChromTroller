@@ -298,6 +298,12 @@ class Chromatogram(Data2D):
 
         return self
 
+    def get_absorbance(self, elution_time: float) -> float:
+        """finds the summed absorbance at a given elution time"""
+        closest_time_idx, closest_time = self.closest_time(elution_time)
+        absorbance = self.data[:, closest_time_idx].sum()
+        return absorbance
+
     def all_components(
         self, sort_by: Callable[[Component], Any] | None = None
     ) -> List[Component]:
