@@ -5,6 +5,7 @@ Code by: O.Bayley
 
 Efficiently read time, wavelength, and absorbance data from Agilent OpenLab CDS .dx data files.
 """
+import logging
 import io
 import time
 import zipfile
@@ -43,9 +44,7 @@ def smooth_timings(times_ms):
     :param times_ms: sorted np.array of times in ms
     :return: sorted np.array of times in min (averaged spacing)
     """
-    aqq_time_ms = times_ms[-1] / len(times_ms)
-    aqq_time_min = aqq_time_ms / 60000
-    times_min = np.arange(start=0, stop=(len(times_ms) * aqq_time_min), step=aqq_time_min)
+    times_min = np.linspace(times_ms[0], times_ms[-1], num=len(times_ms)) / 60000.0
     times_min = np.round(times_min, 3)
 
     return times_min
@@ -79,6 +78,10 @@ def parse_dx(dx_file_path):
                 if subfile_name.endswith('.UV'):
                     with dx_file_unzipped.open(subfile_name) as target_uv_data_file:
                         return parse_uv(target_uv_data_file.read())
+            msg = (f"parse_dx fn called with path: {dx_file_path}, however no .UV subcomponent file has been identified."
+                   f"Check that the acquisition function used collects/saves all of the UV data")
+            print(msg)
+            logging.warning(msg)
     except Exception as e:
         print(f"Error reading .dx file: {e}")
         return None, None, None
