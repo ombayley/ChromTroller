@@ -22,6 +22,8 @@ import re
 import os
 from datetime import datetime
 from typing import Any, Dict, List, Optional
+import tkinter as tk
+from tkinter import filedialog
 
 from utils.get_project_directory import get_project_dir
 from utils.custom_error_classes import *
@@ -44,6 +46,7 @@ class ChromTroller:
 
         # Initialise Class Vars
         self.settings: Dict[str, Any] = self._load_settings()
+        self.set_result_directory()
         self.runlog_path: str = self._get_runlog_path()
         self.runlog_list: List[RunLog] = []
         self.new_file_path: str = ""
@@ -322,6 +325,7 @@ class ChromTroller:
         Returns:
             Optional[str]: The filename of the new file detected, or None if not found.
         """
+        logging.info("Starting file monitoring system...")
         # Get the directory to monitor
         results_dirpath: str = self._get_latest_result_dirpath()
         if not results_dirpath:
@@ -458,12 +462,17 @@ class ChromTroller:
         # project_all_results_dir: str = os.path.join("D:", "CDSProjects", project, "Results")
 
         project_results_path: str = self.settings["paths"]["project_results_path"]
+        if not os.path.exists(project_results_path):
+            raise OSError(f"path does not exist: {project_results_path}")
+        logging.info(f"Searching directory: {project_results_path} for subdirectories")
         subdir_names: List[str] = next(os.walk(project_results_path))[1]
+        logging.info(f"Found subdirectorie: {subdir_names}")
 
         # Create the searchable run result tag
         dir_suffix: str = self.settings["tags"]["result_dir_tag"]
         escaped_dir_suffix = re.escape(dir_suffix)  # fix regex operators (i.e deals with '.')
         run_result_subdir_tag = re.compile(rf'{escaped_dir_suffix}$')
+        logging.info(f"filtering for tag: {run_result_subdir_tag}")
 
         # Of all the run result subdirs with the given file tag, find the most recent
         most_recent_dirpath = None
@@ -517,6 +526,24 @@ class ChromTroller:
         """
         logging.info(message)
         print(message)
+
+    def set_result_directory(self):
+        """Uses tkinter to select the directory for monitoring and saves to the settings.json"""
+        folder = self._select_folder()
+        self.settings["paths"]["project_results_path"] = folder
+        print(f"Folder set to: {folder}")
+        self._save_settings()
+
+    @staticmethod
+    def _select_folder():
+        """Uses tkinter to select a directory and return the path"""
+        root = tk.Tk()
+        root.withdraw()  # Hide the main window
+        folder_path = filedialog.askdirectory(title="Select The Folder Used For HPLC Data Output")
+        if folder_path is None:
+            raise Exception("No Directory Specified, Now Shutting off server...")
+        root.destroy()
+        return folder_path
 
 
 if __name__ == "__main__":
