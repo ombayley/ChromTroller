@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 Author: O. Bayley
-Description: function to get a custom Logger object (RbcLogger) that can both log and print
+Description: function to get a custom Logger object that can both log and print
 """
 import os
 import logging
@@ -52,6 +52,10 @@ class Logger(logging.Logger):
 
 
 class CustomFormatter(logging.Formatter):
+    """
+    Custom Formatter to override default logging format and provide clearer locations
+    timings and alignments for the log calls.
+    """
     def __init__(self, fmt=None, datefmt=None):
         super().__init__(fmt, datefmt)
         # Define the maximum length of log level names
@@ -64,6 +68,7 @@ class CustomFormatter(logging.Formatter):
         }
 
     def format(self, record):
+        """Override of default logging format fn to add extra info"""
         # Calculate the padding required for the log level
         levelname = record.levelname
         max_length = max(self.level_lengths.values())
@@ -75,11 +80,12 @@ class CustomFormatter(logging.Formatter):
         # Shorten the file name to just the models name (without extension)
         record.filename = os.path.splitext(os.path.basename(record.filename))[0]
 
-        # Only include location for DEBUG and ERROR logs
-        if record.levelno in (logging.DEBUG, logging.ERROR):
-            record.location = f"[File:{record.filename}, Function:{record.funcName}, Line:{record.lineno}]"
-        else:
+        # Only remove the location for INFO logs
+        if record.levelno == logging.INFO:
             record.location = f"[{record.funcName}]"
+        else:
+            # Include location for DEBUG, WARNING, ERROR and CRITICAL logs
+            record.location = f"[File:{record.filename}, Function:{record.funcName}, Line:{record.lineno}]"
 
         # Call the parent class's format method
         return super().format(record)
@@ -87,7 +93,7 @@ class CustomFormatter(logging.Formatter):
 
 def get_logger(
         name: str,
-        project_path: Optional[Path] = None,
+        dir_path: Optional[Path] = None,
         lowest_level: int = logging.DEBUG,
         sub_dir: Optional[str] = None
 ) -> Logger:
@@ -95,7 +101,7 @@ def get_logger(
 
     Args:
         name(str): Name of the Logger object
-        project_path(Path): Path to the project
+        dir_path(Path): Path to the project
         lowest_level(int): lowest logging level to be registered in the log (Default: logging.DEBUG)
         sub_dir (str): directory in which to save the log file (Default: "Devices")
     Returns:
@@ -109,15 +115,15 @@ def get_logger(
         logger.handlers.clear()
 
     # If no path is provided, use the default project directory
-    project_path = project_path if project_path else Path(__file__).parent.parent.parent / "projects" / "default"
+    dir_path = dir_path if dir_path else Path(__file__).parent.parent.parent / "projects" / "default"
 
     # Build Path to the log file
     time_hours = time.strftime("%H-%M-%S")
     date = time.strftime("%Y_%m_%d")
     if sub_dir is not None:
-        file_path = project_path / "logs" / sub_dir / name / date / f"{time_hours}_{name}.log"
+        file_path = dir_path / "logs" / sub_dir / name / date / f"{time_hours}_{name}.log"
     else:
-        file_path = project_path / "logs" / name / date / f"T_{time_hours}_{name}.log"
+        file_path = dir_path / "logs" / name / date / f"T_{time_hours}_{name}.log"
     file_path.parent.mkdir(parents=True, exist_ok=True)
 
     # Set up the logging handler with the desired formatting
