@@ -21,6 +21,10 @@ import re
 import os
 import time
 from typing import Any, Dict, List, Optional
+import tkinter as tk
+from tkinter import filedialog
+
+import pandas as pd
 
 from src.utils.get_project_path import get_project_path
 from src.utils.logger import get_logger, Logger
@@ -34,21 +38,25 @@ from src.tcp_comm.ct_server import Server
 # Constants
 SETTINGS_PATH = os.path.join(get_project_path(), 'settings_files', 'settings.json')
 
+
 class ChromTroller:
     """
     The ChromTroller class is the master class for the ChromTroller package, responsible for orchestrating
     the communication between the server, hardware controller, file monitoring, self.log, and data analysis components.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         # Setup Log
         self.log: Logger = get_logger("ChromTroller")
 
         # Initialise Class Vars
         self.settings: Dict[str, Any] = self._load_settings()
+        self.set_result_directory()
         self.runlog_path: str = self._get_runlog_path()
         self.runlog_list: List[RunLog] = []
         self.new_file_path: str = ""
+        self.rt_target = 0
+        self.rt_tolerance = 0.1
 
         # Start the server
         self.server: Server = self._init_server()
@@ -56,8 +64,8 @@ class ChromTroller:
         # Connect to the Arduino Controller
         self.lcms_controller: Controller = self._init_controller()
 
-        self.log.info("ChromTroller Initialised and Ready For Analysis", print_msg=True)
-        print("REMINDERS: - Ensure OpenLab CDS is running and has the correct sequence queued"
+        self.log.info("\nChromTroller Initialised and Ready For Analysis", print_msg=True)
+        print("REMINDERS: - Ensure OpenLab CDS is running and has the correct sequence queued\n"
               "           - Ensure the monitoring path in the settings.json matches that of the OpenLab project\n")
 
     # ----- Initialization Methods -----
@@ -180,6 +188,8 @@ class ChromTroller:
                 return self.start_hplc_run()
             case 'run_data_analysis':
                 return self.run_data_analysis()
+            case 'get_abs_at_time':
+                return self.get_abs_at_time(elution_time=data)
             case _:
                 message = f"Unknown command received: {command}"
                 self.log.warning(message)
@@ -307,6 +317,7 @@ class ChromTroller:
         Returns:
             Optional[str]: The filename of the new file detected, or None if not found.
         """
+        self.log.info("Starting file monitoring system...")
         # Get the directory to monitor
         results_dirpath: str = self._get_latest_result_dirpath()
         if not results_dirpath:
@@ -339,6 +350,19 @@ class ChromTroller:
 
         Returns:
             Dict[str, Any]: The result dictionary from the analysis.
+            Dict looks like:
+            {
+                data: {
+                    peak_rt: [...r.t. list...],
+                    integral: [...integral list...],
+                    peak_height: [...height list...],
+                    *name of reference spectra file*: [...spectral correlations....]
+                },
+                file_name: str,
+                settings: {...},
+                given_info: any
+            }
+
         """
         self.log.info("run_data_analysis called", print_msg=True)
         # Check the self.new_file_path and the latest file by ct time match
@@ -350,7 +374,8 @@ class ChromTroller:
         analyser = Analyser()
         self.log.info("Analysis Initiated", print_msg=True)
 
-        result_dict: Dict[str, Any] = analyser.run_analysis(sample_filepath=self.new_file_path)
+        result_df: pd.DataFrame = analyser.run_analysis(sample_filepath=self.new_file_path)
+        result_dict: Dict[str, Any] = result_df.to_dict()
         self.log.info(result_dict)
 
         if self.runlog_list:
@@ -368,8 +393,21 @@ class ChromTroller:
                     "given_info": given_info}
 
         return response
+        # return result_dict if result_dict is not None else {"peak_rt": None, "integral": None}
+
+    def get_abs_at_time(self, elution_time: float) -> float:
+        """
+        Returns the absorbance value at a set timepoint
+        """
+        if self.new_file_path != self._find_latest_sample_name_by_ct():
+            self.log.warning("Mismatch between the identified file and the most recent file based on creation time"
+                             f" {self.new_file_path} != {self._find_latest_sample_name_by_ct()}")
+        analyser = Analyser()
+        return analyser.get_abs_at_time(sample_filepath=self.new_file_path, elution_time=elution_time)
+
 
     # ----- Utility Methods -----
+
 
     def _save_run_logs(self) -> None:
         """Save the RunLog information to the runlog file."""
@@ -387,14 +425,21 @@ class ChromTroller:
             Optional[str]: Path to the most recent directory, or None if not found.
         """
         # OpenLab CDS stores all new results within the projects 'Results' directoy:
+        # "D:\\CDSProjects\\Project\\Results"
+        # project_all_results_dir: str = os.path.join("D:", "CDSProjects", project, "Results")
 
         project_results_path: str = self.settings["paths"]["project_results_path"]
+        if not os.path.exists(project_results_path):
+            raise OSError(f"path does not exist: {project_results_path}")
+        self.log.info(f"Searching directory: {project_results_path} for subdirectories")
         subdir_names: List[str] = next(os.walk(project_results_path))[1]
+        self.log.info(f"Found subdirectorie: {subdir_names}")
 
         # Create the searchable run result tag
         dir_suffix: str = self.settings["tags"]["result_dir_tag"]
         escaped_dir_suffix = re.escape(dir_suffix)  # fix regex operators (i.e deals with '.')
         run_result_subdir_tag = re.compile(rf'{escaped_dir_suffix}$')
+        self.log.info(f"filtering for tag: {run_result_subdir_tag}")
 
         # Of all the run result subdirs with the given file tag, find the most recent
         most_recent_dirpath = None
@@ -439,6 +484,24 @@ class ChromTroller:
 
         self.log.info(f"Most recent file found: {most_recent_filename}")
         return most_recent_filename
+
+    def set_result_directory(self):
+        """Uses tkinter to select the directory for monitoring and saves to the settings.json"""
+        folder = self._select_folder()
+        self.settings["paths"]["project_results_path"] = folder
+        print(f"Folder set to: {folder}")
+        self._save_settings()
+
+    @staticmethod
+    def _select_folder():
+        """Uses tkinter to select a directory and return the path"""
+        root = tk.Tk()
+        root.withdraw()  # Hide the main window
+        folder_path = filedialog.askdirectory(title="Select The Folder Used For HPLC Data Output")
+        if folder_path is None:
+            raise Exception("No Directory Specified, Now Shutting off server...")
+        root.destroy()
+        return folder_path
 
 
 if __name__ == "__main__":

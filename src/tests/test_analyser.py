@@ -4,18 +4,30 @@
 Author: O. Bayley
 Description: *Brief script description*.
 """
+import pytest
 import os
 import pandas as pd
-from src.ct_components import Analyser
+from src.ct_components.ct_analyser import Analyser
+
 
 def test_load_chromatogram():
     analyser = Analyser()
 
+
 def test_process_chromatogram():
     pass
 
+
 def test_plot_chromatogram():
     pass
+
+
+def test_get_abs_time():
+    path = r"D:\CDSProjects\RoboChem_1\Polymer_Degradation\Results\Polyurethanes\TEST2_20250923_2.rslt\run2_06.dx"
+    analyser = Analyser()
+    res = analyser.get_abs_at_time(sample_filepath=path, elution_time=0.5)
+    print(res)
+
 
 def test_run_analysis():
     path = r""
@@ -23,11 +35,14 @@ def test_run_analysis():
     run_result = analyser.run_analysis(sample_filepath=path)
     print(run_result)
 
+
 def test_plot_all_spectra():
     pass
 
+
 def test_save_all_spectra():
     pass
+
 
 def test_batch_process_chromatograms():
     path = r"C:\Users\obayley\OneDrive - UvA\Desktop\test\racemic"
@@ -42,6 +57,7 @@ def test_batch_process_chromatograms():
 
     analyser.save_analysis_results(peak_data=all_peaks, name="full-peak-summary")
 
+
 def test_extract_compound_info():
     path = r"C:\Users\obayley\OneDrive - UvA\Desktop\test\racemic\OB_Yoon_Col-IC-3_Racemic_Crude_Aquisition_Chiral_0-6percent_0,1-0,4mlmin_20min.amx_04.dx"
     analyser = Analyser()
@@ -49,6 +65,6 @@ def test_extract_compound_info():
     run_result = analyser.add_assignments(peak_data=run_result)
     analyser.save_analysis_results(peak_data=run_result, name="assignment-test")
 
+
 if __name__ == "__main__":
-    import pytest
     pytest.main(["-s", __file__])

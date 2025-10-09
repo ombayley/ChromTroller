@@ -57,7 +57,7 @@ class Analyser:
         # Get the raw chromatogram (with optional background correction)
         raw_chrom: Chromatogram = self.get_chrom(file_path=sample_filepath, bkg_filepath=bkg_filepath)
 
-        self.log.info(f"Chromatogram loaded successfullyfrom {sample_filepath} with background: {bkg_filepath}", print_msg=True)
+        self.log.info(f"Chromatogram loaded successfully from {sample_filepath} with background: {bkg_filepath}", print_msg=True)
 
         # Process the chromatogram (e.g., wavelength extraction, baseline correction, peak detection)
         proc_chrom: Chromatogram = self.process_chrom(chrom=raw_chrom)
@@ -76,6 +76,33 @@ class Analyser:
             self.save_analysis_results(peak_data)
 
         return peak_data
+
+    def get_abs_at_time(self, sample_filepath: str, elution_time: float) -> float:
+        """
+        Perform chromatogram analysis on a given sample file.
+
+        Args:
+            sample_filepath (str): Path to the sample chromatogram file.
+            elution_time (float): time to extract abs from
+
+        Returns:
+            Optional[pd.DataFrame]: DataFrame with peak data (columns include peak_rt, integral,
+                                    peak_height, and peak_width) or None if no peaks are found.
+        """
+        # Identify background file using tag from settings
+        bkg_filepath: Optional[str] = self.get_bkg_filepath(sample_filepath)
+
+        # Get the raw chromatogram (with optional background correction)
+        raw_chrom: Chromatogram = self.get_chrom(file_path=sample_filepath, bkg_filepath=bkg_filepath)
+
+        self.log.info(f"Chromatogram loaded successfully from {sample_filepath} with background: {bkg_filepath}",
+                      print_msg=True)
+
+        # Process the chromatogram (e.g., wavelength extraction, baseline correction, peak detection)
+        proc_chrom: Chromatogram = self.process_chrom(chrom=raw_chrom)
+
+        return proc_chrom.get_absorbance(elution_time=elution_time)
+
 
     def get_chrom(self, file_path: str, bkg_filepath: Optional[str] = None) -> Chromatogram:
         """
@@ -517,3 +544,34 @@ class Analyser:
         ax.plot()
         plt.tight_layout()
         plt.show()
+
+# ---- Quick Testing ----
+def main_testing() -> None:
+    analyser = Analyser()
+    # Sample file path (update as needed)
+    # path = r"C:\Users\obayley\Downloads\Chromtroller_check\run 22.txt"
+    # bkg_path = r"C:\Users\obayley\Downloads\gradient.txt"
+    # raw_chrom = analyser.get_chrom(file_path=path, bkg_filepath=bkg_path)
+    #
+    # # Process the chromatogram (e.g., wavelength extraction, baseline correction, peak detection)
+    # proc_chrom = analyser.process_chrom(chrom=raw_chrom)
+    # analyser.plot_chromatogram(proc_chrom)
+    # analyser.save_all_peak_spectra(proc_chrom)
+
+    dir_path = r"C:\Users\obayley\Documents (Local)\GitHub_Repositries\ChromTroller\saved_results\batch_test_2"
+    # Test analysis
+    for root, dirs, files in os.walk(dir_path):
+        for file in files:
+            if file.endswith(".txt"):
+                try:
+                    path = os.path.join(root, file)
+                    run_result = analyser.run_analysis(sample_filepath=path)
+                    file = file.split('.txt')[0]
+                    path = os.path.join(get_project_path(), "saved_results", f"{file}_result.csv")
+                    run_result.to_csv(path)
+                    print(run_result)
+                except:
+                    pass
+
+if __name__ == "__main__":
+    main_testing()
