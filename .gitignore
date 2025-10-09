@@ -1,5 +1,5 @@
 # Program Specific
-src/settings_files/protected_settings.json
+src/settings/protected_settings.json
 log_files
 *.pkl
 

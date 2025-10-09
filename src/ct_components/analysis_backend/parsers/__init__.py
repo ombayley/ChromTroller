@@ -1,1 +1,0 @@
-from src.ct_components.analysis_backend.parsers.wrapper import load_data2d

@@ -8,10 +8,9 @@ import logging
 import os
 import json
 import pandas as pd
-from src.ct_components.analysis_backend import cosine_similarity
-from matplotlib import pyplot as plt
+from src.analysis import cosine_similarity
 from glob import glob
-from src.ct_components.analysis_backend import ProcessingSettings, Chromatogram
+from src.analysis import ProcessingSettings, Chromatogram
 
 
 class Analyser:

@@ -8,15 +8,13 @@ Description: *Brief script description*.
 
 import logging
 import os
-import json
 import pandas as pd
 from glob import glob
-from matplotlib import pyplot as plt
-from typing import Any, Dict, List, Optional
+from typing import List
 
-from src.ct_components.analysis_backend import Component
-from src.ct_components.analysis_backend import cosine_similarity
-from src.ct_components.analysis_backend import Chromatogram
+from src.analysis import Component
+from src.analysis import cosine_similarity
+from src.analysis import Chromatogram
 
 def run_multi_analysis(self, dirpath):
     """

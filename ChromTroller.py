@@ -25,11 +25,11 @@ from typing import Any, Dict, List, Optional
 from src.utils.get_project_path import get_project_path
 from src.utils.logger import get_logger, Logger
 from src.utils.custom_error_classes import *
-from src.ct_components.ct_analyser import Analyser
-from src.ct_components.ct_controller import Controller
-from src.ct_components.ct_monitor import Monitor
-from src.ct_components.ct_runlog import RunLog
-from src.ct_components.ct_server import Server
+from src.analysis.ct_analyser import Analyser
+from src.hrd_control.ct_controller import Controller
+from src.file_mgmnt.ct_monitor import Monitor
+from src.file_mgmnt.ct_runlog import RunLog
+from src.tcp_comm.ct_server import Server
 
 # Constants
 SETTINGS_PATH = os.path.join(get_project_path(), 'settings_files', 'settings.json')
