@@ -15,3 +15,6 @@ def get_project_path() -> str:
     """
     return os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
+
+if __name__ == "__main__":
+    print(get_project_path())
