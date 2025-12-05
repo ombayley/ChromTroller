@@ -7,7 +7,7 @@ Description: *Brief script description*.
 import pytest
 import os
 import pandas as pd
-from src.ct_components.ct_analyser import Analyser
+from src.analysis.ct_analyser import Analyser
 
 
 def test_load_chromatogram():
@@ -30,7 +30,7 @@ def test_get_abs_time():
 
 
 def test_run_analysis():
-    path = r""
+    path = r"D:\CDSProjects\RoboChem_1\NovoNordisk\Results\Sample_Submission\run_test\KA_OTMS_2025-11-24 13-07-26+01-00.dx"
     analyser = Analyser()
     run_result = analyser.run_analysis(sample_filepath=path)
     print(run_result)
@@ -45,7 +45,7 @@ def test_save_all_spectra():
 
 
 def test_batch_process_chromatograms():
-    path = r"C:\Users\obayley\OneDrive - UvA\Desktop\test\racemic"
+    path = r"D:\CDSProjects\RoboChem_1\eRoboChem\Results\Oxidative\campaign_10_view"
     analyser = Analyser()
     all_peaks = pd.DataFrame()
 
@@ -55,11 +55,11 @@ def test_batch_process_chromatograms():
             run_result['name'] = file
             all_peaks = pd.concat([all_peaks, run_result], ignore_index=True)
 
-    analyser.save_analysis_results(peak_data=all_peaks, name="full-peak-summary")
+    analyser.save_analysis_results(path=path, peak_data=all_peaks, name="full-peak-summary")
 
 
 def test_extract_compound_info():
-    path = r"C:\Users\obayley\OneDrive - UvA\Desktop\test\racemic\OB_Yoon_Col-IC-3_Racemic_Crude_Aquisition_Chiral_0-6percent_0,1-0,4mlmin_20min.amx_04.dx"
+    path = r"D:\CDSProjects\RoboChem_1\eRoboChem\Results\Oxidative\RbC_Oxidative_Campaign_CF3_Anisole_Calibration.rslt\CF3_Anisole_15mM_1,4uL_11-r002.dx"
     analyser = Analyser()
     run_result = analyser.run_analysis(sample_filepath=path)
     run_result = analyser.add_assignments(peak_data=run_result)
