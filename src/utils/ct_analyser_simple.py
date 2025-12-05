@@ -32,7 +32,7 @@ class Analyser:
         try:
 
             project_dir = os.path.dirname(os.path.dirname(__file__))
-            settings_json_path = os.path.join(project_dir, 'settings_files', 'analysis_settings.json')
+            settings_json_path = os.path.join(project_dir, 'settings', 'analysis_settings.json')
             with open(settings_json_path, mode='r', encoding='utf-8') as infile:
                 logging.info("loaded analysis settings from json")
                 return json.load(infile)

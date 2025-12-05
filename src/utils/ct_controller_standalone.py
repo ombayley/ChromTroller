@@ -33,7 +33,7 @@ class StandaloneController:
         """
         try:
             project_path = os.path.dirname(os.path.dirname(__file__))
-            settings_path = os.path.join(project_path, 'settings_files', 'settings.json')
+            settings_path = os.path.join(project_path, 'settings', 'settings.json')
             with open(settings_path, 'r') as settings_file:
                 settings = json.load(settings_file)
                 hardware_settings = settings["hardware_settings"]
@@ -49,7 +49,7 @@ class StandaloneController:
         """
         try:
             project_path = os.path.dirname(os.path.dirname(__file__))
-            settings_path = os.path.join(project_path, 'settings_files', 'socket_settings.json')
+            settings_path = os.path.join(project_path, 'settings', 'socket_settings.json')
             with open(settings_path, 'r') as settings_file:
                 settings = json.load(settings_file)
                 logging.info("Loaded hardware settings successfully")

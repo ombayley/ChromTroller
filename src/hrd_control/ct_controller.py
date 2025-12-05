@@ -47,7 +47,7 @@ class Controller:
             PermissionError: If there is a permission error accessing the file.
         """
         try:
-            settings_path = os.path.join(get_project_path(), 'settings_files', 'protected_settings.json')
+            settings_path = os.path.join(get_project_path(), 'settings', 'protected_settings.json')
             with open(settings_path, 'r', encoding='utf-8') as settings_file:
                 sensitive_settings = json.load(settings_file)
                 logging.info("Loaded hardware settings successfully")
@@ -112,26 +112,27 @@ class Controller:
             # Attempt to send start request and wait for LCMS response
             attempt = 0
             max_attempts = 3
-            while attempt < max_attempts:
-                attempt += 1  # Increment attempt counter
-
-                # Send start analysis and check acknowledgement
-                self._send_start_request()
-                self.log_info(f"Sending start signal: ATTEMPT {attempt}")
-
-                # Check request acknowledgement from spectrometer
-                try:
-                    self._wait_on_lcms_response()
-                except LCMSCommunicationError:
-                    self.log_info(f"Attempt {attempt} failed. LCMS did not acknowledge start request.")
-                    continue  # Try again
-
-                self.log_info("Start request acknowledged\nSample prep starting")
-                break  # Exit loop if successful
-            else:
-                error_msg = f"HPLC not starting after {max_attempts} attempts"
-                logging.error(error_msg)
-                raise LCMSCommunicationError(error_msg)
+            self._send_start_request()
+            # while attempt < max_attempts:
+            #     attempt += 1  # Increment attempt counter
+            #
+            #     # Send start analysis and check acknowledgement
+            #     self._send_start_request()
+            #     self.log_info(f"Sending start signal: ATTEMPT {attempt}")
+            #
+            #     # Check request acknowledgement from spectrometer
+            #     try:
+            #         self._wait_on_lcms_response()
+            #     except LCMSCommunicationError:
+            #         self.log_info(f"Attempt {attempt} failed. LCMS did not acknowledge start request.")
+            #         continue  # Try again
+            #
+            #     self.log_info("Start request acknowledged\nSample prep starting")
+            #     break  # Exit loop if successful
+            # else:
+            #     error_msg = f"HPLC not starting after {max_attempts} attempts"
+            #     logging.error(error_msg)
+            #     raise LCMSCommunicationError(error_msg)
 
             time.sleep(0.3)
 
@@ -309,12 +310,12 @@ if __name__ == "__main__":
             datefmt='%d-%m-%Y %H:%M:%S',
             filemode='w'  # w=write, a=append
         )
-        settings_path = os.path.join(get_project_path(), 'settings_files', 'settings.json')
+        settings_path = os.path.join(get_project_path(), 'settings', 'settings.json')
         with open(settings_path, 'r', encoding='utf-8') as settings_file:
             settings = json.load(settings_file)
         controller = Controller(settings['hardware_settings'])
-        #controller.set_valve_to_pos(desired_position='A')
-        controller.run_sample_acquisition()
+        controller.set_valve_to_pos(desired_position='B')
+        # controller.run_sample_acquisition()
 
     except ControllerError as e:
         logging.error(f"Controller encountered an error: {e}")
