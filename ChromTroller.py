@@ -36,7 +36,7 @@ from src.file_mgmnt.ct_runlog import RunLog
 from src.tcp_comm.ct_server import Server
 
 # Constants
-SETTINGS_PATH = os.path.join(get_project_path(), 'settings_files', 'settings.json')
+SETTINGS_PATH = os.path.join(get_project_path(), 'settings', 'settings.json')
 
 
 class ChromTroller:
@@ -54,7 +54,7 @@ class ChromTroller:
         self.set_result_directory()
         self.runlog_path: str = self._get_runlog_path()
         self.runlog_list: List[RunLog] = []
-        self.new_file_path: str = ""
+        self.new_file_path: str | None = None
         self.rt_target = 0
         self.rt_tolerance = 0.1
 
@@ -304,6 +304,7 @@ class ChromTroller:
             self.runlog_list[-1].hplc_start = acq_outcome
             self._save_run_logs()
 
+
         self.log.info(f"HPLC analysis initiation: {acq_outcome}", print_msg=True)
 
         # Start file monitoring to ensure the run completes, and the desired output file can be found
@@ -366,9 +367,13 @@ class ChromTroller:
         """
         self.log.info("run_data_analysis called", print_msg=True)
         # Check the self.new_file_path and the latest file by ct time match
-        if self.new_file_path != self._find_latest_sample_name_by_ct():
+        if self.new_file_path != self._find_latest_sample_path_by_ct():
             self.log.warning("Mismatch between the identified file and the most recent file based on creation time"
-                             f" {self.new_file_path} != {self._find_latest_sample_name_by_ct()}")
+                             f" {self.new_file_path} != {self._find_latest_sample_path_by_ct()}")
+
+        if self.new_file_path is None and self._find_latest_sample_path_by_ct() is not None:
+            self.log.warning("No new file identified. Using most recent file instead", print_msg=True)
+            self.new_file_path = self._find_latest_sample_path_by_ct()
 
         # Create the necessary analyser object
         analyser = Analyser()
@@ -399,9 +404,9 @@ class ChromTroller:
         """
         Returns the absorbance value at a set timepoint
         """
-        if self.new_file_path != self._find_latest_sample_name_by_ct():
+        if self.new_file_path != self._find_latest_sample_path_by_ct():
             self.log.warning("Mismatch between the identified file and the most recent file based on creation time"
-                             f" {self.new_file_path} != {self._find_latest_sample_name_by_ct()}")
+                             f" {self.new_file_path} != {self._find_latest_sample_path_by_ct()}")
         analyser = Analyser()
         return analyser.get_abs_at_time(sample_filepath=self.new_file_path, elution_time=elution_time)
 
@@ -454,7 +459,7 @@ class ChromTroller:
         self.log.info(f"Current results directory set to: {most_recent_dirpath}")
         return most_recent_dirpath
 
-    def _find_latest_sample_name_by_ct(self) -> Optional[str]:
+    def _find_latest_sample_path_by_ct(self) -> Optional[str]:
         """
         Find the most recently created result file.
 
@@ -483,7 +488,8 @@ class ChromTroller:
         )
 
         self.log.info(f"Most recent file found: {most_recent_filename}")
-        return most_recent_filename
+        most_recent_file_path = os.path.join(result_dir_path, most_recent_filename)
+        return most_recent_file_path
 
     def set_result_directory(self):
         """Uses tkinter to select the directory for monitoring and saves to the settings.json"""
@@ -497,11 +503,14 @@ class ChromTroller:
         """Uses tkinter to select a directory and return the path"""
         root = tk.Tk()
         root.withdraw()  # Hide the main window
-        folder_path = filedialog.askdirectory(title="Select The Folder Used For HPLC Data Output")
-        if folder_path is None:
-            raise Exception("No Directory Specified, Now Shutting off server...")
-        root.destroy()
-        return folder_path
+        folder_path = filedialog.askdirectory(
+            title="Select The Folder Used For HPLC Data Output that containst the .rslt file")
+
+        if not folder_path.endswith(".rslt") and not None:
+            root.destroy()
+            return folder_path
+
+        raise Exception(f"No Good Directory Specified, Now Shutting off server...")
 
 
 if __name__ == "__main__":
@@ -510,5 +519,4 @@ if __name__ == "__main__":
         chromtroller.server.listen_for_new_connections()
     except KeyboardInterrupt:
         print("Shutting down the server.")
-
 
