@@ -45,7 +45,7 @@ def parse_openlabcds(file_path: str) -> Data2D:
                 time.sleep(backoff_time)
             else:
                 log.error(f"Failed to read data from: {file_path} due to: {e}.")
-                raise from e
+                raise
 
     # Round times and merge identical
     times = round_timings(times)
