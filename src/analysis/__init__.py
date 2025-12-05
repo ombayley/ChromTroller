@@ -9,3 +9,4 @@ from src.analysis.deconvolution.deconvolve import deconvolve_fixed, deconvolve_a
 from src.analysis.classes.chromatogram import Chromatogram
 from src.analysis.dataset.dataset import MoccaDataset
 from src.analysis.dataset.settings import ProcessingSettings
+from src.analysis.math import cosine_similarity
