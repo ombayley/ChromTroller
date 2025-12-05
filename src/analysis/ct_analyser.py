@@ -39,7 +39,7 @@ class Analyser:
         self.settings: dict = settings if settings is not None else self.load_analysis_json()
         self.log.info("Analyser object initialized successfully", print_msg=True)
 
-    def run_analysis(self, sample_filepath: str, save_data: bool = False) -> Optional[pd.DataFrame]:
+    def run_analysis(self, sample_filepath: str, save_data: bool = True) -> Optional[pd.DataFrame]:
         """
         Perform chromatogram analysis on a given sample file.
 
@@ -62,13 +62,16 @@ class Analyser:
         # Process the chromatogram (e.g., wavelength extraction, baseline correction, peak detection)
         proc_chrom: Chromatogram = self.process_chrom(chrom=raw_chrom)
 
+        if save_data:
+            self.save_chromatogram(proc_chrom)
+
         # Summarize processed chromatogram into a DataFrame
-        peak_data: Optional[pd.DataFrame] = self.get_df(chrom=proc_chrom)
+        peak_data: pd.DataFrame = self.get_df(chrom=proc_chrom)
 
         self.log.info(f"Identified peaks: {peak_data}", print_msg=False)
 
         # Add spectral matching results if peak data exists
-        if peak_data is not None:
+        if not peak_data.empty:
             peak_data = self.add_spectral_matches(chrom=raw_chrom, peak_data=peak_data)
 
         # Save analysis results if save_data is True
@@ -140,6 +143,7 @@ class Analyser:
         Returns:
             Optional[str]: Path to the closest background file or None if not found.
         """
+
         dirpath = os.path.dirname(sample_filepath)
         bkg_tag = self.settings["tags"]["bkg_filename_tag"].replace(" ", "_").lower()
         data_file_tag = self.settings["tags"]["data_file_tag"].replace(" ", "_").lower()
@@ -206,7 +210,7 @@ class Analyser:
 
         return proc_chrom
 
-    def get_df(self, chrom: Chromatogram) -> Optional[pd.DataFrame]:
+    def get_df(self, chrom: Chromatogram) -> pd.DataFrame:
         """
         Generate a DataFrame summarizing peak data from a processed chromatogram.
 
@@ -224,14 +228,16 @@ class Analyser:
         components: List[Component] = chrom.all_components()
         if not components:
             self.log.info("No peaks found in chromatogram", print_msg=True)
-            return None
+            peaks_dict = {"peak_rt": [], "integral": [], "peak_height": []}
+            return pd.DataFrame(peaks_dict)
 
         peaks_dict = {
             "peak_rt": [chrom.time[comp.elution_time] for comp in components],
-            "integral": [round(comp.integral,2) for comp in components],
-            "peak_height": [round(max(comp.concentration),2) for comp in components],
-            "peak_width": [round(float(chrom.time[peak.right] - chrom.time[peak.left]), 2) for peak in chrom.peaks]
+            "integral": [round(comp.integral, 2) for comp in components],
+            "peak_height": [round(max(comp.concentration), 2) for comp in components],
+            # "peak_width": [round(float(chrom.time[peak.right] - chrom.time[peak.left]), 2) for peak in chrom.peaks]
         }
+        # TODO the use of chrom.peaks vs components for width allows for mismatching indexes in some edge cases. Fix!
         return pd.DataFrame(peaks_dict)
 
     def add_spectral_matches(
@@ -440,7 +446,7 @@ class Analyser:
             spectrum = self.get_spectrum(chrom, float(peak_time))
             self.save_spectrum_to_csv(spectrum, f"{peak_time}.csv")
 
-    def save_analysis_results(self, peak_data: pd.DataFrame, name: str = None) -> None:
+    def save_analysis_results(self, peak_data: pd.DataFrame, name: str = None, path: str = None) -> None:
         """
         Save the analysis results to a CSV file and save a copy of the chromatogram.
 
@@ -451,7 +457,8 @@ class Analyser:
         """
         timestamp = time.strftime("%Y_%m_%d-%H_%M_%S")
         day = time.strftime("%Y_%m_%d")
-        save_dir = os.path.join(get_project_path(), "results", "summaries", day)
+        directory = path if path is not None else get_project_path()
+        save_dir = os.path.join(directory, "results", "summaries", day)
         os.makedirs(save_dir, exist_ok=True)
         name = name if name else f"{name}_"
         filename = f"{name}{timestamp}.csv"
@@ -461,7 +468,7 @@ class Analyser:
 
     def save_chromatogram(self, chrom: Chromatogram) -> None:
         """
-        Save the chromatogram to a CSV file.
+        Save the chromatogram as a png file.
 
         Args:
             chrom (Chromatogram): The chromatogram object to save.
@@ -471,7 +478,7 @@ class Analyser:
         os.makedirs(save_dir, exist_ok=True)
         ax = chrom.plot(color="black")
         fig = ax.get_figure()
-        plot_label_colour= "black"
+        plot_label_colour = "black"
         plot_facecolour = '#ffffff'
         ax.set_title(chrom.name, color=plot_label_colour, fontsize=11)
         ax.set_xlabel("Elution Time (min)", color=plot_label_colour, fontsize=9)
@@ -481,7 +488,8 @@ class Analyser:
         fig.patch.set_facecolor(plot_facecolour)
         ax.set_facecolor(plot_facecolour)
         fig.subplots_adjust(left=0.06, right=0.98, top=0.95, bottom=0.09)
-        fig.savefig(os.path.join(save_dir, chrom.name+".png"), dpi=600, bbox_inches="tight")
+        run_time = time.strftime("%H_%M_%S")
+        fig.savefig(os.path.join(save_dir, chrom.name+run_time+".png"), dpi=300, bbox_inches="tight")
 
     def load_analysis_json(self) -> dict:
         """
@@ -491,7 +499,7 @@ class Analyser:
             dict: Analysis settings.
         """
         try:
-            settings_json_path = os.path.join(get_project_path(), "settings_files", "settings.json")
+            settings_json_path = os.path.join(get_project_path(), "settings", "settings.json")
             with open(settings_json_path, mode="r", encoding="utf-8") as infile:
                 self.log.info(f"Loaded analysis settings from {settings_json_path}")
                 return json.load(infile)
