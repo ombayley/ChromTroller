@@ -14,3 +14,18 @@ def test_load_chromatogram():
     absorb = ct.get_abs_at_time(elution_time=1.0)
     print(absorb)
 
+
+def test_set_valve():
+    ct = ChromTroller()
+    ct.lcms_controller.set_valve_to_pos("A")  # Filling Position
+    # ct.lcms_controller.set_valve_to_pos("B")  # Loading Position
+
+
+def test_acquisition():
+    ct = ChromTroller()
+    ct.start_hplc_run()
+
+
+def test_analysis():
+    ct = ChromTroller()
+    ct.run_data_analysis()
