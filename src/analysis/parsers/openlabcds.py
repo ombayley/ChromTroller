@@ -85,6 +85,10 @@ def merge_identical_times(times: np.ndarray, data: np.ndarray) -> tuple[np.ndarr
     Returns:
         tuple[np.ndarray, np.ndarray]: unique_times, new_absorbance
     """
+    # Fit to min size
+    n = min(times.shape[0], data.shape[1])
+    times = times[:n]
+    data = data[:n]
 
     # Find unique times and the indices of their first occurrence
     unique_times, index = np.unique(times, return_index=True)
