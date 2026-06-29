@@ -4,7 +4,7 @@ import pandas as pd
 
 
 def main():
-    path = r"C:\Users\nrg_lcms\ChromTroller\src\log_files\run_logs\2025_12_04\RunLog_2025_12_04-16_19_58.json"
+    path = r"C:\Users\OllyBayley\Documents\GitHub_Repositries\ChromTroller\run_logs\RunLog_2025_12_04-16_19_58.json"
     with open(path) as f:
         data: list[dict] = json.load(f)
     prod_rt = 5.0
@@ -26,7 +26,7 @@ def main():
     integral_df.sort_values(by="id", ascending=True, inplace=True)
     integral_df.reset_index(drop=True, inplace=True)
 
-    path = r"C:\Users\nrg_lcms\ChromTroller\src\log_files\run_logs\2025_12_04\RunLog_2025_12_04-16_19_58.csv"
+    path = r"C:\Users\OllyBayley\Documents\GitHub_Repositries\ChromTroller\run_logs\RunLog_2025_12_04-16_19_58.csv"
     integral_df.to_csv(path)
 
 if __name__ == "__main__":

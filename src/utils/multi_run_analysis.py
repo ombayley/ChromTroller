@@ -12,7 +12,7 @@ import pandas as pd
 from glob import glob
 from typing import List
 
-from src.analysis import Component
+from src.analysis.classes import Component
 from src.analysis import cosine_similarity
 from src.analysis import Chromatogram
 

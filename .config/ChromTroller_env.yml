@@ -10,6 +10,7 @@ dependencies:
   - pyserial
   - matplotlib
   - watchdog
+  - pytest
 
   - pip:
       - customtkinter

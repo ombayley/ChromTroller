@@ -1,0 +1,55 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    OpenLabShim - x86 / .NET Framework 4.8 console app that owns the OpenLab
+    Acquisition SDK connection and exposes a tiny line protocol to ChromTroller.
+
+    MUST be x86: the Agilent.OpenLAB.Acquisition.* assemblies are 32-bit.
+    MUST target .NET Framework (net48): the acquisition assemblies are not .NET Core.
+  -->
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net48</TargetFramework>
+    <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
+    <AssemblyName>OpenLabShim</AssemblyName>
+    <Nullable>disable</Nullable>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <!--
+    Adjust HintPaths to YOUR install.
+      * The two Acquisition assemblies live in the 32-bit GAC. The version segment
+        (e.g. v4.0_2.8.0.0__968ccb09b2a5fe74) varies by build - list the folder to
+        get the exact name:
+          dir "C:\Windows\Microsoft.NET\assembly\GAC_32\Agilent.OpenLAB.Acquisition.AutomationInstrument"
+      * SharedServices / its Common assembly live under the OpenLab install dirs.
+    <Private>false</Private> keeps the Agilent DLLs out of the output folder - they
+    (and their many dependencies) are resolved at runtime from the install dirs via
+    the AssemblyResolve handler in Program.cs.
+  -->
+  <ItemGroup>
+    <Reference Include="Agilent.OpenLAB.Acquisition.AutomationInstrument">
+      <HintPath>C:\Windows\Microsoft.NET\assembly\GAC_32\Agilent.OpenLAB.Acquisition.AutomationInstrument\v4.0_2.8.0.0__968ccb09b2a5fe74\Agilent.OpenLAB.Acquisition.AutomationInstrument.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Agilent.OpenLAB.Acquisition.AutomationCore">
+      <HintPath>C:\Windows\Microsoft.NET\assembly\GAC_32\Agilent.OpenLAB.Acquisition.AutomationCore\v4.0_2.8.0.0__968ccb09b2a5fe74\Agilent.OpenLAB.Acquisition.AutomationCore.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Agilent.OpenLab.SharedServices">
+      <HintPath>C:\Program Files (x86)\Agilent Technologies\OpenLab Services\Common\Agilent.OpenLab.SharedServices.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Agilent.OpenLab.SharedServices.Common">
+      <HintPath>C:\Program Files (x86)\Agilent Technologies\OpenLab Acquisition\Agilent.OpenLab.SharedServices.Common.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+</Project>

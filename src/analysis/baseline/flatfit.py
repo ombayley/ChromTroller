@@ -11,6 +11,7 @@ import numpy as np
 from scipy.signal import savgol_filter # type: ignore
 from scipy import sparse # type: ignore
 from scipy.sparse.linalg import spsolve # type: ignore
+from scipy.sparse import csc_matrix
 
 
 def flatfit(data: ArrayLike, smoothness: float, p: float) -> NDArray:
@@ -71,6 +72,7 @@ def flatfit(data: ArrayLike, smoothness: float, p: float) -> NDArray:
 
     W = sparse.spdiags(w, 0, L, L)
     Z = W + H
+    Z = csc_matrix(Z)
     z = spsolve(Z, w*y)
 
     return z

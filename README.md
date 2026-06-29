@@ -224,7 +224,9 @@ Contributions are welcome—please open a Pull Request with a clear description 
 ---
 
 ## License
-This project is licensed under the **MIT License**. See the `LICENSE` file for details.
+This project is licensed under the **GNU General Public License (GPL)**. See the `LICENSE` file for details.
+The GPL License is a copyleft license, that requires any derivative work to also be released under the GPL License.
+This means any derivative software that uses this code remains open-source and freely available to the public.
 
 ---
 

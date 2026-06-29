@@ -30,9 +30,9 @@ def test_get_abs_time():
 
 
 def test_run_analysis():
-    path = r"D:\CDSProjects\RoboChem_1\NovoNordisk\Results\Sample_Submission\run_test\KA_OTMS_2025-11-24 13-07-26+01-00.dx"
+    path = r"Z:\personal_file_transfer\olly_file_transfer\NN_PhOTMS_Telescope_Manual_Test_2.rslt\Sample_2026-01-24 23-27-23+01-00-r010.dx"
     analyser = Analyser()
-    run_result = analyser.run_analysis(sample_filepath=path)
+    run_result = analyser.run_analysis(sample_filepath=path, save_data=True)
     print(run_result)
 
 
@@ -40,12 +40,13 @@ def test_plot_all_spectra():
     pass
 
 
+
 def test_save_all_spectra():
     pass
 
 
 def test_batch_process_chromatograms():
-    path = r"D:\CDSProjects\RoboChem_1\eRoboChem\Results\Oxidative\campaign_10_view"
+    path = r"Z:\personal_file_transfer\olly_file_transfer\NN_PhOTMS_Telescope_Manual_Test_2.rslt"
     analyser = Analyser()
     all_peaks = pd.DataFrame()
 
