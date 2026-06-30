@@ -1,0 +1,52 @@
+{
+    "analysis_settings": {
+        "baseline_model": "flatfit",
+        "baseline_smoothness": 1.0,
+        "baseline_smooth_filter": false,
+        "min_rel_prominence": 0.02,
+        "min_prominence": 1.0,
+        "border_max_peak_cutoff": 0.1,
+        "split_threshold": 0.95,
+        "explained_threshold": 0.995,
+        "expand_peak_boarders": true,
+        "peak_model": "Bemg",
+        "max_peak_comps": 1,
+        "max_peak_distance": 1.0,
+        "min_spectrum_correl": 0.99,
+        "min_elution_time": 3.0,
+        "max_elution_time": 8.0,
+        "peak_maxima_identification": "max",
+        "min_wavelength": 200.0,
+        "max_wavelength": 300.0,
+        "min_rel_integral": 0.01,
+        "relaxe_concs": false,
+        "__classname__": "ProcessingSettings"
+    },
+    "hardware_settings": {
+        "serial_baud_rate": 9600,
+        "serial_timeout": 1,
+        "valve_filling_position": "A",
+        "valve_injection_position": "B",
+        "sample_loop_flush_time": 30,
+        "valve_switching_timeout": 10,
+        "lcms_response_timeout": 20,
+        "lcms_sample_prep_timeout": 300,
+        "sample_detection_timeout": 1200,
+        "empty_phase_sensor_value": "2",
+        "full_phase_sensor_values": [
+            "0",
+            "1"
+        ],
+        "phase_sensor_stability_time": 0.5,
+        "phase_sensor_polling_time": 0.1
+    },
+    "tags": {
+        "bkg_filename_tag": "gradient",
+        "sample_filename_tag": "sample",
+        "data_file_tag": ".dx",
+        "result_dir_tag": ".rslt"
+    },
+    "paths": {
+        "project_results_path": "D:/CDSProjects/RoboChem_1/Polymer_Degradation/Results/Polyurethanes"
+    }
+}

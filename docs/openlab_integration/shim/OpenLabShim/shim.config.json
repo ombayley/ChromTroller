@@ -1,0 +1,23 @@
+{
+  "_comment": "All REPLACE_* values come from the bench discovery script / OpenLab Control Panel. Do not commit real credentials - load Password from a secret at deploy time.",
+
+  "ConnectionString": "",
+  "Login": "RoboChemSvc",
+  "Domain": "",
+  "Password": "CHANGE_ME",
+
+  "InstrumentId": "00000000-0000-0000-0000-000000000000",
+  "ProjectId":    "00000000-0000-0000-0000-000000000000",
+  "ConnectTimeoutSec": 90,
+
+  "ValveModuleMatch": "Column Comp",
+  "ValveFirmware": {
+    "load":   "REPLACE_WITH_DISCOVERED_CMD_FOR_POSITION_A",
+    "inject": "REPLACE_WITH_DISCOVERED_CMD_FOR_POSITION_B"
+  },
+
+  "ParamMap": {
+    "flow":     { "ModuleMatch": "Pump",        "PropId": "REPLACE_FLOW_PROPID" },
+    "col_temp": { "ModuleMatch": "Column Comp", "PropId": "REPLACE_TEMP_PROPID" }
+  }
+}

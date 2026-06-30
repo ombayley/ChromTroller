@@ -1,0 +1,16 @@
+name: ChromTroller_env
+channels:
+  - conda-forge
+dependencies:
+  - python>=3.11
+  - pip
+  - numpy
+  - pandas
+  - scipy
+  - pyserial
+  - matplotlib
+  - watchdog
+  - pytest
+
+  - pip:
+      - customtkinter
