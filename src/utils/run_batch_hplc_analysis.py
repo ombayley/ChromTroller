@@ -32,21 +32,24 @@ async def run_batch_hplc_analysis(path: str) -> None:
     """
     analyser = Analyser()
 
+    print(f"Analysing files in directory: {path}\n-------------------------------------------------------\n")
+
     for file in os.listdir(path=path):
         if file.endswith(".dx") and file.lower() != "gradient.dx":
-            print(f"File : {file}")
+            print(f"File : {file}\n")
             run_result = analyser.run_analysis(sample_filepath=os.path.join(path, file))
 
             if run_result is None or run_result.empty:
                 print("No peaks found.")
             else:
                 for _, peak in run_result.iterrows():
-                    print(f"Peak rt: {peak['peak_rt']} | "
+                    print(f"\nPeaks found:")
+                    print(f"\t- Peak rt: {peak['peak_rt']} | "
                           f"Integral: {peak['integral']} | "
                           f"Height: {peak['peak_height']} | ")
-
-            print("\n--------------------\n")
+            print(f"\nChromatograms images saved at 'ChromTroller/src/results/chromatograms'")
+            print("\n---------------------------------------------------------\n")
 
 if __name__ == "__main__":
-    path = r"C:\Users\mvanzel\Downloads\HPLC_analysis_imine.rslt"
+    path = r"C:\Users\mvanzel\Downloads\HPLC_analysis_imine_2.rslt"
     asyncio.run(run_batch_hplc_analysis(path))
