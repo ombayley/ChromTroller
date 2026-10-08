@@ -60,13 +60,13 @@ class Analyser:
         self.log.info(f"Chromatogram loaded successfully from {sample_filepath} with background: {bkg_filepath}", print_msg=True)
 
         if save_data:
-            self.save_chromatogram(raw_chrom, processing_stage="Raw data")
+            self.save_chromatogram(raw_chrom, processing_stage="Raw data", path=sample_filepath)
 
         # Process the chromatogram (e.g., wavelength extraction, baseline correction, peak detection)
-        proc_chrom: Chromatogram = self.process_chrom(chrom=raw_chrom, save_data=save_data)
+        proc_chrom: Chromatogram = self.process_chrom(chrom=raw_chrom, save_data=save_data, path=sample_filepath)
 
         if save_data:
-            self.save_chromatogram(proc_chrom, processing_stage="Processed data")
+            self.save_chromatogram(proc_chrom, processing_stage="Processed data", path=sample_filepath)
 
         # Summarize processed chromatogram into a DataFrame
         peak_data: pd.DataFrame = self.get_df(chrom=proc_chrom)
@@ -105,7 +105,7 @@ class Analyser:
                       print_msg=True)
 
         # Process the chromatogram (e.g., wavelength extraction, baseline correction, peak detection)
-        proc_chrom: Chromatogram = self.process_chrom(chrom=raw_chrom)
+        proc_chrom: Chromatogram = self.process_chrom(chrom=raw_chrom, path=sample_filepath)
 
         return proc_chrom.get_absorbance(elution_time=elution_time)
 
@@ -121,13 +121,12 @@ class Analyser:
         Returns:
             Chromatogram: Loaded chromatogram object.
         """
-        filename = os.path.basename(file_path)
         try:
             if bkg_filepath is not None:
-                chrom = Chromatogram(sample=file_path, blank=bkg_filepath, name=filename)
+                chrom = Chromatogram(sample=file_path, blank=bkg_filepath, name="sample")
                 self.log.info("Chromatogram loaded WITH background reference correction")
             else:
-                chrom = Chromatogram(sample=file_path, name=filename)
+                chrom = Chromatogram(sample=file_path, name="sample")
                 self.log.info("Chromatogram loaded WITHOUT a background reference file")
             return chrom
         except Exception as e:
@@ -168,13 +167,14 @@ class Analyser:
         closest_bkg = min(bkg_files, key=lambda file: abs(ctime_sample - os.path.getctime(file)))
         return closest_bkg
 
-    def process_chrom(self, chrom: Chromatogram, save_data: bool = True) -> Chromatogram:
+    def process_chrom(self, chrom: Chromatogram, path: str, save_data: bool = True) -> Chromatogram:
         """
         Process the chromatogram based on the analysis settings.
 
         Args:
             chrom (Chromatogram): Raw chromatogram object.
             save_data(bool): whether to save spectrum as a png or not after each step of processing
+            path(str): path of the file analysed
 
         Returns:
             Chromatogram: Processed chromatogram.
@@ -188,14 +188,14 @@ class Analyser:
         )
         proc_chrom = Chromatogram(trimmed_data2d, name=chrom.name)
         if save_data:
-            self.save_chromatogram(proc_chrom, processing_stage="Post wavelength extraction")
+            self.save_chromatogram(proc_chrom, processing_stage="Post wavelength extraction", path=path)
 
         proc_chrom = proc_chrom.correct_baseline(
             method=proc_settings.baseline_model,
             smoothness=proc_settings.baseline_smoothness,
         )
         if save_data:
-            self.save_chromatogram(proc_chrom, processing_stage="Post baseline correction")
+            self.save_chromatogram(proc_chrom, processing_stage="Post baseline correction", path=path)
 
 
         proc_chrom = proc_chrom.find_peaks(
@@ -210,7 +210,7 @@ class Analyser:
             max_elution_time=proc_settings.max_elution_time,
         )
         if save_data:
-            self.save_chromatogram(proc_chrom, processing_stage="Post peak finding")
+            self.save_chromatogram(proc_chrom, processing_stage="Post peak finding", path=path)
 
         proc_chrom = proc_chrom.deconvolve_peaks(
             model=proc_settings.peak_model,
@@ -219,7 +219,7 @@ class Analyser:
             max_comps=proc_settings.max_peak_comps,
         )
         if save_data:
-            self.save_chromatogram(proc_chrom, processing_stage="Post peak deconvolution")
+            self.save_chromatogram(proc_chrom, processing_stage="Post peak deconvolution", path=path)
 
         return proc_chrom
 
@@ -479,14 +479,17 @@ class Analyser:
         peak_data.to_csv(file_path)
 
 
-    def save_chromatogram(self, chrom: Chromatogram, processing_stage: str) -> None:
+    def save_chromatogram(self, chrom: Chromatogram, processing_stage: str, path: str) -> None:
         """
         Save the chromatogram as a png file.
 
         Args:
             chrom (Chromatogram): The chromatogram object to save.
-            processing_stage(str): stage of the processed chromatgoram
+            processing_stage(str): stage of the processed chromatogram
+            path(str): path of the chromatogram file analysed
         """
+        filename = os.path.basename(path)
+
         day = time.strftime("%Y_%m_%d")
         save_dir = os.path.join(get_project_path(), "results", "chromatograms", day)
         os.makedirs(save_dir, exist_ok=True)
@@ -511,9 +514,8 @@ class Analyser:
 
         # Make processing stage safe for use in a filename
         stage = processing_stage.replace(" ", "_")
-        filename = f"{chrom.name}_{stage}_{run_time}.png"
+        filename = f"{filename}_{stage}_{run_time}.png"
         fig.savefig(os.path.join(save_dir, filename), dpi=300, bbox_inches="tight")
-        # plt.close(fig)
 
 
     def load_analysis_json(self) -> dict:
