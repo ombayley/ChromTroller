@@ -499,7 +499,7 @@ class Analyser:
         plot_label_colour = "black"
         plot_facecolour = '#ffffff'
 
-        ax.set_title(chrom.name, color=plot_label_colour, fontsize=11)
+        ax.set_title(filename, color=plot_label_colour, fontsize=11)
         ax.set_xlabel("Elution Time (min)", color=plot_label_colour, fontsize=9)
         ax.set_ylabel("Absorbance", color=plot_label_colour, fontsize=9)
 
