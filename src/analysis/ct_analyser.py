@@ -59,11 +59,14 @@ class Analyser:
 
         self.log.info(f"Chromatogram loaded successfully from {sample_filepath} with background: {bkg_filepath}", print_msg=True)
 
+        if save_data:
+            self.save_chromatogram(raw_chrom, processing_stage="Raw data", path=sample_filepath)
+
         # Process the chromatogram (e.g., wavelength extraction, baseline correction, peak detection)
-        proc_chrom: Chromatogram = self.process_chrom(chrom=raw_chrom)
+        proc_chrom: Chromatogram = self.process_chrom(chrom=raw_chrom, save_data=save_data, path=sample_filepath)
 
         if save_data:
-            self.save_chromatogram(proc_chrom)
+            self.save_chromatogram(proc_chrom, processing_stage="Processed data", path=sample_filepath)
 
         # Summarize processed chromatogram into a DataFrame
         peak_data: pd.DataFrame = self.get_df(chrom=proc_chrom)
@@ -102,7 +105,7 @@ class Analyser:
                       print_msg=True)
 
         # Process the chromatogram (e.g., wavelength extraction, baseline correction, peak detection)
-        proc_chrom: Chromatogram = self.process_chrom(chrom=raw_chrom)
+        proc_chrom: Chromatogram = self.process_chrom(chrom=raw_chrom, path=sample_filepath)
 
         return proc_chrom.get_absorbance(elution_time=elution_time)
 
@@ -164,12 +167,14 @@ class Analyser:
         closest_bkg = min(bkg_files, key=lambda file: abs(ctime_sample - os.path.getctime(file)))
         return closest_bkg
 
-    def process_chrom(self, chrom: Chromatogram) -> Chromatogram:
+    def process_chrom(self, chrom: Chromatogram, path: str, save_data: bool = True) -> Chromatogram:
         """
         Process the chromatogram based on the analysis settings.
 
         Args:
             chrom (Chromatogram): Raw chromatogram object.
+            save_data(bool): whether to save spectrum as a png or not after each step of processing
+            path(str): path of the file analysed
 
         Returns:
             Chromatogram: Processed chromatogram.
@@ -182,11 +187,15 @@ class Analyser:
             max_wavelength=proc_settings.max_wavelength,
         )
         proc_chrom = Chromatogram(trimmed_data2d, name=chrom.name)
+        if save_data:
+            self.save_chromatogram(proc_chrom, processing_stage="Post wavelength extraction", path=path)
 
         proc_chrom = proc_chrom.correct_baseline(
             method=proc_settings.baseline_model,
             smoothness=proc_settings.baseline_smoothness,
         )
+        if save_data:
+            self.save_chromatogram(proc_chrom, processing_stage="Post baseline correction", path=path)
 
 
         proc_chrom = proc_chrom.find_peaks(
@@ -200,6 +209,8 @@ class Analyser:
             min_elution_time=proc_settings.min_elution_time,
             max_elution_time=proc_settings.max_elution_time,
         )
+        if save_data:
+            self.save_chromatogram(proc_chrom, processing_stage="Post peak finding", path=path)
 
         proc_chrom = proc_chrom.deconvolve_peaks(
             model=proc_settings.peak_model,
@@ -207,6 +218,8 @@ class Analyser:
             relaxe_concs=proc_settings.relaxe_concs,
             max_comps=proc_settings.max_peak_comps,
         )
+        if save_data:
+            self.save_chromatogram(proc_chrom, processing_stage="Post peak deconvolution", path=path)
 
         return proc_chrom
 
@@ -466,30 +479,44 @@ class Analyser:
         peak_data.to_csv(file_path)
 
 
-    def save_chromatogram(self, chrom: Chromatogram) -> None:
+    def save_chromatogram(self, chrom: Chromatogram, processing_stage: str, path: str) -> None:
         """
         Save the chromatogram as a png file.
 
         Args:
             chrom (Chromatogram): The chromatogram object to save.
+            processing_stage(str): stage of the processed chromatogram
+            path(str): path of the chromatogram file analysed
         """
+        filename = os.path.basename(path)
+
         day = time.strftime("%Y_%m_%d")
         save_dir = os.path.join(get_project_path(), "results", "chromatograms", day)
         os.makedirs(save_dir, exist_ok=True)
         ax = chrom.plot(color="black")
+
         fig = ax.get_figure()
         plot_label_colour = "black"
         plot_facecolour = '#ffffff'
-        ax.set_title(chrom.name, color=plot_label_colour, fontsize=11)
+
+        ax.set_title(filename, color=plot_label_colour, fontsize=11)
         ax.set_xlabel("Elution Time (min)", color=plot_label_colour, fontsize=9)
         ax.set_ylabel("Absorbance", color=plot_label_colour, fontsize=9)
+
         ax.tick_params(axis='x', colors=plot_label_colour)
         ax.tick_params(axis='y', colors=plot_label_colour)
+
         fig.patch.set_facecolor(plot_facecolour)
         ax.set_facecolor(plot_facecolour)
         fig.subplots_adjust(left=0.06, right=0.98, top=0.95, bottom=0.09)
+
         run_time = time.strftime("%H_%M_%S")
-        fig.savefig(os.path.join(save_dir, chrom.name+run_time+".png"), dpi=300, bbox_inches="tight")
+
+        # Make processing stage safe for use in a filename
+        stage = processing_stage.replace(" ", "_")
+        filename = f"{filename}_{stage}_{run_time}.png"
+        fig.savefig(os.path.join(save_dir, filename), dpi=300, bbox_inches="tight")
+
 
     def load_analysis_json(self) -> dict:
         """
