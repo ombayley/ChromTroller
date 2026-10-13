@@ -59,6 +59,13 @@ conda env create -f .config/ChromTroller_env.yml
 conda activate ChromTroller
 ```
 
+NOTE:
+If conda's shell hook hasn't been started make sure it initilaise with:
+
+```bash
+conda init
+```
+
 ---
 
 ### 🧠 Hardware & Firmware
