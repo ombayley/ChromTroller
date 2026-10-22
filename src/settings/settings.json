@@ -3,22 +3,22 @@
         "baseline_model": "flatfit",
         "baseline_smoothness": 1.0,
         "baseline_smooth_filter": false,
-        "min_rel_prominence": 0.1,
-        "min_prominence": 1000000.0,
+        "min_rel_prominence": 0.01,
+        "min_prominence": 10000000.0,
         "border_max_peak_cutoff": 0.1,
         "split_threshold": 0.95,
         "explained_threshold": 0.995,
         "expand_peak_boarders": true,
-        "peak_model": "Bemg",
+        "peak_model": "FraserSuzuki",
         "max_peak_comps": 1,
         "max_peak_distance": 1.0,
         "min_spectrum_correl": 0.99,
         "min_elution_time": 0.5,
-        "max_elution_time": 9.0,
+        "max_elution_time": 10.5,
         "peak_maxima_identification": "max",
         "min_wavelength": 230.0,
         "max_wavelength": 260.0,
-        "min_rel_integral": 0.01,
+        "min_rel_integral": 0.001,
         "relaxe_concs": false,
         "__classname__": "ProcessingSettings"
     },
@@ -47,6 +47,6 @@
         "result_dir_tag": ".rslt"
     },
     "paths": {
-        "project_results_path": "D:/CDSProjects/RoboChem_1/Polymer_Degradation/Results/Polyurethanes"
+        "project_results_path": "D:/CDSProjects/Photochem_Imine/Results"
     }
 }

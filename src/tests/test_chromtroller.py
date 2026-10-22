@@ -18,7 +18,7 @@ def test_load_chromatogram():
 def test_set_valve():
     ct = ChromTroller()
     ct.lcms_controller.set_valve_to_pos("A")  # Filling Position
-    # ct.lcms_controller.set_valve_to_pos("B")  # Loading Position
+    #ct.lcms_controller.set_valve_to_pos("B")  # Loading Position
 
 
 def test_acquisition():

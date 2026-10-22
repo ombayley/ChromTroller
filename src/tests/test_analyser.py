@@ -46,7 +46,7 @@ def test_save_all_spectra():
 
 
 def test_batch_process_chromatograms():
-    path = r"Z:\personal_file_transfer\olly_file_transfer\NN_PhOTMS_Telescope_Manual_Test_2.rslt"
+    path = r"D:\CDSProjects\Photochem_Imine\Results\Results_test_sequence.rslt"
     analyser = Analyser()
     all_peaks = pd.DataFrame()
 
